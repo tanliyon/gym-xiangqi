@@ -9,7 +9,7 @@ class XiangQiEnv(gym.Env):
 		pass
 
 	def step(self, action):
-		pass
+		return 0, 0, 0, 0
 
 	def reset(self):
 		pass
