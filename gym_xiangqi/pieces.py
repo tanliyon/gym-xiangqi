@@ -17,8 +17,8 @@ class Piece:
     # constants
     RED = 0
     BLACK = 1
-    OUT = 0
-    IN = 1
+    DEAD = 0
+    ALIVE = 1
 
     # Must set this attributes in subclasses
     color = 0
@@ -27,7 +27,7 @@ class Piece:
     state = 0
     image = None
 
-    def move(self):
+    def move(self, newRow, newCol):
         """
         Take one move among given piece's allowed moves
         Update piece's coordinates internally
@@ -43,11 +43,17 @@ class King(Piece):
     Can only move 1 unit of space orthogonally within the special square area
     """
 
-    def __init__(self, side, row, col, imgFile):
-        pass
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        self.state = Piece.ALIVE
+        # TODO: add image for pygame rendering
+        #  self.image =
 
-    def move(self):
-        raise NotImplementedError
+    def move(self, newRow, newCol):
+        self.row = newRow
+        self.col = newCol
 
 
 class Queen(Piece):
@@ -58,11 +64,17 @@ class Queen(Piece):
     Can only move 1 unit of space diagonally within the special square area
     """
 
-    def __init__(self, side, row, col, imgFile):
-        pass
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        self.state = Piece.ALIVE
+        # TODO: add image for pygame rendering
+        #  self.image =
 
-    def move(self):
-        raise NotImplementedError
+    def move(self, newRow, newCol):
+        self.row = newRow
+        self.col = newCol
 
 
 class Bishop(Piece):
@@ -74,11 +86,16 @@ class Bishop(Piece):
     Moves 2 unit of space diagonally
     """
 
-    def __init__(self, side, row, col, imgFile):
-        pass
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        # TODO: add image for pygame rendering
+        #  self.image =
 
-    def move(self):
-        raise NotImplementedError
+    def move(self, newRow, newCol):
+        self.row = newRow
+        self.col = newCol
 
 
 class Knight(Piece):
@@ -90,11 +107,16 @@ class Knight(Piece):
     The difference is that it cannot jump over pieces
     """
 
-    def __init__(self, side, row, col, imgFile):
-        pass
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        # TODO: add image for pygame rendering
+        #  self.image =
 
-    def move(self):
-        raise NotImplementedError
+    def move(self, newRow, newCol):
+        self.row = newRow
+        self.col = newCol
 
 
 class Rook(Piece):
@@ -105,11 +127,16 @@ class Rook(Piece):
     Moves just like a Rook in chess; As many as you want horizontally and vertically.
     """
 
-    def __init__(self, side, row, col, imgFile):
-        pass
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        # TODO: add image for pygame rendering
+        #  self.image =
 
-    def move(self):
-        raise NotImplementedError
+    def move(self, newRow, newCol):
+        self.row = newRow
+        self.col = newCol
 
 
 class Cannon(Piece):
@@ -120,11 +147,16 @@ class Cannon(Piece):
     It moves like a Rook; However, has to jump over ONE piece (enemy or foe) to capture enemy piece.
     """
 
-    def __init__(self, side, row, col, imgFile):
-        pass
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        # TODO: add image for pygame rendering
+        #  self.image =
 
-    def move(self):
-        raise NotImplementedError
+    def move(self, newRow, newCol):
+        self.row = newRow
+        self.col = newCol
 
 
 class Pawn(Piece):
@@ -136,8 +168,13 @@ class Pawn(Piece):
     When it crosses the river, it gets options to move left or right as well.
     """
 
-    def __init__(self, side, row, col, imgFile):
-        pass
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        # TODO: add image for pygame rendering
+        #  self.image =
 
-    def move(self):
-        raise NotImplementedError
+    def move(self, newRow, newCol):
+        self.row = newRow
+        self.col = newCol
