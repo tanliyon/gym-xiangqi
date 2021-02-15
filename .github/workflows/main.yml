@@ -39,14 +39,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
           python examples/demo.py
-
-  unittest:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Run unit tests
-        run: |
           python -m pytest
 
 
