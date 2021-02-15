@@ -40,7 +40,13 @@ jobs:
           pip install -e .
           python examples/demo.py
 
+  unittest:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
       - name: Run unit tests
         run: |
           python -m pytest
+
+
 
