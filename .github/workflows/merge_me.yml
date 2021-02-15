@@ -1,4 +1,4 @@
-name: merge-me
+name: merge_me
 
 # Controls when the action will run. 
 on:
