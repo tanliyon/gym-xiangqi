@@ -1,5 +1,6 @@
 # Python
 __pycache__
+.cache
 
 # Vitual Environment
 .venv/

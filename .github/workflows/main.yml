@@ -39,3 +39,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
           python examples/demo.py
+
+      - name: Run unit tests
+        run: |
+          python -m pytest
