@@ -1,1 +1,1 @@
-from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
+# from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
