@@ -13,12 +13,18 @@ class Piece:
         Methods:
         - move(self): make allowed movements
     """
+    # initializing
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        self.state = Piece.alive
 
     # constants
-    RED = 0
-    BLACK = 1
-    DEAD = 0
-    ALIVE = 1
+    red = 0
+    black = 1
+    dead = 0
+    alive = 1
 
     # Must set this attributes in subclasses
     color = 0
@@ -27,12 +33,14 @@ class Piece:
     state = 0
     image = None
 
-    def move(self, newRow, newCol):
+    def move(self, new_row, new_col):
+        self.row = new_row
+        self.col = new_col
         """
         Take one move among given piece's allowed moves
         Update piece's coordinates internally
         """
-        raise NotImplementedError
+        #raise NotImplementedError
 
 
 class King(Piece):
@@ -44,16 +52,10 @@ class King(Piece):
     """
 
     def __init__(self, color, row, col):
-        self.color = color
-        self.row = row
-        self.col = col
-        self.state = Piece.ALIVE
+        super(King, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
-    def move(self, newRow, newCol):
-        self.row = newRow
-        self.col = newCol
 
 
 class Queen(Piece):
@@ -65,16 +67,10 @@ class Queen(Piece):
     """
 
     def __init__(self, color, row, col):
-        self.color = color
-        self.row = row
-        self.col = col
-        self.state = Piece.ALIVE
+        super(Queen, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
-    def move(self, newRow, newCol):
-        self.row = newRow
-        self.col = newCol
 
 
 class Bishop(Piece):
@@ -87,15 +83,10 @@ class Bishop(Piece):
     """
 
     def __init__(self, color, row, col):
-        self.color = color
-        self.row = row
-        self.col = col
+        super(Bishop, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
-    def move(self, newRow, newCol):
-        self.row = newRow
-        self.col = newCol
 
 
 class Knight(Piece):
@@ -108,15 +99,10 @@ class Knight(Piece):
     """
 
     def __init__(self, color, row, col):
-        self.color = color
-        self.row = row
-        self.col = col
+        super(Knight, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
-    def move(self, newRow, newCol):
-        self.row = newRow
-        self.col = newCol
 
 
 class Rook(Piece):
@@ -128,15 +114,10 @@ class Rook(Piece):
     """
 
     def __init__(self, color, row, col):
-        self.color = color
-        self.row = row
-        self.col = col
+        super(Rook, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
-    def move(self, newRow, newCol):
-        self.row = newRow
-        self.col = newCol
 
 
 class Cannon(Piece):
@@ -148,15 +129,10 @@ class Cannon(Piece):
     """
 
     def __init__(self, color, row, col):
-        self.color = color
-        self.row = row
-        self.col = col
+        super(Cannon, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
-    def move(self, newRow, newCol):
-        self.row = newRow
-        self.col = newCol
 
 
 class Pawn(Piece):
@@ -169,12 +145,6 @@ class Pawn(Piece):
     """
 
     def __init__(self, color, row, col):
-        self.color = color
-        self.row = row
-        self.col = col
+        super(Pawn, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
-
-    def move(self, newRow, newCol):
-        self.row = newRow
-        self.col = newCol
