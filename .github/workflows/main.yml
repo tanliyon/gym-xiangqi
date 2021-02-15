@@ -50,11 +50,6 @@ jobs:
 
     steps:
       - uses: Automattic/action-required-review@v2
-        with:
-          requirements: |
-            - paths: unmatched
-              teams:
-                - maintenance
   
   # This must be the last job
   merge-me:
