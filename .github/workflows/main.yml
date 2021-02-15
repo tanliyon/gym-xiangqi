@@ -39,3 +39,43 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
           python examples/demo.py
+
+  code-review:
+    name: Checking required reviews
+    runs-on: ubuntu-latest
+
+    # GitHub should provide a "pull_request_review_target", but they don't and
+    # the action will fail if run on a forked PR.
+    if: github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name
+
+    steps:
+      - uses: Automattic/action-required-review@v2
+        with:
+          requirements: |
+            - paths: unmatched
+              teams:
+                - maintenance
+  
+  # This must be the last job
+  merge-me:
+    name: Merge me!
+    needs:
+      - build
+      - code-review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge me!
+        uses: ridedott/merge-me-action@v1
+        with:
+          # Depending on branch protection rules, a  manually populated
+          # `GITHUB_TOKEN_WORKAROUND` environment variable with permissions to
+          # push to a protected branch must be used. This variable can have an
+          # arbitrary name, as an example, this repository uses
+          # `GITHUB_TOKEN_DOTTBOTT`.
+          #
+          # When using a custom token, it is recommended to leave the following
+          # comment for other developers to be aware of the reasoning behind it:
+          #
+          # This must be used as GitHub Actions token does not support
+          # pushing to protected branches.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
