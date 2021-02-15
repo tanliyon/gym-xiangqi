@@ -53,8 +53,6 @@ jobs:
         with:
           requirements: |
             - paths: unmatched
-              teams:
-                - any-of
   
   # This must be the last job
   merge-me:
