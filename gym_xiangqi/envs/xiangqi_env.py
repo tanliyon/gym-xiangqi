@@ -1,21 +1,21 @@
 import gym
-from gym import error, spaces, utils
-from gym.utils import seeding
+# from gym import error, spaces, utils
+# from gym.utils import seeding
 
 class XiangQiEnv(gym.Env):
-	metadata = {'render.modes': ['human']}
+    metadata = {'render.modes': ['human']}
 
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
-	def step(self, action):
-		return 0, 0, 0, 0
+    def step(self, action):
+        return 0, 0, 0, 0
 
-	def reset(self):
-		pass
+    def reset(self):
+        pass
 
-	def render(self, mode='human'):
-		pass
+    def render(self, mode='human'):
+        pass
 
-	def close(self):
-		pass
+    def close(self):
+        pass
