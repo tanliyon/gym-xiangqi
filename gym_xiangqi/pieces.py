@@ -13,7 +13,7 @@ class Piece:
         Methods:
         - move(self): make allowed movements
     """
-    # initializing
+
     def __init__(self, color, row, col):
         self.color = color
         self.row = row
@@ -34,21 +34,20 @@ class Piece:
     image = None
 
     def move(self, new_row, new_col):
-        self.row = new_row
-        self.col = new_col
         """
         Take one move among given piece's allowed moves
         Update piece's coordinates internally
         """
-        #raise NotImplementedError
+        self.row = new_row
+        self.col = new_col
 
 
 class King(Piece):
     """
     This piece is equivalent to King.
     It is called "Jiang" or "Shuai" meaning Governor (red) and General (black) respectively.
-    Only one piece exists in each side
-    Can only move 1 unit of space orthogonally within the special square area
+    - Only one piece exists in each side
+    - Can only move 1 unit of space orthogonally within the special square area
     """
 
     def __init__(self, color, row, col):
@@ -57,13 +56,12 @@ class King(Piece):
         #  self.image =
 
 
-
 class Queen(Piece):
     """
     This piece is not quite equivalent to Queen but for the sake of simplicity we will regard as so.
     It is called "Shi" meaning counselor/scholar.
-    2 pieces exist in each side
-    Can only move 1 unit of space diagonally within the special square area
+    - 2 pieces exist in each side
+    - Can only move 1 unit of space diagonally within the special square area
     """
 
     def __init__(self, color, row, col):
@@ -72,14 +70,13 @@ class Queen(Piece):
         #  self.image =
 
 
-
 class Bishop(Piece):
     """
     This piece is similar to Bishop.
     It is called "Shiang" meaning minister (red) and elephant (black)
-    2 pieces exist in each side
-    This piece cannot cross the river
-    Moves 2 unit of space diagonally
+    - 2 pieces exist in each side
+    - This piece cannot cross the river
+    - Moves 2 unit of space diagonally
     """
 
     def __init__(self, color, row, col):
@@ -88,21 +85,19 @@ class Bishop(Piece):
         #  self.image =
 
 
-
 class Knight(Piece):
     """
     This piece is almost identical to knight.
     It is called "Ma" meaning horse.
-    2 Pieces in each side.
-    Moves just like knights in chess. (The "L" shape move)
-    The difference is that it cannot jump over pieces
+    - 2 Pieces in each side.
+    - Moves just like knights in chess. (The "L" shape move)
+    - Cannot jump over pieces unlike Knights in Chess
     """
 
     def __init__(self, color, row, col):
         super(Knight, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
-
 
 
 class Rook(Piece):
@@ -119,7 +114,6 @@ class Rook(Piece):
         #  self.image =
 
 
-
 class Cannon(Piece):
     """
     This piece has no equivalent in chess.
@@ -132,7 +126,6 @@ class Cannon(Piece):
         super(Cannon, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
-
 
 
 class Pawn(Piece):

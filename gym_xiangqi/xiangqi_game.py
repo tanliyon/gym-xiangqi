@@ -104,23 +104,23 @@ class XiangQiGame:
         """
         pass
 
-    # def render(self):
-    #     """
-    #     Render current game state into graphics
-    #     """
-    #     pass
+    def render(self):
+        """
+        Render current game state into graphics
+        """
+        pass
 
-    # def cleanup(self):
-    #     """
-    #     Free resources and exit the game and
-    #     """
-    #     pygame.quit()
+    def cleanup(self):
+        """
+        Free resources and exit the game and
+        """
+        pygame.quit()
 
-    # def reset(self):
-    #     """
-    #     terminate current game and create a new game
-    #     """
-    #     pass
+    def reset(self):
+        """
+        terminate current game and create a new game
+        """
+        pass
 
     def run(self):
         """
