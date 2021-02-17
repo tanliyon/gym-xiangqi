@@ -54,4 +54,4 @@ def test_make_valid_move(agent, ongoing_env):
 
 def test_no_error_when_no_valid_move(agent, ended_env):
     action = agent.move(ended_env)
-    assert action == None
+    assert action is None
