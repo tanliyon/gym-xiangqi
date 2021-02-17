@@ -21,5 +21,3 @@ class RandomAgent:
             return None
         random_index = random.randint(0, len(actions)-1)
         return actions[random_index]
-        
-

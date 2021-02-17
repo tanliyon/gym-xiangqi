@@ -2,7 +2,6 @@ from random_agent import RandomAgent
 
 import gym
 import pytest
-from pytest_mock import mocker
 
 
 @pytest.fixture
