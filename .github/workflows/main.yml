@@ -46,7 +46,6 @@ jobs:
       # as we continue developing.
       - name: Run unit tests and coverage report
         run: |
-          python -m pytest --cov=agents/ --cov=gym_xiangqi/ \
-            --cov=examples/ --cov-report=html --cov-fail-under=25
+          python -m pytest --cov=agents/ --cov=gym_xiangqi/ --cov=examples/ --cov-fail-under=25
 
 
