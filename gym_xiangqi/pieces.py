@@ -44,8 +44,8 @@ class Piece:
 
 class King(Piece):
     """
-    This piece is equivalent to King.
-    It is called "Jiang" or "Shuai" meaning Governor (red) and General (black) respectively.
+    This piece is equivalent to King. It is called "Jiang" or "Shuai"
+    meaning Governor (red) and General (black) respectively.
     - Only one piece exists in each side
     - Can only move 1 unit of space orthogonally within the special square area
     """
@@ -58,7 +58,8 @@ class King(Piece):
 
 class Queen(Piece):
     """
-    This piece is not quite equivalent to Queen but for the sake of simplicity we will regard as so.
+    This piece is not quite equivalent to Queen
+    but for the sake of simplicity we will name this class as so.
     It is called "Shi" meaning counselor/scholar.
     - 2 pieces exist in each side
     - Can only move 1 unit of space diagonally within the special square area
@@ -105,7 +106,8 @@ class Rook(Piece):
     This piece is identical to Rook.
     It is called "Chuh" meaning chariot
     2 pieces in each side.
-    Moves just like a Rook in chess; As many as you want horizontally and vertically.
+    Moves just like a Rook in chess
+    - As many as you want horizontally or vertically.
     """
 
     def __init__(self, color, row, col):
@@ -119,7 +121,8 @@ class Cannon(Piece):
     This piece has no equivalent in chess.
     It is called "Pao" meaning cannon or catapult.
     2 pieces in each side.
-    It moves like a Rook; However, has to jump over ONE piece (enemy or foe) to capture enemy piece.
+    It moves similar to a Rook. The difference is, it has to jump over
+    ONE piece (enemy or foe) to capture enemy piece.
     """
 
     def __init__(self, color, row, col):
