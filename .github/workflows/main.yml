@@ -40,5 +40,11 @@ jobs:
           pip install -e .
           pip install -r requirements.txt
           python examples/demo.py
-          python -m pytest
+      
+      # Runs unit tests and coverage report. For now, set coverage to
+      # fail if it's less than 25 percent. We will adjust this number higher
+      # as we continue developing.
+      - name: Run unit tests and coverage report
+          python -m pytest --cov=./ --cov-fail-under=25
+
 
