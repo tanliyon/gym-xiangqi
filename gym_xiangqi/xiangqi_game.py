@@ -55,7 +55,7 @@ class XiangQiGame:
     def __init__(self):
         # Xiangqi components
         self.board = [
-            [None for _ in range(self.boardCols)] for _ in range(self.boardRows)
+          [None for _ in range(self.boardCols)] for _ in range(self.boardRows)
         ]
         self.agentColor = random.randint(0, 1)
         self.enemyColor = 0 if self.agentColor == 1 else 1
@@ -87,7 +87,10 @@ class XiangQiGame:
             (anything related to PyGame module that needs to be initialized)
         """
         pygame.init()
-        self.display_surf = pygame.display.set_mode(self.dim, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self.display_surf = pygame.display.set_mode(
+            self.dim,
+            pygame.HWSURFACE | pygame.DOUBLEBUF
+        )
         return True
 
     def onEvent(self, event):
