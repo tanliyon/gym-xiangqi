@@ -20,3 +20,6 @@ class XiangQiEnv(gym.Env):
 
     def close(self):
         pass
+
+    def get_possible_actions(self):
+        pass
