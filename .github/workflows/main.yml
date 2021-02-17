@@ -38,6 +38,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .
+          pip install -r requirements.txt
           python examples/demo.py
           python -m pytest
 

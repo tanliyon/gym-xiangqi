@@ -9,4 +9,6 @@ Read through the [software handbook](https://docs.google.com/document/d/1Y5AM-Xj
 
 `pip3 install -e .`
 
+`pip3 install -r requirements.txt`
+
 

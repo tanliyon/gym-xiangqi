@@ -1,0 +1,22 @@
+attrs==20.3.0
+cloudpickle==1.6.0
+future==0.18.2
+gym==0.18.0
+-e git+git@github.com:tanliyon/gym-xiangqi.git@a2da31e016ed3e1bfb8ac58a36b9785f5eb3c328#egg=gym_xiangqi
+importlib-metadata==3.4.0
+iniconfig==1.1.1
+numpy==1.19.5
+packaging==20.9
+Pillow==7.2.0
+pkg-resources==0.0.0
+pluggy==0.13.1
+py==1.10.0
+pygame==2.0.1
+pyglet==1.5.0
+pyparsing==2.4.7
+pytest==6.2.2
+pytest-mock==3.5.1
+scipy==1.5.4
+toml==0.10.2
+typing-extensions==3.7.4.3
+zipp==3.4.0
