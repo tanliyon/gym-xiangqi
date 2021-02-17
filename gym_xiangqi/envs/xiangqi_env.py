@@ -17,9 +17,9 @@ class XiangQiEnv(gym.Env):
 
     def render(self, mode='human'):
         pass
-      
+
     def close(self):
-		    pass
-     
+        pass
+
     def get_possible_actions(self):
-		    pass
+        pass
