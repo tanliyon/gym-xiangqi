@@ -45,6 +45,8 @@ jobs:
       # fail if it's less than 25 percent. We will adjust this number higher
       # as we continue developing.
       - name: Run unit tests and coverage report
-          python -m pytest --cov=./ --cov-fail-under=25
+        run: |
+          python -m pytest --cov=agents/ --cov=gym_xiangqi/ \
+            --cov=examples/ --cov-report=html --cov-fail-under=25
 
 
