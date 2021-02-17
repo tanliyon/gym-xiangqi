@@ -8,3 +8,7 @@ __pycache__
 
 # Distribution / packaging
 *.egg-info/
+
+# Testing
+.coverage
+htmlcov
