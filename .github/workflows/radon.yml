@@ -1,0 +1,26 @@
+name: Radon Analysis
+
+on: [pull_request]
+
+jobs:
+  radon-analysis:
+    runs-one: ubuntu-latest
+    name: radon-analysis
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Set up Python environment
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.8"
+      - name: Install dependencies
+        run: pip install requirements.txt
+      - name: Cyclomatic Complexity
+        run: radon cc ./
+      - name: Maintainability Index
+        run: radon mi ./
+      - name: Code Lines Analysis
+        run: radon raw ./ --summary
+      - name: Halstead Complexity
+        run: radon hal ./
+
