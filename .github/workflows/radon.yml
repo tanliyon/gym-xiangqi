@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   radon-analysis:
-    runs-one: ubuntu-latest
+    runs-on: ubuntu-latest
     name: radon-analysis
     steps:
       - name: Check out source repository
