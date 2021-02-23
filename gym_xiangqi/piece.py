@@ -14,24 +14,18 @@ class Piece:
         - move(self): make allowed movements
     """
 
-    def __init__(self, color, row, col):
-        self.color = color
-        self.row = row
-        self.col = col
-        self.state = Piece.alive
-
     # constants
     red = 0
     black = 1
     dead = 0
     alive = 1
 
-    # Must set this attributes in subclasses
-    color = 0
-    row = 0
-    col = 0
-    state = 0
-    image = None
+    def __init__(self, color, row, col):
+        self.color = color
+        self.row = row
+        self.col = col
+        self.state = Piece.alive
+        self.image = None
 
     def move(self, new_row, new_col):
         """
@@ -42,7 +36,7 @@ class Piece:
         self.col = new_col
 
 
-class King(Piece):
+class General(Piece):
     """
     This piece is equivalent to King. It is called "Jiang" or "Shuai"
     meaning Governor (red) and General (black) respectively.
@@ -51,44 +45,42 @@ class King(Piece):
     """
 
     def __init__(self, color, row, col):
-        super(King, self).__init__(color, row, col)
+        super(General, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
 
-class Queen(Piece):
+class Advisor(Piece):
     """
-    This piece is not quite equivalent to Queen
-    but for the sake of simplicity we will name this class as so.
-    It is called "Shi" meaning counselor/scholar.
+    This piece is called "Shi" meaning advisor/scholar.
     - 2 pieces exist in each side
     - Can only move 1 unit of space diagonally within the special square area
     """
 
     def __init__(self, color, row, col):
-        super(Queen, self).__init__(color, row, col)
+        super(Advisor, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
 
-class Bishop(Piece):
+class Elephant(Piece):
     """
-    This piece is similar to Bishop.
     It is called "Shiang" meaning minister (red) and elephant (black)
+    This piece is similar to Bishop.
     - 2 pieces exist in each side
     - This piece cannot cross the river
     - Moves 2 unit of space diagonally
     """
 
     def __init__(self, color, row, col):
-        super(Bishop, self).__init__(color, row, col)
+        super(Elephant, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
 
-class Knight(Piece):
+class Horse(Piece):
     """
-    This piece is almost identical to knight.
+    This piece is almost identical to knight in Chess.
     It is called "Ma" meaning horse.
     - 2 Pieces in each side.
     - Moves just like knights in chess. (The "L" shape move)
@@ -96,29 +88,28 @@ class Knight(Piece):
     """
 
     def __init__(self, color, row, col):
-        super(Knight, self).__init__(color, row, col)
+        super(Horse, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
 
-class Rook(Piece):
+class Chariot(Piece):
     """
-    This piece is identical to Rook.
     It is called "Chuh" meaning chariot
     2 pieces in each side.
+    This piece is identical to Rook in Chess.
     Moves just like a Rook in chess
     - As many as you want horizontally or vertically.
     """
 
     def __init__(self, color, row, col):
-        super(Rook, self).__init__(color, row, col)
+        super(Chariot, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
 
 
 class Cannon(Piece):
     """
-    This piece has no equivalent in chess.
     It is called "Pao" meaning cannon or catapult.
     2 pieces in each side.
     It moves similar to a Rook. The difference is, it has to jump over
@@ -131,16 +122,16 @@ class Cannon(Piece):
         #  self.image =
 
 
-class Pawn(Piece):
+class Soldier(Piece):
     """
-    This is equivalent to Pawn in chess.
     It is called "Ping" (red) and "Tsuh" (black) meaning a foot soldier.
     5 pieces in each side.
+    This is equivalent to Pawn in chess.
     Moves 1 unit of space forward
     When it crosses the river, it gets options to move left or right as well.
     """
 
     def __init__(self, color, row, col):
-        super(Pawn, self).__init__(color, row, col)
+        super(Soldier, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
