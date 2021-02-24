@@ -55,7 +55,7 @@ Enter the repository - `cd gym-xiangqi`
 
 Install the core dependencies - `pip3 install -e .`
 
-(optional) Install the ddependencies for development - `pip3 install -r requirements.txt`
+(optional) Install the dependencies for development - `pip3 install -r requirements.txt`
 
 # Software Handbook
 Read through the [software handbook](https://docs.google.com/document/d/1Y5AM-Xj4XUkurKW1m9cBOs0bRJWS62qw8wu74Alcj9k/edit?usp=sharing) for comprehensive explaination and development guide for the repository.
