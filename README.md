@@ -3,7 +3,7 @@ Xiang Qi, also known as Chinese chess is a traditional game originated from Chin
 
 # Introduction to Xiang Qi
 ## The Board
-![XiangQi](./resources/xiangqi_board.png)
+![XiangQi](./resources/xiangqi_board.png =250x)
 
 This is how the Xiang Qi board looks like. The board has 9 columns and 10 rows, where the pieces are placed at the line intersections. There is a wide blank space in between the two sides which we will call it the river. There's also a 3x3 square box situated at the middle of each ends of the board, which we will call the palace. Like chess, you will either play as the red pieces or the black, and your opponent will be challenging you with the other color.
 
