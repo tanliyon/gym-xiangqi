@@ -54,52 +54,52 @@ MAX_REP = 9
 
 class XiangQiEnv(gym.Env):
     """
-        This is Xiangqi (Chinese chess) game implemented as reinforcement
-        learning environment using OpenAI Gym framework. Xiangqi is played
-        on a board of 10 rows and 9 columns with 16 pieces on each side (7
-        unique pieces called General, Advisor, Elephant, Horse, Chariot,
-        Cannon and Soldier.
+    This is Xiangqi (Chinese chess) game implemented as reinforcement
+    learning environment using OpenAI Gym framework. Xiangqi is played
+    on a board of 10 rows and 9 columns with 16 pieces on each side (7
+    unique pieces called General, Advisor, Elephant, Horse, Chariot,
+    Cannon and Soldier.
 
-        Observation:
-            Type: Box(10, 9)
-            The observation space is the state of the board and pieces.
-            Each item in the space corresponds to a single coordinate on
-            the board with the value range from -16 to 16. Each piece is
-            encoded as an integer in that range. Negative integers are enemy
-            pieces and positive integers are ally pieces.
+    Observation:
+        Type: Box(10, 9)
+        The observation space is the state of the board and pieces.
+        Each item in the space corresponds to a single coordinate on
+        the board with the value range from -16 to 16. Each piece is
+        encoded as an integer in that range. Negative integers are enemy
+        pieces and positive integers are ally pieces.
 
-        Actions:
-            Type: Discrete(16 * 10 * 9 * 10 * 9)
-            The action space is an aggregation of all possible moves even
-            including illegal moves. Each space encodes 3 information: which
-            piece, from where, and to where. From 16 * 10 * 9 * 10 * 9, 16 is
-            the number of pieces and 10 * 9 is all possible grid positions on
-            the board. The first 10 * 9 represents the start position and the
-            second half represents the end position which is the position the
-            piece wants to move to.
+    Actions:
+        Type: Discrete(16 * 10 * 9 * 10 * 9)
+        The action space is an aggregation of all possible moves even
+        including illegal moves. Each space encodes 3 information: which
+        piece, from where, and to where. From 16 * 10 * 9 * 10 * 9, 16 is
+        the number of pieces and 10 * 9 is all possible grid positions on
+        the board. The first 10 * 9 represents the start position and the
+        second half represents the end position which is the position the
+        piece wants to move to.
 
-            In addition to this, the environment will calculate legal and
-            illegal moves within the action space to penalize an agent trying
-            to perform illegal moves and to correctly implement Xiangqi rules.
+        In addition to this, the environment will calculate legal and
+        illegal moves within the action space to penalize an agent trying
+        to perform illegal moves and to correctly implement Xiangqi rules.
 
-        Reward:
-            We apply points to every type of pieces following the most widely
-            used standard.
-            General: infinity
-            Advisor: 2.0
-            Elephant: 2.0
-            Horse: 4.0
-            Chariot: 9.0
-            Cannon: 4.5
-            Soldier: 1.0 (2.0 if it has crossed the river)
+    Reward:
+        We apply points to every type of pieces following the most widely
+        used standard.
+        General: infinity
+        Advisor: 2.0
+        Elephant: 2.0
+        Horse: 4.0
+        Chariot: 9.0
+        Cannon: 4.5
+        Soldier: 1.0 (2.0 if it has crossed the river)
 
-        Starting State:
-            The initial board state with pieces laid out in correct position.
-            Reference the README for initial board illustration.
+    Starting State:
+        The initial board state with pieces laid out in correct position.
+        Reference the README for initial board illustration.
 
-        Episode Termination:
-            Either the red or black runs out of moves or also known as the
-            general is captured. Reference the README for more details.
+    Episode Termination:
+        Either the red or black runs out of moves or also known as the
+        general is captured. Reference the README for more details.
     """
     metadata = {'render.modes': ['human']}
 
