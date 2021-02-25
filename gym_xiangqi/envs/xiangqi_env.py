@@ -255,7 +255,7 @@ class XiangQiEnv(gym.Env):
             # 2. diagonally left or right along the same direction
             for first_move, second_move in HORSE_MOVE:
                 next_r = orig_pos[0] + first_move[0]
-                next_c = orig_pos[0] + first_move[1]
+                next_c = orig_pos[1] + first_move[1]
 
                 # bound check
                 row_bound = 0 <= next_r < self.shape[0]
