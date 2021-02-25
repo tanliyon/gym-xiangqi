@@ -53,6 +53,54 @@ MAX_REP = 9
 
 
 class XiangQiEnv(gym.Env):
+    """
+        This is Xiangqi (Chinese chess) game implemented as reinforcement
+        learning environment using OpenAI Gym framework. Xiangqi is played
+        on a board of 10 rows and 9 columns with 16 pieces on each side (7
+        unique pieces called General, Advisor, Elephant, Horse, Chariot,
+        Cannon and Soldier.
+
+        Observation:
+            Type: Box(10, 9)
+            The observation space is the state of the board and pieces.
+            Each item in the space corresponds to a single coordinate on
+            the board with the value range from -16 to 16. Each piece is
+            encoded as an integer in that range. Negative integers are enemy
+            pieces and positive integers are ally pieces.
+
+        Actions:
+            Type: Discrete(16 * 10 * 9 * 10 * 9)
+            The action space is an aggregation of all possible moves even
+            including illegal moves. Each space encodes 3 information: which
+            piece, from where, and to where. From 16 * 10 * 9 * 10 * 9, 16 is
+            the number of pieces and 10 * 9 is all possible grid positions on
+            the board. The first 10 * 9 represents the start position and the
+            second half represents the end position which is the position the
+            piece wants to move to.
+
+            In addition to this, the environment will calculate legal and
+            illegal moves within the action space to penalize an agent trying
+            to perform illegal moves and to correctly implement Xiangqi rules.
+
+        Reward:
+            We apply points to every type of pieces following the most widely
+            used standard.
+            General: infinity
+            Advisor: 2.0
+            Elephant: 2.0
+            Horse: 4.0
+            Chariot: 9.0
+            Cannon: 4.5
+            Soldier: 1.0 (2.0 if it has crossed the river)
+
+        Starting State:
+            The initial board state with pieces laid out in correct position.
+            Reference the README for initial board illustration.
+
+        Episode Termination:
+            Either the red or black runs out of moves or also known as the
+            general is captured. Reference the README for more details.
+    """
     metadata = {'render.modes': ['human']}
 
     shape = (10, 9)
@@ -89,7 +137,7 @@ class XiangQiEnv(gym.Env):
         else:
             self.enemy_color = Piece.red
 
-        # observation space: 10 x 9 board that has pieces encoded as integers
+        # observation space: 10 x 9 space with pieces encoded as integers
         self.observation_space = spaces.Box(
             low=-self.piece_cnt,
             high=self.piece_cnt,
@@ -131,6 +179,9 @@ class XiangQiEnv(gym.Env):
         pass
 
     def init_pieces(self):
+        """
+        Method initializes and stores all ally and enemy pieces
+        """
         # initialize agent and enemy pieces
         for r in range(self.shape[0]):
             for c in range(self.shape[1]):
@@ -142,12 +193,34 @@ class XiangQiEnv(gym.Env):
                     self.agent_piece[piece_id] = init(self.agent_color, r, c)
 
     def move_to_action_space(self, piece_id, start, end):
+        """
+        The action space is a 1D flat array. We can convert piece id,
+        start position and end position to a corresponding index value
+        in the action space.
+
+        Parameters:
+            piece_id (int): a piece ID integer
+            start (tuple(int)): (row, col) start coordinate
+            end (tuple(int)): (row, col) end coordinate
+        return:
+            Index within the self.possible_actions
+        """
         piece_id_val = (piece_id-1) * pow(self.total_pos, 2)
         start_val = (start[0] * 9 + start[1]) * self.total_pos
         end_val = end[0] * 9 + end[1]
         return piece_id_val + start_val + end_val
 
     def action_space_to_move(self, action):
+        """
+        This is exact opposite of move_to_action_space() method.
+        With index value, we can convert this back to piece id,
+        start position and end position values.
+
+        Parameters:
+            action (int): index value within action space
+        return:
+            piece ID, start coordinate, end coordinate
+        """
         piece_id, r = divmod(action, pow(self.total_pos, 2))
         start_val, end_val = divmod(r, self.total_pos)
         start = [0, 0]
@@ -157,6 +230,9 @@ class XiangQiEnv(gym.Env):
         return piece_id+1, start, end
 
     def get_possible_actions(self):
+        """
+        Searches all valid actions each piece can perform
+        """
         self.get_general_actions()
         self.get_advisor_actions()
         self.get_elephant_actions()
@@ -166,6 +242,22 @@ class XiangQiEnv(gym.Env):
         self.get_soldier_actions()
 
     def check_action(self, piece, orig_pos, cur_pos, repeat, offset, i):
+        """
+        This is general searching procedure. Given the following parameters,
+        repeatedly search in the same direction until either end of the board
+        or another piece is blocking.
+
+        Parameters:
+            piece (int): piece ID
+            orig_pos (tuple(int)): original position coordinate
+            cur_pos (tuple(int)): current position in evaluation
+            repeat (int): number of repetitions
+            offset (tuple(int)): direction offset
+            i (int): current iteration number
+        return:
+            Number of times repeated; This is used to find out the farthest
+            possible position.
+        """
         r = cur_pos[0]
         c = cur_pos[1]
 
@@ -191,6 +283,9 @@ class XiangQiEnv(gym.Env):
         return i + 1
 
     def get_general_actions(self):
+        """
+        Finds legal moves for the General
+        """
         orig_pos = (self.agent_piece[GENERAL].row,
                     self.agent_piece[GENERAL].col)
         lb = 7      # lower bound row value
@@ -206,6 +301,9 @@ class XiangQiEnv(gym.Env):
                 self.check_action(GENERAL, orig_pos, next_pos, 1, offset, 0)
 
     def get_advisor_actions(self):
+        """
+        Finds legal moves for the Advisors
+        """
         for pid in range(ADVISOR_1, ADVISOR_2+1):
             orig_pos = (self.agent_piece[pid].row,
                         self.agent_piece[pid].col)
@@ -222,6 +320,9 @@ class XiangQiEnv(gym.Env):
                     self.check_action(pid, orig_pos, next_pos, 1, offset, 0)
 
     def get_elephant_actions(self):
+        """
+        Finds legal moves for the Elephants
+        """
         for pid in range(ELEPHANT_1, ELEPHANT_2+1):
             orig_pos = (self.agent_piece[pid].row,
                         self.agent_piece[pid].col)
@@ -246,6 +347,9 @@ class XiangQiEnv(gym.Env):
                 self.check_action(pid, orig_pos, next_pos, 1, offset, 0)
 
     def get_horse_actions(self):
+        """
+        Finds legal moves for the Horses
+        """
         for pid in range(HORSE_1, HORSE_2+1):
             orig_pos = (self.agent_piece[pid].row,
                         self.agent_piece[pid].col)
@@ -274,6 +378,9 @@ class XiangQiEnv(gym.Env):
                 self.check_action(pid, orig_pos, next_pos, 1, (0, 0), 0)
 
     def get_chariot_actions(self):
+        """
+        Find legal moves for the Chariots
+        """
         for pid in range(CHARIOT_1, CHARIOT_2+1):
             orig_pos = (self.agent_piece[pid].row,
                         self.agent_piece[pid].col)
@@ -284,6 +391,9 @@ class XiangQiEnv(gym.Env):
                 self.check_action(pid, orig_pos, next_pos, MAX_REP, offset, 0)
 
     def get_cannon_actions(self):
+        """
+        Find legal moves for the Cannons
+        """
         for pid in range(CANNON_1, CANNON_2+1):
             orig_pos = (self.agent_piece[pid].row,
                         self.agent_piece[pid].col)
@@ -327,6 +437,9 @@ class XiangQiEnv(gym.Env):
                     next_c += offset[1]
 
     def get_soldier_actions(self):
+        """
+        Find legal moves for the soldiers
+        """
         for pid in range(SOLDIER_1, SOLDIER_5+1):
             orig_pos = (self.agent_piece[pid].row,
                         self.agent_piece[pid].col)
