@@ -1,5 +1,3 @@
-from gym_xiangqi.piece import General, Advisor, Elephant
-from gym_xiangqi.piece import Horse, Chariot, Cannon, Soldier
 import pygame
 
 
@@ -85,6 +83,6 @@ class XiangQiGame:
 if __name__ == "__main__":
     # initializing and running the game for manual testing
     from gym_xiangqi.piece import Piece
-    myGame = XiangQiGame(Piece.red, Piece.black)
+    myGame = XiangQiGame()
     myGame.on_init()
     myGame.run()
