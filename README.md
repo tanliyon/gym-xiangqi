@@ -28,7 +28,7 @@ Similar to the general, the advisor can only move within the palace. In contrast
 ### The Elephant
 The elephant moves exactly 2 steps diagonally, which can also be visualized as two positions to the left/right and two positions forward/backward. The elephant will not be able to jump over pieces while moving, meaning if a piece exists to the top right of the elephant, it will not be able to jump over that piece to reach the top right position of the piece.
 
-The elephant can be used to a piece as it moves. The elephant cannot cross the river, which is why it is mainly used as a defensive piece.
+The elephant can be used to capture a piece as it moves. The elephant cannot cross the river, which is why it is mainly used as a defensive piece.
 
 ### The Horse
 The horse in Xiang Qi behaves similarly to knight in chess, where it moves following the "L" shape, which can be visualized as moving 1 position orthogonally followed by 1 position diagonally away from the horse. The horse can be used to capture a piece as it moves.
@@ -41,7 +41,7 @@ The chariot in Xiang Qi behaves exactly like rook in chess, where it can move or
 ### The Cannon
 The cannon is the only piece in the game where its movement and capturing pattern is different. The movement of the cannon is similar to the chariot, where it can move orthogonally for however many positions without skipping over a piece.
 
-Unlike the chariot, the cannon must capture a piece by skipping over another piece. There can be be any number of blank positions that exists between the cannon to the piece that it is skipping over, and from the piece that it is skipping over to the piece being captures.
+Unlike the chariot, the cannon must capture a piece by skipping over another piece. There can be be any number of blank positions that exists between the cannon to the piece that it is skipping over, and from the piece that it is skipping over to the piece being captured. The piece that the cannon is skipping over can be either an ally piece or an enemy piece.
 
 ### The Soldier
 The soldier changes its movement depending whether is has crossed the river or not. Before crossing the river, the soldier has only 1 possible move - moving forward. After crossing the river, the soldier will have 3 possible moves - moving forward, moving left, and moving right. Do note that soldiers are not able to move backward. The soldier can be used to capture a piece as it moves.
