@@ -1,5 +1,6 @@
 import unittest
-from gym_xiangqi.piece import *
+from gym_xiangqi.piece import Piece, General, Advisor, Elephant
+from gym_xiangqi.piece import Horse, Chariot, Cannon, Soldier
 
 
 class TestPieceClasses(unittest.TestCase):
