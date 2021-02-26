@@ -108,26 +108,25 @@ class XiangQiGame:
         elif event.type == MOUSEBUTTONDOWN:
 
             if self.agent_turn:
+
                 is_left_clicked = pygame.mouse.get_pressed()[0] #clicked: 1 not_clicked: 0
                 
                 if is_left_clicked:
+
                     self.clicked_x, self.clicked_y = pygame.mouse.get_pos()
                     self.clicked_coor = (self.click_x, self.click_y)
 
-                    if self.clicked_coor in agentCoord:
-                        self.target_piece = self.clicked_coor
-                        #identify the piece
-                        #load the object's valid_next_moves
+                    cur_agent_coors = self.get_cur_agent_coors() #get all current coordinates of the agent pieces
+                    if self.clicked_coor in cur_agent_coors:
+                        
+                        self.target_piece = self.get_target_piece(self.clicked_coor) #identify the piece
+                        self.target_piece.image = self.load_selected_image(Piece) #switch to the image for the selected piece
 
-                    elif self.target_piece != None and self.clicked_coor in self.target_piece.valid_next_moves:
-                        #change object coordinates
+                    elif self.target_piece != None and self.can_it_move(self.target_piece, self.clicked_coor):
+                        
+                        self.target_piece.set_new_pos(self.clicked_coor) #update piece_coord
                         self.target_piece = None #reset target selection
                         self.agent_turn = False #turn switch
-
-                    else:
-                        pass
-
-
 
     def onUpdate(self):
         """
