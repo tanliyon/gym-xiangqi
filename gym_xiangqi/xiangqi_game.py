@@ -2,7 +2,6 @@ import pygame
 from gym_xiangqi.board import Board
 from gym_xiangqi.piece import Piece, General, Advisor, Elephant
 from gym_xiangqi.piece import Horse, Chariot, Cannon, Soldier
-
 class XiangQiGame:
     """
     This class represents the Xiangqi game using PyGame.
@@ -15,7 +14,7 @@ class XiangQiGame:
 
     def __init__(self):
         # PyGame components
-        self.running = False
+        self.running = True
         self.winWidth = 600
         self.winHeight = 600
         self.boardWidth = 600
@@ -43,7 +42,7 @@ class XiangQiGame:
         self.board_background = self.init_board()
 
         #init pieces
-        self.pieces = self.init_pieces()
+        self.pieces = self.update_pieces()
 
     def init_board(self):
 
@@ -53,7 +52,7 @@ class XiangQiGame:
 
         return board
 
-    def init_pieces(self):
+    def update_pieces(self):
         #get cur positions of pieces
         #return a list objects
         pass
@@ -94,18 +93,18 @@ class XiangQiGame:
         """
         Relfect detected changes and update game states
         """
-        pass
+        self.update_pieces()
 
     def render(self):
         """
         Render current game state into graphics
         """
 
-        self.screen.blit(self.board_background, (0, 0)) #show board
+        self.screen.blit(self.board_background, (0, 0)) #draw board
 
         #update all cur positions of pieces
-        for piece in self.pieces:
-            self.screen.blit(piece, (piece.col, piece.get_cur_coor()))
+        #for piece in self.pieces:
+        #    self.screen.blit(piece, (piece.col, piece.get_cur_coor()))
 
         pygame.display.update()
 
@@ -132,7 +131,9 @@ class XiangQiGame:
         while self.running:
             for event in pygame.event.get():
                 self.on_event(event)
+            
             self.on_update()
+            self.render()
 
 
         self.cleanup()
