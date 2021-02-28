@@ -43,7 +43,7 @@ class XiangQiGame:
         self.board_background = self.init_board()
 
         #init pieces
-        self.pieces = self.init_pieces()
+        self.b_pieces, self.r_pieces = self.init_pieces()
 
     def init_board(self):
 
@@ -59,77 +59,78 @@ class XiangQiGame:
         #this will be replaced by the pieces from env
         ###############
 
-        pieces = []
+        b_pieces = []
+        r_pieces = []
 
         #init black pieces
         b_general = General(Piece.black, row=0, col=235)
-        pieces.append(b_general)
+        b_pieces.append(b_general)
         b_advisor_1 = Advisor(Piece.black, row=0, col=175)
-        pieces.append(b_advisor_1)
+        b_pieces.append(b_advisor_1)
         b_advisor_2 = Advisor(Piece.black, row=0, col=290)
-        pieces.append(b_advisor_2)
+        b_pieces.append(b_advisor_2)
         b_horse_1 = Horse(Piece.black, row=0, col=60)
-        pieces.append(b_horse_1)
+        b_pieces.append(b_horse_1)
         b_horse_2 = Horse(Piece.black, row=0, col=405)
-        pieces.append(b_horse_2)
+        b_pieces.append(b_horse_2)
         b_cannon_1 = Cannon(Piece.black, row=115, col=60)
-        pieces.append(b_cannon_1)
+        b_pieces.append(b_cannon_1)
         b_cannon_2 = Cannon(Piece.black, row=115, col=405)
-        pieces.append(b_cannon_2)
+        b_pieces.append(b_cannon_2)
         b_chariot_1 = Chariot(Piece.black, row=0, col=0)
-        pieces.append(b_chariot_1)
+        b_pieces.append(b_chariot_1)
         b_chariot_2 = Chariot(Piece.black, row=0, col=467)
-        pieces.append(b_chariot_2)
+        b_pieces.append(b_chariot_2)
         b_elephant_1 = General(Piece.black, row=0, col=347)
-        pieces.append(b_elephant_1)
+        b_pieces.append(b_elephant_1)
         b_elephant_2 = General(Piece.black, row=0, col=120)
-        pieces.append(b_elephant_2)
+        b_pieces.append(b_elephant_2)
         b_soldier_1 = Soldier(Piece.black, row=230, col=0)
-        pieces.append(b_soldier_1)
+        b_pieces.append(b_soldier_1)
         b_soldier_2 = Soldier(Piece.black, row=230, col=120)
-        pieces.append(b_soldier_2)
+        b_pieces.append(b_soldier_2)
         b_soldier_3 = Soldier(Piece.black, row=230, col=235)
-        pieces.append(b_soldier_3)
+        b_pieces.append(b_soldier_3)
         b_soldier_4 = Soldier(Piece.black, row=230, col=347)
-        pieces.append(b_soldier_4)
+        b_pieces.append(b_soldier_4)
         b_soldier_5 = Soldier(Piece.black, row=230, col=467)
-        pieces.append(b_soldier_5)
+        b_pieces.append(b_soldier_5)
 
         #init red piecs
         r_general = General(Piece.red, row=524, col=235)
-        pieces.append(r_general)
+        r_pieces.append(r_general)
         r_advisor_1 = Advisor(Piece.red, row=524, col=175)
-        pieces.append(r_advisor_1)
+        r_pieces.append(r_advisor_1)
         r_advisor_2 = Advisor(Piece.red, row=524, col=290)
-        pieces.append(r_advisor_2)
+        r_pieces.append(r_advisor_2)
         r_horse_1 = Horse(Piece.red, row=524, col=60)
-        pieces.append(r_horse_1)
+        r_pieces.append(r_horse_1)
         r_horse_2 = Horse(Piece.red, row=524, col=405)
-        pieces.append(r_horse_2)
+        r_pieces.append(r_horse_2)
         r_cannon_1 = Cannon(Piece.red, row=400, col=60)
-        pieces.append(r_cannon_1)
+        r_pieces.append(r_cannon_1)
         r_cannon_2 = Cannon(Piece.red, row=400, col=405)
-        pieces.append(r_cannon_2)
+        r_pieces.append(r_cannon_2)
         r_chariot_1 = Chariot(Piece.red, row=524, col=0)
-        pieces.append(r_chariot_1)
+        r_pieces.append(r_chariot_1)
         r_chariot_2 = Chariot(Piece.red, row=524, col=467)
-        pieces.append(r_chariot_2)
+        r_pieces.append(r_chariot_2)
         r_elephant_1 = General(Piece.red, row=524, col=347)
-        pieces.append(r_elephant_1)
+        r_pieces.append(r_elephant_1)
         r_elephant_2 = General(Piece.red, row=524, col=120)
-        pieces.append(r_elephant_2)
+        r_pieces.append(r_elephant_2)
         r_soldier_1 = Soldier(Piece.red, row=295, col=0)
-        pieces.append(r_soldier_1)
+        r_pieces.append(r_soldier_1)
         r_soldier_2 = Soldier(Piece.red, row=295, col=120)
-        pieces.append(r_soldier_2)
+        r_pieces.append(r_soldier_2)
         r_soldier_3 = Soldier(Piece.red, row=295, col=235)
-        pieces.append(r_soldier_3)
+        r_pieces.append(r_soldier_3)
         r_soldier_4 = Soldier(Piece.red, row=295, col=347)
-        pieces.append(r_soldier_4)
+        r_pieces.append(r_soldier_4)
         r_soldier_5 = Soldier(Piece.red, row=295, col=467)
-        pieces.append(r_soldier_5)
+        r_pieces.append(r_soldier_5)
         
-        return pieces
+        return b_pieces, r_pieces
 
     def update_pieces(self):
         #get new positions of pieces
@@ -147,7 +148,7 @@ class XiangQiGame:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
 
-            if self.agent_turn:
+            if self.agent_turn: #!@
 
                 is_left_clicked = pygame.mouse.get_pressed()[0] #clicked: 1 not_clicked: 0
                 
@@ -156,8 +157,7 @@ class XiangQiGame:
                     self.clicked_x, self.clicked_y = pygame.mouse.get_pos()
                     self.clicked_coor = (self.click_x, self.click_y)
 
-                    cur_agent_coors = self.get_cur_agent_coors() #get all current coordinates of the agent pieces
-                    if self.clicked_coor in cur_agent_coors:
+                    if self.clicked_coor in self.r_pieces:
                         
                         self.target_piece = self.get_target_piece(self.clicked_coor) #identify the piece
                         self.target_piece.image = self.load_selected_image(Piece) #switch to the image for the selected piece
@@ -180,16 +180,19 @@ class XiangQiGame:
         """
         Render current game state into graphics
         """
-
-        self.screen.blit(self.board_background, (0, 0)) #draw board
-
+        #draw board
+        self.screen.blit(self.board_background, (0, 0)) 
         
-        #update all cur positions of pieces
-        for piece in self.pieces:
-           self.screen.blit(piece.image, piece.get_cur_coor)
-           #print(piece.get_cur_coor)
+        #update all cur positions of pieces 
+        #used separated loops because the number of pieces may differ
+        for b_piece in self.b_pieces:
+           self.screen.blit(b_piece.image, b_piece.get_cur_coor) #black
+           
+        for r_piece in self.r_pieces:
+           self.screen.blit(r_piece.image, r_piece.get_cur_coor) #black
 
         pygame.display.update()
+
 
     def cleanup(self):
         """
