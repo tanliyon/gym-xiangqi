@@ -1,3 +1,6 @@
+import os
+import pygame
+
 class Piece:
     """
     A base class for all Xiangqi pieces
@@ -23,6 +26,8 @@ class Piece:
         self.col = col
         self.state = Piece.alive
         self.image = None
+        self.piece_width = 58
+        self.piece_height = 58
 
 
     #setters
@@ -42,6 +47,7 @@ class Piece:
         target_file = file_path + filename
         try:
             image = pygame.image.load(target_file).convert()
+            #image = pygame.transform.scale(image, (self.piece_width, self.piece_height))
         except pygame.error:
             raise SystemExit('Image Load Failure: "%s" %s' %(target_file, pygame.get_error()))
         return image
