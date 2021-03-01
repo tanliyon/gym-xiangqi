@@ -7,7 +7,7 @@ from gym_xiangqi.piece import (
 from gym_xiangqi.utils import (
     action_space_to_move
 )
-from gym_xiangqi.constants import RED, BLACK, GENERAL
+from gym_xiangqi.constants import RED, BLACK, GENERAL, ADVISOR_1
 from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
 
 
@@ -77,6 +77,40 @@ class TestPieceClasses(unittest.TestCase):
             expected=[
                 (GENERAL, [7, 5], [7, 4]),
                 (GENERAL, [7, 5], [8, 5]),
+            ]
+        )
+
+    def test_advisor_can_move_within_palace(self):
+        env = XiangQiEnv()
+        # Move the left advisor to the center of palace.
+        env.agent_piece[ADVISOR_1].row -= 1
+        env.agent_piece[ADVISOR_1].col += 1
+        env.state[8][4] = env.state[9][3]
+        env.state[9][3] = 0
+
+        self.diff_move_list(
+            env=env,
+            piece_id=ADVISOR_1,
+            expected=[
+                (ADVISOR_1, [8, 4], [9, 3]),
+                (ADVISOR_1, [8, 4], [7, 3]),
+                (ADVISOR_1, [8, 4], [7, 5]),
+            ]
+        )
+
+
+    def test_advisor_cannot_move_out_of_palace(self):
+        env = XiangQiEnv()
+        # Move the left advisor to the top left of palace.
+        env.agent_piece[ADVISOR_1].row -= 2
+        env.state[7][3] = env.state[9][3]
+        env.state[9][3] = 0
+
+        self.diff_move_list(
+            env=env,
+            piece_id=ADVISOR_1,
+            expected=[
+                (ADVISOR_1, [7, 3], [8, 4]),
             ]
         )
 
