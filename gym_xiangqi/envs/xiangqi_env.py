@@ -153,6 +153,34 @@ class XiangQiEnv(gym.Env):
         """
         Searches all valid actions each piece can perform
         """
+        # Clear possible actions list.
+        self.possible_actions.fill(0)
         # skip first element which is piece id 0: empty space ID
         for pid, piece_obj in enumerate(self.agent_piece[1:], 1):
             piece_obj.get_actions(pid, self.state, self.possible_actions)
+    
+    def get_possible_actions_by_piece(self, piece_id):
+        """
+        Given a piece_id, returns only the possible actions that
+        can be taken by the piece.
+        
+        Parameters:
+            piece_id (int): Piece ID to filter possible actions.
+        return:
+            actions that are can be taken by the piece.
+        """
+        self.get_possible_actions()
+
+        # Calculate the starting and ending index of a piece
+        # based on its piece id.
+        piece_action_id_start = (piece_id - 1) * pow(TOTAL_POS, 2)
+        piece_action_id_end = piece_action_id_start + pow(TOTAL_POS, 2)
+
+        # First filter to obtain only legal actions.
+        all_possible_actions = np.where(self.possible_actions == 1)[0]
+        # Second filter to limit the actions to only a piece done via
+        # limiting the index.
+        all_possible_actions = all_possible_actions[
+            all_possible_actions >= piece_action_id_start]
+        return all_possible_actions[
+            all_possible_actions < piece_action_id_end]
