@@ -1,3 +1,14 @@
+from gym_xiangqi.utils import move_to_action_space
+from gym_xiangqi.constants import (
+    ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
+    BOARD_ROWS, BOARD_COLS,                             # board specs
+    PALACE_AGENT_ROW, PALACE_COL,                       # palace bound
+    RIVER_HIGH,                                         # river bound
+    MAX_REP,                                            # repetition bound
+    ALIVE                                               # piece states
+)
+
+
 class Piece:
     """
     A base class for all Xiangqi pieces
@@ -14,17 +25,11 @@ class Piece:
         - move(self): make allowed movements
     """
 
-    # constants
-    red = 0
-    black = 1
-    dead = 0
-    alive = 1
-
     def __init__(self, color, row, col):
         self.color = color
         self.row = row
         self.col = col
-        self.state = Piece.alive
+        self.state = ALIVE
         self.image = None
 
     def move(self, new_row, new_col):
@@ -34,6 +39,50 @@ class Piece:
         """
         self.row = new_row
         self.col = new_col
+
+
+def check_action(piece, orig_pos, cur_pos, repeat, offset, i, state, actions):
+    """
+    This is general searching procedure. Given the following parameters,
+    repeatedly search in the same direction until either end of the board
+    or another piece is blocking.
+
+    Parameters:
+        piece (int): piece ID
+        orig_pos (tuple(int)): original coordinate of the piece
+        cur_pos (tuple(int)): current position in evaluation
+        repeat (int): number of repetitions to perform this procedure
+        offset (tuple(int)): coordinate offset towards current direction
+        i (int): current iteration number
+        state (numpy.ndarray): current environment state
+        actions (numpy.ndarray): pool of possible actions
+    return:
+        Number of times repeated; This is used to find out the farthest
+        possible position used for other conditional check.
+    """
+    r = cur_pos[0]
+    c = cur_pos[1]
+
+    for i in range(repeat):
+        rb = 0 <= r < BOARD_ROWS
+        cb = 0 <= c < BOARD_COLS
+
+        if not rb or not cb:
+            return i
+
+        if state[r][c] > 0:
+            break
+
+        action_idx = move_to_action_space(piece, orig_pos, (r, c))
+        actions[action_idx] = 1
+
+        if state[r][c] != 0:
+            break
+
+        r += offset[0]
+        c += offset[1]
+
+    return i + 1
 
 
 class General(Piece):
@@ -49,6 +98,20 @@ class General(Piece):
         # TODO: add image for pygame rendering
         #  self.image =
 
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the General
+        """
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+
+            # general must stay in the palace: row and column bound check
+            rb = PALACE_AGENT_ROW[0] <= next_pos[0] <= PALACE_AGENT_ROW[1]
+            cb = PALACE_COL[0] <= next_pos[1] <= PALACE_COL[1]
+            if rb and cb:
+                check_action(piece_id, (self.row, self.col), next_pos,
+                             1, offset, 0, state, actions)
+
 
 class Advisor(Piece):
     """
@@ -61,6 +124,20 @@ class Advisor(Piece):
         super(Advisor, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
+
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the Advisors
+        """
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+
+            # must stay in the special square
+            rb = PALACE_AGENT_ROW[0] <= next_pos[0] <= PALACE_AGENT_ROW[1]
+            cb = 3 <= next_pos[1] <= 5
+            if rb and cb:
+                check_action(piece_id, (self.row, self.col), next_pos,
+                             1, offset, 0, state, actions)
 
 
 class Elephant(Piece):
@@ -77,6 +154,28 @@ class Elephant(Piece):
         # TODO: add image for pygame rendering
         #  self.image =
 
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the Elephants
+        """
+        for offset in ELEPHANT_MOVE:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+
+            # bound check: must not cross the river
+            rb = RIVER_HIGH <= next_pos[0] < BOARD_ROWS
+            cb = 0 <= next_pos[1] < BOARD_COLS
+            if not rb or not cb:
+                continue
+
+            # must be not blocked
+            block_r = self.row + offset[0] // 2
+            block_c = self.col + offset[1] // 2
+            if state[block_r][block_c] != 0:
+                continue
+
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+
 
 class Horse(Piece):
     """
@@ -91,6 +190,34 @@ class Horse(Piece):
         super(Horse, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
+
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the Horses
+        """
+        # horse moves consist of 2 separate moves:
+        # 1. along the line up or down or left or right
+        # 2. diagonally left or right along the same direction
+        for first_move, second_move in HORSE_MOVE:
+            next_r = self.row + first_move[0]
+            next_c = self.col + first_move[1]
+
+            # bound check
+            rb = 0 <= next_r < BOARD_ROWS
+            cb = 0 <= next_c < BOARD_COLS
+
+            if not rb or not cb:
+                continue
+
+            # check for any blocking piece
+            if state[next_r][next_c] != 0:
+                continue
+
+            next_pos = (next_r + second_move[0], next_c + second_move[1])
+
+            # no need to recurse on next moves; (0, 0) just a placeholder
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, (0, 0), 0, state, actions)
 
 
 class Chariot(Piece):
@@ -107,6 +234,16 @@ class Chariot(Piece):
         # TODO: add image for pygame rendering
         #  self.image =
 
+    def get_actions(self, piece_id, state, actions):
+        """
+        Find legal moves for the Chariots
+        """
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            # No need to check for repetition; check as far as possible
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         MAX_REP, offset, 0, state, actions)
+
 
 class Cannon(Piece):
     """
@@ -120,6 +257,49 @@ class Cannon(Piece):
         super(Cannon, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
+
+    def get_actions(self, piece_id, state, actions):
+        """
+        Find legal moves for the Cannons
+        """
+        for offset in ORTHOGONAL:
+            # moving positions
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            reps = check_action(piece_id, (self.row, self.col), next_pos,
+                                MAX_REP, offset, 0, state, actions)
+
+            # mark the farthest position invalid if it is an enemy
+            last_r = self.row + offset[0] * reps
+            last_c = self.col + offset[1] * reps
+
+            if state[last_r][last_c] < 0:
+                action_idx = move_to_action_space(piece_id,
+                                                  (self.row, self.col),
+                                                  (last_r, last_c))
+                actions[action_idx] = 0
+
+            # attacking positions
+            next_r = self.row + offset[0] * (reps + 1)
+            next_c = self.col + offset[1] * (reps + 1)
+
+            while True:
+                rb = 0 <= next_r < BOARD_ROWS
+                cb = 0 <= next_c < BOARD_COLS
+
+                if not rb or not cb:
+                    break
+
+                if state[next_r][next_c] > 0:
+                    break
+                elif state[next_r][next_c] < 0:
+                    action_idx = move_to_action_space(
+                        piece_id, (self.row, self.col), (next_r, next_c)
+                    )
+                    actions[action_idx] = 1
+                    break
+
+                next_r += offset[0]
+                next_c += offset[1]
 
 
 class Soldier(Piece):
@@ -135,3 +315,18 @@ class Soldier(Piece):
         super(Soldier, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
         #  self.image =
+
+    def get_actions(self, piece_id, state, actions):
+        """
+        Find legal moves for the soldiers
+        """
+        if self.row > 4:
+            moves = [0]
+        else:
+            moves = [0, 1, 3]
+
+        for i in moves:
+            offset = ORTHOGONAL[i]
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
