@@ -47,10 +47,3 @@ jobs:
       - name: Run unit tests and coverage report
         run: |
           python -m pytest --cov=agents/ --cov=gym_xiangqi/ --cov=examples/ --cov-fail-under=25
-
-      # Runs unit tests for Xiangqi environment components
-      - name: Run unit tests for Xiangqi environment components
-        run: |
-          python gym_xiangqi/test/piece_test.py
-          python gym_xiangqi/test/utils_test.py
-          python gym_xiangqi/test/xiangqi_env_test.py
