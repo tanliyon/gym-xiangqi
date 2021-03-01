@@ -98,7 +98,6 @@ class TestPieceClasses(unittest.TestCase):
             ]
         )
 
-
     def test_advisor_cannot_move_out_of_palace(self):
         env = XiangQiEnv()
         # Move the left advisor to the top left of palace.

@@ -153,7 +153,9 @@ class XiangQiEnv(gym.Env):
         """
         Searches all valid actions each piece can perform
         """
-        # Clear possible actions list.
+        # Clear all possible actions to remove possible actions from
+        # previous turn.
+        # TODO: Don't clear the entire list, but only the relevant actions.
         self.possible_actions.fill(0)
         # skip first element which is piece id 0: empty space ID
         for pid, piece_obj in enumerate(self.agent_piece[1:], 1):
