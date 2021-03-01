@@ -1,5 +1,4 @@
 import unittest
-import numpy as np
 
 from gym_xiangqi.piece import (
     Piece, General, Advisor, Elephant,
@@ -17,7 +16,7 @@ class TestPieceClasses(unittest.TestCase):
     def setUp(self) -> None:
         self.classes = [Piece, General, Advisor, Elephant,
                         Horse, Chariot, Cannon, Soldier]
-    
+
     def diff_move_list(self, env, piece_id, expected):
         result = []
         for action in env.get_possible_actions_by_piece(piece_id):
@@ -35,7 +34,7 @@ class TestPieceClasses(unittest.TestCase):
             self.assertEqual(piece.col, 0)
             piece.color = 1
             self.assertEqual(piece.color, BLACK)
-    
+
     def test_general_can_move_within_palace(self):
         env = XiangQiEnv()
         # Test red general can only move forward 1 position from
@@ -45,7 +44,7 @@ class TestPieceClasses(unittest.TestCase):
             piece_id=GENERAL,
             expected=[(GENERAL, [9, 4], [8, 4])]
         )
-        
+
         # Move general to the center of the palace.
         env.agent_piece[GENERAL].row -= 1
         env.state[8][4] = env.state[9][4]

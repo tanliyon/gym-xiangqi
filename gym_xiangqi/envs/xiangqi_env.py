@@ -158,12 +158,12 @@ class XiangQiEnv(gym.Env):
         # skip first element which is piece id 0: empty space ID
         for pid, piece_obj in enumerate(self.agent_piece[1:], 1):
             piece_obj.get_actions(pid, self.state, self.possible_actions)
-    
+
     def get_possible_actions_by_piece(self, piece_id):
         """
         Given a piece_id, returns only the possible actions that
         can be taken by the piece.
-        
+
         Parameters:
             piece_id (int): Piece ID to filter possible actions.
         return:
