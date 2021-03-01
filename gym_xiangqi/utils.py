@@ -1,5 +1,3 @@
-import numpy as np
-
 from gym_xiangqi.constants import TOTAL_POS
 
 
