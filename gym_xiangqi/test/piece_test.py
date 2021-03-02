@@ -43,10 +43,12 @@ class TestPieceClasses(unittest.TestCase):
         """
         Simple helper function to move a piece to a destination.
         """
-        source = (env.agent_piece[piece_id].row, env.agent_piece[piece_id].col)
+        source = (env.agent_piece[piece_id].row,
+            env.agent_piece[piece_id].col)
         env.agent_piece[piece_id].row = destination[0]
         env.agent_piece[piece_id].col = destination[1]
-        env.state[destination[0]][destination[1]] = env.state[source[0]][source[1]]
+        env.state[destination[0]][destination[1]] = (
+            env.state[source[0]][source[1]])
         env.state[source[0]][source[1]] = 0
 
     def test_piece_initialization(self):
