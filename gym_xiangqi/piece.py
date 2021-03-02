@@ -132,7 +132,7 @@ class Advisor(Piece):
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
 
-            # must stay in the special square
+            # advisor must stay in the palace: row and column bound check
             rb = PALACE_AGENT_ROW[0] <= next_pos[0] <= PALACE_AGENT_ROW[1]
             cb = 3 <= next_pos[1] <= 5
             if rb and cb:

@@ -3,6 +3,7 @@ from gym import spaces
 import numpy as np
 
 from gym_xiangqi.xiangqi_game import XiangQiGame
+from gym_xiangqi.utils import action_space_to_move
 from gym_xiangqi.piece import (
     General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
 )
@@ -10,6 +11,8 @@ from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     TOTAL_POS, PIECE_CNT,
     RED, BLACK,
+    ILLEGAL_MOVE, PIECE_POINTS,
+    AGENT, ENEMY, EMPTY,
 )
 
 
@@ -95,6 +98,16 @@ class XiangQiEnv(gym.Env):
         else:
             self.enemy_color = RED
 
+        # track whose turn it is
+        if self.agent_color == RED:
+            self.turn = AGENT
+        else:
+            self.turn = ENEMY
+
+        # epoch termination flag
+        self._done = False
+        self.done_warn = False
+
         # observation space: 10 x 9 space with pieces encoded as integers
         self.observation_space = spaces.Box(
             low=-PIECE_CNT,
@@ -124,7 +137,59 @@ class XiangQiEnv(gym.Env):
         self.game = XiangQiGame()
 
     def step(self, action):
-        return 0, 0, 0, 0
+        """
+        Run one time step of Xiangqi game: agent and enemy each plays a move
+        Parameter:
+            action (int): a valid action in Xiangqi action space
+        Return:
+            observation (object): agent's observation of the current environment
+            reward (float) : amount of reward returned after given action
+            done (bool): whether the episode has ended, in which case further
+                         step() calls will return undefined results
+            info (dict): contains auxiliary diagnostic information (helpful for
+                         debugging, and sometimes learning)
+        """
+        error_msg = "%r (%s) invalid action" % (action, type(action))
+        assert self.action_space.contains(action), error_msg
+
+        if self._done:
+            if not self.done_warn:
+                self.done_warn = True
+                print(gym.utils.colorize(
+                    "WARN: Environment should be reset with call to reset() "
+                    "when the episode has terminated (i.e 'done == True')",
+                    "yellow"
+                ))
+            return self.state, 0, self._done, {}
+
+        # initialize variables
+        reward = 0.0
+        pieces = self.agent_piece if self.turn == AGENT else self.enemy_piece
+
+        # if illegal move is given, penalize agent
+        if self.possible_actions[action] == 0:
+            return self.state, ILLEGAL_MOVE, False, {}
+
+        # if legal move, move the piece
+        piece, start, end = action_space_to_move(action)
+        pieces[piece].move(*end)
+
+        # update observation space
+        self.state[start[0]][start[1]] = EMPTY
+        removed_piece = self.state[end[0]][end[1]]
+        self.state[end[0]][end[1]] = piece * self.turn
+
+        # TODO: Implment conditions for checks and checkmates
+        #       and update done flag correspondingly
+
+        # reward based on removed piece
+        reward += PIECE_POINTS[abs(removed_piece)]
+
+        # self-play: agent switches turns between agent and enemy side
+        self.turn = ENEMY if self.turn == AGENT else AGENT
+        self.get_possible_actions(self.turn)
+
+        return self.state, reward, self._done, {}
 
     def reset(self):
         pass
@@ -149,17 +214,28 @@ class XiangQiEnv(gym.Env):
                 elif piece_id > 0:
                     self.agent_piece[piece_id] = init(self.agent_color, r, c)
 
-    def get_possible_actions(self):
+    def get_possible_actions(self, player):
         """
         Searches all valid actions each piece can perform
+        Parameter:
+            player (int): -1 for enemy 1 for agent
         """
+        # current piece set changes depending on whose turn it is
+        if player == AGENT:
+            piece_set = self.agent_piece
+        else:
+            piece_set = self.enemy_piece
+
         # Clear all possible actions to remove possible actions from
         # previous turn.
         # TODO: Don't clear the entire list, but only the relevant actions.
         self.possible_actions.fill(0)
-        # skip first element which is piece id 0: empty space ID
-        for pid, piece_obj in enumerate(self.agent_piece[1:], 1):
-            piece_obj.get_actions(pid, self.state, self.possible_actions)
+
+        # get possible moves for every piece in the piece set
+        for pid, piece_obj in enumerate(piece_set[1:], 1):
+            piece_obj.get_actions(pid * player,
+                                  self.state,
+                                  self.possible_actions)
 
     def get_possible_actions_by_piece(self, piece_id):
         """
