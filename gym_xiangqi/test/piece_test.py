@@ -9,7 +9,8 @@ from gym_xiangqi.utils import (
 )
 from gym_xiangqi.constants import (
     RED, BLACK, GENERAL, ADVISOR_1,
-    HORSE_1, ELEPHANT_1
+    HORSE_1, ELEPHANT_1, SOLDIER_1,
+    CHARIOT_1, CANNON_1
 )
 from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
 
@@ -199,6 +200,98 @@ class TestPieceClasses(unittest.TestCase):
             expected=[
                 (ELEPHANT_1, [5, 2], [7, 4]),
                 (ELEPHANT_1, [5, 2], [7, 0]),
+            ]
+        )
+
+    def test_soldier_can_move(self):
+        env = XiangQiEnv()
+
+        self.diff_move_list(
+            env=env,
+            piece_id=SOLDIER_1,
+            expected=[
+                (SOLDIER_1, [6, 0], [5, 0]),
+            ]
+        )
+
+    def test_soldier_can_move_sideways_after_river(self):
+        env = XiangQiEnv()
+
+        # Move soldier across the river.
+        self.move_piece(env=env,
+                        piece_id=SOLDIER_1,
+                        destination=(4, 0))
+
+        self.diff_move_list(
+            env=env,
+            piece_id=SOLDIER_1,
+            expected=[
+                (SOLDIER_1, [4, 0], [3, 0]),
+                (SOLDIER_1, [4, 0], [4, 1]),
+            ]
+        )
+
+    def test_chariot_can_move(self):
+        env = XiangQiEnv()
+
+        # Move chariot to front of cannon.
+        self.move_piece(env=env,
+                        piece_id=CHARIOT_1,
+                        destination=(6, 1))
+
+        self.diff_move_list(
+            env=env,
+            piece_id=CHARIOT_1,
+            expected=[
+                (CHARIOT_1, [6, 1], [5, 1]),
+                (CHARIOT_1, [6, 1], [4, 1]),
+                (CHARIOT_1, [6, 1], [3, 1]),
+                (CHARIOT_1, [6, 1], [2, 1]),
+            ]
+        )
+
+    def test_cannon_can_skip_enemy_piece(self):
+        env = XiangQiEnv()
+
+        # Move cannon forward 1 position and put
+        # chariot behind to limit possible moves.
+        self.move_piece(env=env,
+                        piece_id=CANNON_1,
+                        destination=(6, 1))
+        self.move_piece(env=env,
+                        piece_id=CHARIOT_1,
+                        destination=(7, 1))
+
+        self.diff_move_list(
+            env=env,
+            piece_id=CANNON_1,
+            expected=[
+                (CANNON_1, [6, 1], [5, 1]),
+                (CANNON_1, [6, 1], [4, 1]),
+                (CANNON_1, [6, 1], [3, 1]),
+                (CANNON_1, [6, 1], [0, 1]),
+            ]
+        )
+
+    def test_cannon_can_skip_ally_piece(self):
+        env = XiangQiEnv()
+
+        # Move cannon and put horse in front of it.
+        self.move_piece(env=env,
+                        piece_id=CANNON_1,
+                        destination=(6, 1))
+        self.move_piece(env=env,
+                        piece_id=HORSE_1,
+                        destination=(5, 1))
+
+        self.diff_move_list(
+            env=env,
+            piece_id=CANNON_1,
+            expected=[
+                (CANNON_1, [6, 1], [2, 1]),
+                (CANNON_1, [6, 1], [7, 1]),
+                (CANNON_1, [6, 1], [8, 1]),
+                (CANNON_1, [6, 1], [9, 1]),
             ]
         )
 
