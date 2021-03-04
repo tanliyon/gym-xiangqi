@@ -19,7 +19,8 @@ class TestXiangQiEnv(unittest.TestCase):
         self.assertIsNotNone(env.state)
         self.assertIsNotNone(env.observation_space)
         self.assertIsNotNone(env.action_space)
-        self.assertIsNotNone(env.possible_actions)
+        self.assertIsNotNone(env.agent_actions)
+        self.assertIsNotNone(env.enemy_actions)
 
 
 if __name__ == "__main__":

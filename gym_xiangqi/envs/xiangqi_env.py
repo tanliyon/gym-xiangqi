@@ -161,10 +161,16 @@ class XiangQiEnv(gym.Env):
             return self.state, 0, self._done, {}
 
         reward = 0.0
-        pieces = self.agent_piece if self.turn == AGENT else self.enemy_piece
+
+        if self.turn == AGENT:
+            pieces = self.agent_piece
+            possible_actions = self.agent_actions
+        else:
+            pieces = self.enemy_piece
+            possible_actions = self.enemy_actions
 
         # if illegal move is given, penalize agent
-        if self.possible_actions[action] == 0:
+        if possible_actions[action] == 0:
             return self.state, ILLEGAL_MOVE, False, {}
 
         # if legal move is given, move the piece
@@ -238,9 +244,7 @@ class XiangQiEnv(gym.Env):
         # get possible moves for every piece in the piece set
         for pid, piece_obj in enumerate(piece_set[1:], 1):
             if piece_obj.state == ALIVE:
-                piece_obj.get_actions(pid * player,
-                                      self.state,
-                                      possible_actions)
+                piece_obj.get_actions(pid, self.state, possible_actions)
 
     def get_possible_actions_by_piece(self, piece_id):
         """
