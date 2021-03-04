@@ -87,5 +87,8 @@ def random_agent_latency():
 
 
 if __name__ == "__main__":
+    # TODO: Compare latency from before and after a PR, and actually
+    # fail a PR if the change if too big or if the latency
+    # exceed a certain number.
     env_latency()
     random_agent_latency()
