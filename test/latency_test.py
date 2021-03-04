@@ -2,22 +2,28 @@ from gym_xiangqi.envs.xiangqi_env import XiangQiEnv  # NOQA
 from agents.random_agent import RandomAgent  # NOQA
 import timeit
 
-NUM_REPEAT = 5
+""" Timing """
+# Number of times to repeat the timing tests.
+NUM_REPEAT = 10
+# Number of times to call a method for each timing test.
 NUM_RUN = 1
+
+""" Setup """
 ENV_SETUP = "env = XiangQiEnv()"
 AGENT_SETUP = "agent = RandomAgent()"
 
 
-def average(lst):
-    return sum(lst) / len(lst)
-
-
 def print_time(title, time_list):
+    """
+    Helper function to print latency times
+    in a nice format.
+    """
+    assert len(time_list) == NUM_REPEAT
     print(f"{title}")
     print("--------------------")
     print(f"min    : {min(time_list):.3f}")
     print(f"max    : {max(time_list):.3f}")
-    print(f"average: {average(time_list):.3f}")
+    print(f"average: {sum(time_list) / len(time_list):.3f}")
     print("\n")
 
 
@@ -46,6 +52,10 @@ def measure_and_print_latency(methods_to_setup):
 
 
 def env_latency():
+    """
+    Measure and print the latency of the methods defined
+    in XiangQiEnv.
+    """
     print("XiangQiEnv Latency (ms)")
     print("=========================")
 
@@ -62,6 +72,10 @@ def env_latency():
 
 
 def random_agent_latency():
+    """
+    Measure and print the latency of the methods defined
+    in RandomAgent.
+    """
     print("RandomAgent Latency (ms)")
     print("=========================")
 
