@@ -46,7 +46,7 @@ def measure_and_print_latency(methods_to_setup):
 
 
 def env_latency():
-    print(f"XiangQiEnv Latency (ms)")
+    print("XiangQiEnv Latency (ms)")
     print("=========================")
 
     methods_to_setup = {
@@ -55,14 +55,14 @@ def env_latency():
         "env.get_possible_actions()": ENV_SETUP,
         "env.step(action)":
             f"{ENV_SETUP}; import numpy as np; import random;"
-             "actions = np.where(env.possible_actions == 1)[0];"
-             "action = random.randint(0, len(actions)-1);"
+            "actions = np.where(env.possible_actions == 1)[0];"
+            "action = random.randint(0, len(actions)-1);"
     }
     measure_and_print_latency(methods_to_setup)
 
 
 def random_agent_latency():
-    print(f"RandomAgent Latency (ms)")
+    print("RandomAgent Latency (ms)")
     print("=========================")
 
     methods_to_setup = {
@@ -75,4 +75,3 @@ def random_agent_latency():
 if __name__ == "__main__":
     env_latency()
     random_agent_latency()
-
