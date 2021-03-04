@@ -1,5 +1,5 @@
-from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
-from agents.random_agent import RandomAgent
+from gym_xiangqi.envs.xiangqi_env import XiangQiEnv  # NOQA
+from agents.random_agent import RandomAgent  # NOQA
 import timeit
 
 NUM_REPEAT = 5
@@ -31,7 +31,15 @@ def measure_time(cmd_str, setup=""):
         repeat=NUM_REPEAT, number=NUM_RUN))
 
 
-def print_latency(methods_to_setup):
+def measure_and_print_latency(methods_to_setup):
+    """
+    Helper function to measure and print the latency
+    of methods specified in methods_to_setup.
+
+    Parameters:
+        methods_to_setup (dict[str, str]): Dictionary matching method calls
+            to setups needed to perform the call.
+    """
     for method, setup in methods_to_setup.items():
         time_list = measure_time(cmd_str=method, setup=setup)
         print_time(title=method, time_list=time_list)
@@ -47,11 +55,11 @@ def env_latency():
         "env.get_possible_actions()": ENV_SETUP,
         "env.step(action)":
             f"{ENV_SETUP}; import numpy as np; import random;"
-            f"actions = np.where(env.possible_actions == 1)[0];"
-            f"action = random.randint(0, len(actions)-1);"
+             "actions = np.where(env.possible_actions == 1)[0];"
+             "action = random.randint(0, len(actions)-1);"
     }
+    measure_and_print_latency(methods_to_setup)
 
-    print_latency(methods_to_setup)
 
 def random_agent_latency():
     print(f"RandomAgent Latency (ms)")
@@ -61,10 +69,10 @@ def random_agent_latency():
         "RandomAgent()": "",
         "agent.move(env)": f"{ENV_SETUP}; {AGENT_SETUP}",
     }
-
-    print_latency(methods_to_setup)
+    measure_and_print_latency(methods_to_setup)
 
 
 if __name__ == "__main__":
     env_latency()
     random_agent_latency()
+
