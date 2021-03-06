@@ -12,7 +12,7 @@ from gym_xiangqi.constants import (
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
     ILLEGAL_MOVE, PIECE_POINTS,
-    AGENT, ENEMY, EMPTY,
+    AGENT, ENEMY, EMPTY, GENERAL,
 )
 
 
@@ -158,7 +158,7 @@ class XiangQiEnv(gym.Env):
                     "when the episode has terminated (i.e 'done == True')",
                     "yellow"
                 ))
-            return self.state, 0, self._done, {}
+            return np.array(self.state), 0, self._done, {}
 
         reward = 0.0
 
@@ -171,7 +171,7 @@ class XiangQiEnv(gym.Env):
 
         # if illegal move is given, penalize agent
         if possible_actions[action] == 0:
-            return self.state, ILLEGAL_MOVE, False, {}
+            return np.array(self.state), ILLEGAL_MOVE, False, {}
 
         # if legal move is given, move the piece
         piece, start, end = action_space_to_move(action)
@@ -179,25 +179,26 @@ class XiangQiEnv(gym.Env):
 
         # update observation space
         self.state[start[0]][start[1]] = EMPTY
-        removed_piece = self.state[end[0]][end[1]]
+        rm_piece_id = self.state[end[0]][end[1]]
         self.state[end[0]][end[1]] = piece * self.turn
 
-        if removed_piece < 0:
-            self.enemy_piece[-removed_piece].state = DEAD
-        elif removed_piece > 0:
-            self.agent_piece[removed_piece].state = DEAD
+        if rm_piece_id < 0:
+            self.enemy_piece[-rm_piece_id].state = DEAD
+        elif rm_piece_id > 0:
+            self.agent_piece[rm_piece_id].state = DEAD
 
         # reward based on removed piece
-        reward += PIECE_POINTS[abs(removed_piece)]
+        reward += PIECE_POINTS[abs(rm_piece_id)]
 
-        if abs(removed_piece) == 1:
+        # if the General on either side has been attacked, end game
+        if abs(rm_piece_id) == GENERAL:
             self._done = True
 
         # self-play: agent switches turn between agent and enemy side
-        self.turn = AGENT if self.turn == ENEMY else ENEMY
+        self.turn *= -1     # AGENT (1) -> ENEMY (-1) and vice versa
         self.get_possible_actions(self.turn)
 
-        return self.state, reward, self._done, {}
+        return np.array(self.state), reward, self._done, {}
 
     def reset(self):
         pass
@@ -244,7 +245,9 @@ class XiangQiEnv(gym.Env):
         # get possible moves for every piece in the piece set
         for pid, piece_obj in enumerate(piece_set[1:], 1):
             if piece_obj.state == ALIVE:
-                piece_obj.get_actions(pid, self.state, possible_actions)
+                piece_obj.get_actions(pid * self.turn,
+                                      self.state,
+                                      possible_actions)
 
     def get_possible_actions_by_piece(self, piece_id):
         """
