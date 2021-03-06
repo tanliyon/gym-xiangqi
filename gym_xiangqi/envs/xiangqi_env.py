@@ -3,7 +3,7 @@ from gym import spaces
 import numpy as np
 
 from gym_xiangqi.xiangqi_game import XiangQiGame
-from gym_xiangqi.utils import action_space_to_move
+from gym_xiangqi.utils import action_space_to_move, is_agent
 from gym_xiangqi.piece import (
     General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
 )
@@ -259,12 +259,12 @@ class XiangQiEnv(gym.Env):
         return:
             actions that are can be taken by the piece.
         """
-        if piece_id > 0:
-            possible_actions = self.agent_actions
+        if is_agent(piece_id):
             self.get_possible_actions(AGENT)
+            possible_actions = self.agent_actions
         else:
-            possible_actions = self.enemy_actions
             self.get_possible_actions(ENEMY)
+            possible_actions = self.enemy_actions
 
         piece_id = abs(piece_id)
 
