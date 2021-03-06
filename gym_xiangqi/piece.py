@@ -41,7 +41,8 @@ class Piece:
         self.col = new_col
 
 
-def check_action(piece_id, orig_pos, cur_pos, repeat, offset, i, state, actions):
+def check_action(piece_id, orig_pos, cur_pos,
+                 repeat, offset, i, state, actions):
     """
     This is general searching procedure. Given the following parameters,
     repeatedly search in the same direction until either end of the board
@@ -363,9 +364,9 @@ class Soldier(Piece):
             moves = [0]             # therefore agent soldiers move upwards
 
         # low and high are set to be after-river row ranges
-        if low <= self.row <= high: # After crossing the river,
-            moves.append(1)         # can move right
-            moves.append(3)         # can move left
+        if low <= self.row <= high:     # After crossing the river,
+            moves.append(1)             # can move right
+            moves.append(3)             # can move left
 
         for i in moves:
             offset = ORTHOGONAL[i]
