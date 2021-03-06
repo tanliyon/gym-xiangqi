@@ -38,3 +38,7 @@ def action_space_to_move(action):
     start[0], start[1] = divmod(start_val, 9)
     end[0], end[1] = divmod(end_val, 9)
     return piece_id + 1, start, end
+
+
+def is_agent(piece_id):
+    return piece_id > 0

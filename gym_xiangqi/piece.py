@@ -1,11 +1,11 @@
-from gym_xiangqi.utils import move_to_action_space
+from gym_xiangqi.utils import move_to_action_space, is_agent
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
     BOARD_ROWS, BOARD_COLS,                             # board specs
     PALACE_AGENT_ROW, PALACE_ENEMY_ROW, PALACE_COL,     # palace bound
     RIVER_LOW, RIVER_HIGH,                              # river bound
     MAX_REP,                                            # repetition bound
-    ALIVE                                               # piece states
+    ALIVE, AGENT, ENEMY,                                # piece states
 )
 
 
@@ -41,14 +41,14 @@ class Piece:
         self.col = new_col
 
 
-def check_action(piece, orig_pos, cur_pos, repeat, offset, i, state, actions):
+def check_action(piece_id, orig_pos, cur_pos, repeat, offset, i, state, actions):
     """
     This is general searching procedure. Given the following parameters,
     repeatedly search in the same direction until either end of the board
     or another piece is blocking.
 
     Parameters:
-        piece (int): piece ID
+        piece_id (int): piece ID
         orig_pos (tuple(int)): original coordinate of the piece
         cur_pos (tuple(int)): current position in evaluation
         repeat (int): number of repetitions to perform this procedure
@@ -63,11 +63,11 @@ def check_action(piece, orig_pos, cur_pos, repeat, offset, i, state, actions):
     r = cur_pos[0]
     c = cur_pos[1]
 
-    if piece < 0:
-        sign = -1
-        piece *= -1
+    if not is_agent(piece_id):
+        sign = ENEMY
+        piece_id *= ENEMY
     else:
-        sign = 1
+        sign = AGENT
 
     for i in range(repeat):
         rb = 0 <= r < BOARD_ROWS
@@ -79,7 +79,7 @@ def check_action(piece, orig_pos, cur_pos, repeat, offset, i, state, actions):
         if state[r][c] * sign > 0:
             break
 
-        action_idx = move_to_action_space(piece, orig_pos, (r, c))
+        action_idx = move_to_action_space(piece_id, orig_pos, (r, c))
         actions[action_idx] = 1
 
         if state[r][c] != 0:
@@ -108,7 +108,7 @@ class General(Piece):
         """
         Finds legal moves for the General
         """
-        if piece_id < 0:
+        if not is_agent(piece_id):
             low = PALACE_ENEMY_ROW[0]
             high = PALACE_ENEMY_ROW[1]
         else:
@@ -142,7 +142,7 @@ class Advisor(Piece):
         """
         Finds legal moves for the Advisors
         """
-        if piece_id < 0:
+        if not is_agent(piece_id):
             low = PALACE_ENEMY_ROW[0]
             high = PALACE_ENEMY_ROW[1]
         else:
@@ -178,7 +178,7 @@ class Elephant(Piece):
         """
         Finds legal moves for the Elephants
         """
-        if piece_id < 0:
+        if not is_agent(piece_id):
             low = 0
             high = RIVER_LOW
         else:
@@ -289,10 +289,10 @@ class Cannon(Piece):
         """
         Find legal moves for the Cannons
         """
-        if piece_id < 0:
-            sign = -1
+        if not is_agent(piece_id):
+            sign = ENEMY
         else:
-            sign = 1
+            sign = AGENT
 
         for offset in ORTHOGONAL:
             # moving positions
@@ -352,18 +352,20 @@ class Soldier(Piece):
         """
         Find legal moves for the soldiers
         """
-        if piece_id < 0:
+        # ORTHOGONAL contains 4 moves in clock-wise [UP, RIGHT, DOWN, LEFT]
+        if not is_agent(piece_id):  # enemy side is always at the top half
             low = RIVER_HIGH
             high = BOARD_ROWS - 1
-            moves = [2]
-        else:
+            moves = [2]             # therefore enemy soldiers move downwards
+        else:                       # agent side is always at the bottom half
             low = 0
             high = RIVER_LOW
-            moves = [0]
+            moves = [0]             # therefore agent soldiers move upwards
 
-        if low <= self.row <= high:
-            moves.append(1)
-            moves.append(3)
+        # low and high are set to be after-river row ranges
+        if low <= self.row <= high: # After crossing the river,
+            moves.append(1)         # can move right
+            moves.append(3)         # can move left
 
         for i in moves:
             offset = ORTHOGONAL[i]
