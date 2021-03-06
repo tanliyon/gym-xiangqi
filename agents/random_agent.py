@@ -1,6 +1,3 @@
-import random
-
-
 class RandomAgent:
     """
     This is the implementation of the simplest

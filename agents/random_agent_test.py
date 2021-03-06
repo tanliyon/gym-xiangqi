@@ -54,7 +54,7 @@ def test_make_legal_move(agent, legal_env):
     assert state[9][3] == EMPTY
     assert state[8][4] == ADVISOR_1
     assert reward == 0
-    assert done == False
+    assert done is False
 
 
 def test_make_illegal_move(agent, illegal_env):
@@ -66,4 +66,4 @@ def test_make_illegal_move(agent, illegal_env):
     assert state[9][3] == ADVISOR_1
     assert state[8][2] == EMPTY
     assert reward == ILLEGAL_MOVE
-    assert done == False
+    assert done is False
