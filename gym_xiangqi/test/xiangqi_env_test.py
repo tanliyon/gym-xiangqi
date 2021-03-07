@@ -46,7 +46,7 @@ class TestXiangQiEnv(unittest.TestCase):
 
         for i in range(BOARD_ROWS):
             for j in range(BOARD_COLS):
-                self.assertEqual(obs[i][j], obs[i][j])
+                self.assertEqual(obs[i][j], new_obs[i][j])
         self.assertEqual(reward, ILLEGAL_MOVE)
         self.assertEqual(done, False)
 
