@@ -46,7 +46,8 @@ class Piece:
 
     def load_image(self, filename:str, color:int):
 
-        file_path = os.getcwd()
+        #file_path = os.getcwd()
+        file_path = ""
         sub_path = "/gym_xiangqi/images/black_pieces/" if color else "/gym_xiangqi/images/red_pieces/"
         file_path += sub_path
         target_file = file_path + filename
