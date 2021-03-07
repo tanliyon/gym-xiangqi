@@ -46,8 +46,7 @@ class Piece:
 
     def load_image(self, filename:str, color:int):
 
-        #file_path = os.getcwd() #works in local but causes path error on github 
-        file_path = "../" #path error fixed on github
+        file_path = os.getcwd()
         sub_path = "/gym_xiangqi/images/black_pieces/" if color else "/gym_xiangqi/images/red_pieces/"
         file_path += sub_path
         target_file = file_path + filename
