@@ -1,7 +1,7 @@
 import pygame
 from gym_xiangqi.constants import BLACK, RED
 from gym_xiangqi.board import Board
-from gym_xiangqi.piece import Piece, General, Advisor, Elephant
+from gym_xiangqi.piece import General, Advisor, Elephant
 from gym_xiangqi.piece import Horse, Chariot, Cannon, Soldier
 
 class XiangQiGame:
@@ -17,7 +17,7 @@ class XiangQiGame:
     def __init__(self):
         # PyGame components
         self.running = True
-        self.FPS = 60 #for frame control in loop
+        self.FPS = 60  #for frame control in loop
         self.winWidth = 521
         self.winHeight = 577
         self.boardWidth = 521
@@ -37,14 +37,14 @@ class XiangQiGame:
             pygame.HWSURFACE | pygame.DOUBLEBUF
         )
 
-        #set caption
+        # set caption
         self.screen = pygame.display.set_mode(self.dim)
         pygame.display.set_caption("AI Xiangqi(Chinese Chess) Game")
 
-        #init board
+        # init board
         self.board_background = self.init_board()
 
-        #init pieces
+        # init pieces
         self.b_pieces, self.r_pieces = self.init_pieces()
 
         return True
@@ -88,21 +88,21 @@ class XiangQiGame:
         #                 self.target_piece = None #reset target selection
         #                 self.agent_turn = False #turn switch
 
-    #get list of Piece objects and draw on board
+    # get list of Piece objects and draw on board
     def render(self, agent_pieces: list, enemy_piece: list):
         """
         Render current game state into graphics
         """
-        #draw board
+        # draw board
         self.screen.blit(self.board_background, (0, 0)) 
         
-        #update all cur positions of pieces 
-        #used separated loops because the number of pieces may differ
+        # update all cur positions of pieces 
+        # used separated loops because the number of pieces may differ
         for b_piece in self.b_pieces:
-           self.screen.blit(b_piece.image, b_piece.get_cur_coor) #black
+           self.screen.blit(b_piece.image, b_piece.get_cur_coor)  # black
            
         for r_piece in self.r_pieces:
-           self.screen.blit(r_piece.image, r_piece.get_cur_coor) #black
+           self.screen.blit(r_piece.image, r_piece.get_cur_coor)  # red
 
         pygame.display.update()
 
@@ -134,10 +134,9 @@ class XiangQiGame:
         
             self.render(self.r_pieces, self.b_pieces)
 
-
         self.cleanup()
 
-#-----------------------------temp init_pieces before link to envs--------------------------------------------#
+# -----------------------------temp init_pieces before link to envs-------------------------------------------- #
     def init_pieces(self):
 
         #example pieces for test
@@ -167,9 +166,9 @@ class XiangQiGame:
         b_pieces.append(b_chariot_1)
         b_chariot_2 = Chariot(BLACK, row=0, col=467)
         b_pieces.append(b_chariot_2)
-        b_elephant_1 = General(BLACK, row=0, col=347)
+        b_elephant_1 = Elephant(BLACK, row=0, col=347)
         b_pieces.append(b_elephant_1)
-        b_elephant_2 = General(BLACK, row=0, col=120)
+        b_elephant_2 = Elephant(BLACK, row=0, col=120)
         b_pieces.append(b_elephant_2)
         b_soldier_1 = Soldier(BLACK, row=230, col=0)
         b_pieces.append(b_soldier_1)
@@ -201,9 +200,9 @@ class XiangQiGame:
         r_pieces.append(r_chariot_1)
         r_chariot_2 = Chariot(RED, row=524, col=467)
         r_pieces.append(r_chariot_2)
-        r_elephant_1 = General(RED, row=524, col=347)
+        r_elephant_1 = Elephant(RED, row=524, col=347)
         r_pieces.append(r_elephant_1)
-        r_elephant_2 = General(RED, row=524, col=120)
+        r_elephant_2 = Elephant(RED, row=524, col=120)
         r_pieces.append(r_elephant_2)
         r_soldier_1 = Soldier(RED, row=295, col=0)
         r_pieces.append(r_soldier_1)
