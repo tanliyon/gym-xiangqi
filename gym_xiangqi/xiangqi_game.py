@@ -17,7 +17,7 @@ class XiangQiGame:
     def __init__(self):
         # PyGame components
         self.running = True
-        self.FPS = 60
+        self.FPS = 60 #for frame control in loop
         self.winWidth = 521
         self.winHeight = 577
         self.boardWidth = 521
@@ -137,7 +137,7 @@ class XiangQiGame:
 
         self.cleanup()
 
-
+#-----------------------------temp init_pieces before link to envs--------------------------------------------#
     def init_pieces(self):
 
         #example pieces for test
@@ -217,6 +217,8 @@ class XiangQiGame:
         r_pieces.append(r_soldier_5)
         
         return b_pieces, r_pieces
+
+#-------------------------------------end--------------------------------------------#
 
 if __name__ == "__main__":
     # initializing and running the game for manual testing

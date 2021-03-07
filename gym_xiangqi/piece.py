@@ -46,23 +46,24 @@ class Piece:
 
     def load_image(self, filename:str, color:int):
 
-        file_path = os.path.split(os.path.abspath(__file__))[0] 
-        sub_path = "/images/black_pieces/" if color else "/images/red_pieces/"
+        #file_path = os.path.split(os.path.abspath(__file__))[0]
+        file_path = os.getcwd()
+        sub_path = "/gym_xiangqi/images/black_pieces/" if color else "/gym_xiangqi/images/red_pieces/"
         file_path += sub_path
         target_file = file_path + filename
         try:
             image = pygame.image.load(target_file).convert()
-            #image = pygame.transform.scale(image, (self.piece_width, self.piece_height))
+            image = pygame.transform.scale(image, (self.piece_width, self.piece_height))
         except pygame.error:
             raise SystemExit('Image Load Failure: "%s" %s' %(target_file, pygame.get_error()))
         return image
 
     def set_basic_image(self, name:str, color:int):
-        filename = name + ".GIF"
+        filename = name + ".PNG"
         return self.load_image(filename, color)
 
     def set_selected_image(self, name:str, color:int):
-        filename = name + "_S.GIF"
+        filename = name + "_S.PNG"
         return self.load_image(filename, color)
 
     def set_dead(self):
@@ -421,3 +422,5 @@ class Soldier(Piece):
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
                          1, offset, 0, state, actions)
+
+
