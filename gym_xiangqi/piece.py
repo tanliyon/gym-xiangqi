@@ -8,8 +8,8 @@ from gym_xiangqi.constants import (
     RIVER_LOW, RIVER_HIGH,                              # river bound
     MAX_REP,                                            # repetition bound
     ALIVE, AGENT, ENEMY,                                # piece states
+    COOR_DELTA, COOR_OFFSET,                            # board coordinate
 )
-
 
 class Piece:
     """
@@ -45,6 +45,11 @@ class Piece:
 
     def set_dead(self):
         self.state = Piece.dead
+
+    def get_pygame_coor(self):
+        x = self.col*COOR_DELTA + COOR_OFFSET
+        y = self.row*COOR_DELTA + COOR_OFFSET
+        return (x, y)
 
     ##getters
     @property

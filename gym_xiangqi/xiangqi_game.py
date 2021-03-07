@@ -18,7 +18,7 @@ class XiangQiGame:
     def __init__(self):
         # PyGame components
         self.running = True
-        self.FPS = 60  #for frame control in loop
+        self.FPS = 30  #for frame control in loop
         self.winWidth = 521
         self.winHeight = 577
         self.boardWidth = 521
@@ -29,6 +29,7 @@ class XiangQiGame:
         self.display_surf = None
         self.agent_piece = None
         self.enemy_piece = None
+        self.cur_selected = None
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -98,7 +99,6 @@ class XiangQiGame:
 
     def on_update(self):
         pass
-
     # get list of Piece objects and draw on board
     def render(self):
         """
@@ -110,10 +110,15 @@ class XiangQiGame:
         # update all cur positions of pieces 
         # used separated loops because the number of pieces may differ
         for i in range(1, len(self.agent_piece)):
+            
+            if self.agent_piece[i].is_alive:
+                self.screen.blit(self.agent_piece[i].basic_image, self.agent_piece[i].get_pygame_coor())
+            if self.enemy_piece[i].is_alive:
+                self.screen.blit(self.enemy_piece[i].basic_image, self.enemy_piece[i].get_pygame_coor())
 
-            self.screen.blit(self.agent_piece[i].basic_image, self.agent_piece[i].get_cur_coor)
-            self.screen.blit(self.enemy_piece[i].basic_image, self.agent_piece[i].get_cur_coor)
-           
+        if self.cur_selected is not None and self.cur_selected.is_alive:
+            self.screen.blit(self.cur_selected.select_image, self.cur_selected.get_pygame_coor())
+
 
         pygame.display.update()
 
@@ -155,7 +160,7 @@ class XiangQiGame:
         file_path += sub_path
         target_file = file_path + filename
         try:
-            image = pygame.image.load(target_file).convert()
+            image = pygame.image.load(target_file).convert_alpha()
             image = pygame.transform.scale(image, (self.piece_width, self.piece_height))
         except pygame.error:
             raise SystemExit('Image Load Failure: "%s" %s' %(target_file, pygame.get_error()))

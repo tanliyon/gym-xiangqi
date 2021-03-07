@@ -17,7 +17,7 @@ class Board:
         target_file = file_path + "/images/board/BOARD.PNG"
         print(target_file)
         try:
-            image = pygame.image.load(target_file).convert()
+            image = pygame.image.load(target_file).convert_alpha()
         except pygame.error:
             raise SystemExit('Board Image Load Failure: "%s" %s' %(target_file, pygame.get_error()))
         return image
