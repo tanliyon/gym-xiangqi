@@ -1,11 +1,11 @@
-from gym_xiangqi.utils import move_to_action_space
+from gym_xiangqi.utils import move_to_action_space, is_agent
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
     BOARD_ROWS, BOARD_COLS,                             # board specs
-    PALACE_AGENT_ROW, PALACE_COL,                       # palace bound
-    RIVER_HIGH,                                         # river bound
+    PALACE_AGENT_ROW, PALACE_ENEMY_ROW, PALACE_COL,     # palace bound
+    RIVER_LOW, RIVER_HIGH,                              # river bound
     MAX_REP,                                            # repetition bound
-    ALIVE                                               # piece states
+    ALIVE, AGENT, ENEMY,                                # piece states
 )
 
 
@@ -41,14 +41,15 @@ class Piece:
         self.col = new_col
 
 
-def check_action(piece, orig_pos, cur_pos, repeat, offset, i, state, actions):
+def check_action(piece_id, orig_pos, cur_pos,
+                 repeat, offset, i, state, actions):
     """
     This is general searching procedure. Given the following parameters,
     repeatedly search in the same direction until either end of the board
     or another piece is blocking.
 
     Parameters:
-        piece (int): piece ID
+        piece_id (int): piece ID
         orig_pos (tuple(int)): original coordinate of the piece
         cur_pos (tuple(int)): current position in evaluation
         repeat (int): number of repetitions to perform this procedure
@@ -63,6 +64,12 @@ def check_action(piece, orig_pos, cur_pos, repeat, offset, i, state, actions):
     r = cur_pos[0]
     c = cur_pos[1]
 
+    if not is_agent(piece_id):
+        sign = ENEMY
+        piece_id *= ENEMY
+    else:
+        sign = AGENT
+
     for i in range(repeat):
         rb = 0 <= r < BOARD_ROWS
         cb = 0 <= c < BOARD_COLS
@@ -70,10 +77,10 @@ def check_action(piece, orig_pos, cur_pos, repeat, offset, i, state, actions):
         if not rb or not cb:
             return i
 
-        if state[r][c] > 0:
+        if state[r][c] * sign > 0:
             break
 
-        action_idx = move_to_action_space(piece, orig_pos, (r, c))
+        action_idx = move_to_action_space(piece_id, orig_pos, (r, c))
         actions[action_idx] = 1
 
         if state[r][c] != 0:
@@ -102,11 +109,18 @@ class General(Piece):
         """
         Finds legal moves for the General
         """
+        if not is_agent(piece_id):
+            low = PALACE_ENEMY_ROW[0]
+            high = PALACE_ENEMY_ROW[1]
+        else:
+            low = PALACE_AGENT_ROW[0]
+            high = PALACE_AGENT_ROW[1]
+
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
 
             # general must stay in the palace: row and column bound check
-            rb = PALACE_AGENT_ROW[0] <= next_pos[0] <= PALACE_AGENT_ROW[1]
+            rb = low <= next_pos[0] <= high
             cb = PALACE_COL[0] <= next_pos[1] <= PALACE_COL[1]
             if rb and cb:
                 check_action(piece_id, (self.row, self.col), next_pos,
@@ -129,12 +143,19 @@ class Advisor(Piece):
         """
         Finds legal moves for the Advisors
         """
+        if not is_agent(piece_id):
+            low = PALACE_ENEMY_ROW[0]
+            high = PALACE_ENEMY_ROW[1]
+        else:
+            low = PALACE_AGENT_ROW[0]
+            high = PALACE_AGENT_ROW[1]
+
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
 
-            # must stay in the special square
-            rb = PALACE_AGENT_ROW[0] <= next_pos[0] <= PALACE_AGENT_ROW[1]
-            cb = 3 <= next_pos[1] <= 5
+            # advisor must stay in the palace: row and column bound check
+            rb = low <= next_pos[0] <= high
+            cb = PALACE_COL[0] <= next_pos[1] <= PALACE_COL[1]
             if rb and cb:
                 check_action(piece_id, (self.row, self.col), next_pos,
                              1, offset, 0, state, actions)
@@ -158,11 +179,18 @@ class Elephant(Piece):
         """
         Finds legal moves for the Elephants
         """
+        if not is_agent(piece_id):
+            low = 0
+            high = RIVER_LOW
+        else:
+            low = RIVER_HIGH
+            high = BOARD_ROWS - 1
+
         for offset in ELEPHANT_MOVE:
             next_pos = (self.row + offset[0], self.col + offset[1])
 
             # bound check: must not cross the river
-            rb = RIVER_HIGH <= next_pos[0] < BOARD_ROWS
+            rb = low <= next_pos[0] <= high
             cb = 0 <= next_pos[1] < BOARD_COLS
             if not rb or not cb:
                 continue
@@ -262,6 +290,11 @@ class Cannon(Piece):
         """
         Find legal moves for the Cannons
         """
+        if not is_agent(piece_id):
+            sign = ENEMY
+        else:
+            sign = AGENT
+
         for offset in ORTHOGONAL:
             # moving positions
             next_pos = (self.row + offset[0], self.col + offset[1])
@@ -272,8 +305,8 @@ class Cannon(Piece):
             last_r = self.row + offset[0] * reps
             last_c = self.col + offset[1] * reps
 
-            if state[last_r][last_c] < 0:
-                action_idx = move_to_action_space(piece_id,
+            if state[last_r][last_c] * sign < 0:
+                action_idx = move_to_action_space(piece_id * sign,
                                                   (self.row, self.col),
                                                   (last_r, last_c))
                 actions[action_idx] = 0
@@ -289,11 +322,11 @@ class Cannon(Piece):
                 if not rb or not cb:
                     break
 
-                if state[next_r][next_c] > 0:
+                if state[next_r][next_c] * sign > 0:
                     break
-                elif state[next_r][next_c] < 0:
+                elif state[next_r][next_c] * sign < 0:
                     action_idx = move_to_action_space(
-                        piece_id, (self.row, self.col), (next_r, next_c)
+                        piece_id * sign, (self.row, self.col), (next_r, next_c)
                     )
                     actions[action_idx] = 1
                     break
@@ -320,10 +353,20 @@ class Soldier(Piece):
         """
         Find legal moves for the soldiers
         """
-        if self.row > 4:
-            moves = [0]
-        else:
-            moves = [0, 1, 3]
+        # ORTHOGONAL contains 4 moves in clock-wise [UP, RIGHT, DOWN, LEFT]
+        if not is_agent(piece_id):  # enemy side is always at the top half
+            low = RIVER_HIGH
+            high = BOARD_ROWS - 1
+            moves = [2]             # therefore enemy soldiers move downwards
+        else:                       # agent side is always at the bottom half
+            low = 0
+            high = RIVER_LOW
+            moves = [0]             # therefore agent soldiers move upwards
+
+        # low and high are set to be after-river row ranges
+        if low <= self.row <= high:     # After crossing the river,
+            moves.append(1)             # can move right
+            moves.append(3)             # can move left
 
         for i in moves:
             offset = ORTHOGONAL[i]

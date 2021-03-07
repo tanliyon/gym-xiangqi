@@ -3,8 +3,9 @@ This file contains all the constants used throughout
 the Xiangqi environment.
 """
 
-""" PIECE """
-PIECE_CNT = 16              # Total number of pieces in each side
+
+""" POINTS """
+ILLEGAL_MOVE = -10
 
 PIECE_POINTS = [
     0.,                     # EMPTY: No point for empty grid
@@ -16,6 +17,12 @@ PIECE_POINTS = [
     4.5, 4.5,               # CANNON: 4.5 points
     1., 1., 1., 1., 1.,     # SOLDIER: 1.0 point (2.0 after crossing river)
 ]
+
+""" PIECE """
+AGENT = 1
+ENEMY = -1
+
+PIECE_CNT = 16              # Total number of pieces in each side
 
 # Piece IDs
 EMPTY = 0
@@ -67,6 +74,6 @@ PALACE_COL = (3, 5)
 RIVER_LOW = 4
 RIVER_HIGH = 5
 
-# Other constants
+""" OTHER """
 MAX_REP = 9
 TOTAL_POS = BOARD_ROWS * BOARD_COLS

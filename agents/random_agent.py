@@ -1,6 +1,3 @@
-import random
-
-
 class RandomAgent:
     """
     This is the implementation of the simplest
@@ -15,9 +12,4 @@ class RandomAgent:
         """
         Make a random move based on the environment.
         """
-        actions = env.get_possible_actions()
-        # Return None if there are no valid actions.
-        if not actions:
-            return None
-        random_index = random.randint(0, len(actions)-1)
-        return actions[random_index]
+        return env.action_space.sample()

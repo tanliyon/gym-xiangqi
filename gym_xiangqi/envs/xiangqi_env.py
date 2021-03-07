@@ -3,13 +3,16 @@ from gym import spaces
 import numpy as np
 
 from gym_xiangqi.xiangqi_game import XiangQiGame
+from gym_xiangqi.utils import action_space_to_move, is_agent
 from gym_xiangqi.piece import (
     General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
 )
 from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     TOTAL_POS, PIECE_CNT,
-    RED, BLACK,
+    RED, BLACK, ALIVE, DEAD,
+    ILLEGAL_MOVE, PIECE_POINTS,
+    AGENT, ENEMY, EMPTY, GENERAL,
 )
 
 
@@ -92,8 +95,14 @@ class XiangQiEnv(gym.Env):
         self.agent_color = agent_color
         if agent_color == RED:
             self.enemy_color = BLACK
+            self.turn = AGENT
         else:
             self.enemy_color = RED
+            self.turn = ENEMY
+
+        # epoch termination flag
+        self._done = False
+        self.done_warn = False
 
         # observation space: 10 x 9 space with pieces encoded as integers
         self.observation_space = spaces.Box(
@@ -115,16 +124,81 @@ class XiangQiEnv(gym.Env):
         self.enemy_piece = [None for _ in range(PIECE_CNT + 1)]
         self.init_pieces()
 
-        # possible moves: binary list with same shape as action space
+        # possible moves: binary list with same shape of action space
         #                 valid action will be represented as 1 else 0
-        self.possible_actions = np.zeros((n, ))
-        self.get_possible_actions()
+        self.agent_actions = np.zeros((n, ))
+        self.enemy_actions = np.zeros((n, ))
+        self.get_possible_actions(self.turn)
 
         # initialize PyGame module
         self.game = XiangQiGame()
 
     def step(self, action):
-        return 0, 0, 0, 0
+        """
+        Run one time step of Xiangqi game: agent and enemy each plays a move
+
+        Parameter:
+            action (int): a valid action in Xiangqi action space
+        Return:
+            observation (object): current game state of the environment
+            reward (float) : amount of reward returned after given action
+            done (bool): whether the episode has ended, in which case further
+                         step() calls will return undefined results
+            info (dict): contains auxiliary diagnostic information (helpful for
+                         debugging, and sometimes learning)
+        """
+        error_msg = "%r (%s) invalid action" % (action, type(action))
+        assert self.action_space.contains(action), error_msg
+
+        if self._done:
+            if not self.done_warn:
+                self.done_warn = True
+                print(gym.utils.colorize(
+                    "WARN: Environment should be reset with call to reset() "
+                    "when the episode has terminated (i.e 'done == True')",
+                    "yellow"
+                ))
+            return np.array(self.state), 0, self._done, {}
+
+        reward = 0.0
+
+        if self.turn == AGENT:
+            pieces = self.agent_piece
+            possible_actions = self.agent_actions
+        else:
+            pieces = self.enemy_piece
+            possible_actions = self.enemy_actions
+
+        # if illegal move is given, penalize agent
+        if possible_actions[action] == 0:
+            return np.array(self.state), ILLEGAL_MOVE, False, {}
+
+        # if legal move is given, move the piece
+        piece, start, end = action_space_to_move(action)
+        pieces[piece].move(*end)
+
+        # update observation space
+        self.state[start[0]][start[1]] = EMPTY
+        rm_piece_id = self.state[end[0]][end[1]]
+        self.state[end[0]][end[1]] = piece * self.turn
+
+        if rm_piece_id < 0:
+            self.enemy_piece[-rm_piece_id].state = DEAD
+        elif rm_piece_id > 0:
+            self.agent_piece[rm_piece_id].state = DEAD
+
+        # reward based on removed piece
+        reward += PIECE_POINTS[abs(rm_piece_id)]
+
+        # if the General on either side has been attacked, end game
+        if abs(rm_piece_id) == GENERAL:
+            self._done = True
+
+        # self-play: agent switches turn between agent and enemy side
+        self.turn *= -1     # AGENT (1) -> ENEMY (-1) and vice versa
+        self.get_possible_actions(self.turn)
+
+        return np.array(self.state), reward, self._done, {}
 
     def reset(self):
         pass
@@ -139,7 +213,6 @@ class XiangQiEnv(gym.Env):
         """
         Method initializes and stores all ally and enemy pieces
         """
-        # initialize agent and enemy pieces
         for r in range(BOARD_ROWS):
             for c in range(BOARD_COLS):
                 piece_id = self.initial_board[r][c]
@@ -149,17 +222,32 @@ class XiangQiEnv(gym.Env):
                 elif piece_id > 0:
                     self.agent_piece[piece_id] = init(self.agent_color, r, c)
 
-    def get_possible_actions(self):
+    def get_possible_actions(self, player):
         """
         Searches all valid actions each piece can perform
+
+        Parameter:
+            player (int): -1 for enemy 1 for agent
         """
+        # current piece set changes depending on whose turn it is
+        if player == AGENT:
+            piece_set = self.agent_piece
+            possible_actions = self.agent_actions
+        else:
+            piece_set = self.enemy_piece
+            possible_actions = self.enemy_actions
+
         # Clear all possible actions to remove possible actions from
         # previous turn.
         # TODO: Don't clear the entire list, but only the relevant actions.
-        self.possible_actions.fill(0)
-        # skip first element which is piece id 0: empty space ID
-        for pid, piece_obj in enumerate(self.agent_piece[1:], 1):
-            piece_obj.get_actions(pid, self.state, self.possible_actions)
+        possible_actions.fill(0)
+
+        # get possible moves for every piece in the piece set
+        for pid, piece_obj in enumerate(piece_set[1:], 1):
+            if piece_obj.state == ALIVE:
+                piece_obj.get_actions(pid * self.turn,
+                                      self.state,
+                                      possible_actions)
 
     def get_possible_actions_by_piece(self, piece_id):
         """
@@ -171,7 +259,14 @@ class XiangQiEnv(gym.Env):
         return:
             actions that are can be taken by the piece.
         """
-        self.get_possible_actions()
+        if is_agent(piece_id):
+            self.get_possible_actions(AGENT)
+            possible_actions = self.agent_actions
+        else:
+            self.get_possible_actions(ENEMY)
+            possible_actions = self.enemy_actions
+
+        piece_id = abs(piece_id)
 
         # Calculate the starting and ending index of a piece
         # based on its piece id.
@@ -179,7 +274,7 @@ class XiangQiEnv(gym.Env):
         piece_action_id_end = piece_action_id_start + pow(TOTAL_POS, 2)
 
         # First filter to obtain only legal actions.
-        all_possible_actions = np.where(self.possible_actions == 1)[0]
+        all_possible_actions = np.where(possible_actions == 1)[0]
         # Second filter to limit the actions to only a piece done via
         # limiting the index.
         all_possible_actions = all_possible_actions[
