@@ -1,23 +1,18 @@
-import gym_xiangqi.piece
-import pygame
 import os
-#import envs.xianqi_env
+
+import pygame
 
 
 class Board:
     """
     A class for Xianqi Board
     """
-    
+
     def __init__(self):
-        self.board_background = self.load_board_image()
+        self.board_background = None
+        self.load_board_image()
 
     def load_board_image(self):
         file_path = os.path.split(os.path.abspath(__file__))[0]
-        target_file = file_path + "/images/board/BOARD.PNG"
-        print(target_file)
-        try:
-            image = pygame.image.load(target_file).convert_alpha()
-        except pygame.error:
-            raise SystemExit('Board Image Load Failure: "%s" %s' %(target_file, pygame.get_error()))
-        return image
+        target_file = file_path + "/images/board/BOARD.png"
+        self.board_background = pygame.image.load(target_file).convert_alpha()
