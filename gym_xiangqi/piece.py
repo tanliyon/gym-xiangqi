@@ -46,10 +46,10 @@ class Piece:
 
     def load_image(self, filename:str, color:int):
 
-        file_path = os.path.split(os.path.abspath(__file__))[0]
-        sub_path = "/images/black_pieces/" if color else "/images/red_pieces/"
-        file_path += sub_path
-        target_file = file_path + filename
+        #file_path = os.path.split(os.path.relpath(__file__))[0]
+        sub_path = "images/black_pieces/" if color else "images/red_pieces/"
+        #file_path += sub_path
+        target_file = sub_path + filename
         try:
             image = pygame.image.load(target_file).convert()
             image = pygame.transform.scale(image, (self.piece_width, self.piece_height))
