@@ -13,8 +13,9 @@ class Board:
         self.board_background = self.load_board_image()
 
     def load_board_image(self):
-        file_path = os.getcwd()
-        target_file = file_path + "/gym_xiangqi/images/board/BOARD.PNG"
+        file_path = os.path.split(os.path.abspath(__file__))[0]
+        target_file = file_path + "/images/board/BOARD.PNG"
+        print(target_file)
         try:
             image = pygame.image.load(target_file).convert()
         except pygame.error:
