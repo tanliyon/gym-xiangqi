@@ -28,7 +28,7 @@ class Piece:
     """
 
     def __init__(self, color, row, col):
-        self.color = color
+        self.color=color
         self.row = row
         self.col = col
         self.state = ALIVE
@@ -46,8 +46,9 @@ class Piece:
 
     def load_image(self, filename:str, color:int):
 
-        file_path = os.getcwd()
+        #file_path = os.getcwd()
         # file_path = ""
+        file_path = os.path.split(os.path.abspath(__file__))[0]
         sub_path = "/gym_xiangqi/images/black_pieces/" if color else "/gym_xiangqi/images/red_pieces/"
         file_path += sub_path
         target_file = file_path + filename
@@ -58,7 +59,7 @@ class Piece:
             raise SystemExit('Image Load Failure: "%s" %s' %(target_file, pygame.get_error()))
         return image
 
-    def set_basic_image(self, name:str, color:int):
+    def set_basic_image(self, name:str, color:int): 
         filename = name + ".PNG"
         return self.load_image(filename, color)
 
@@ -91,7 +92,7 @@ class Piece:
         return self.image
 
 def check_action(piece_id, orig_pos, cur_pos,
-                 repeat, offset, i, state, actions):
+                repeat, offset, i, state, actions):
     """
     This is general searching procedure. Given the following parameters,
     repeatedly search in the same direction until either end of the board
@@ -152,7 +153,7 @@ class General(Piece):
     def __init__(self, color, row, col):
         super(General, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
-        self.image = self.set_basic_image(name = "GEN", color = color)
+        self.image = self.set_basic_image(name="GEN", color=color)
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -186,7 +187,7 @@ class Advisor(Piece):
     def __init__(self, color, row, col):
         super(Advisor, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
-        self.image = self.set_basic_image(name = "ADV", color = color)
+        self.image = self.set_basic_image(name="ADV", color=color)
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -222,7 +223,7 @@ class Elephant(Piece):
     def __init__(self, color, row, col):
         super(Elephant, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
-        self.image = self.set_basic_image(name = "ELE", color = color)
+        self.image = self.set_basic_image(name="ELE", color=color)
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -266,7 +267,7 @@ class Horse(Piece):
     def __init__(self, color, row, col):
         super(Horse, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
-        self.image = self.set_basic_image(name = "HRS", color = color)
+        self.image = self.set_basic_image(name="HRS", color=color)
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -309,7 +310,7 @@ class Chariot(Piece):
     def __init__(self, color, row, col):
         super(Chariot, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
-        self.image = self.set_basic_image(name = "CHR", color = color)
+        self.image = self.set_basic_image(name="CHR", color=color)
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -333,7 +334,7 @@ class Cannon(Piece):
     def __init__(self, color, row, col):
         super(Cannon, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
-        self.image = self.set_basic_image(name = "CAN", color = color)
+        self.image = self.set_basic_image(name="CAN", color=color)
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -396,7 +397,7 @@ class Soldier(Piece):
     def __init__(self, color, row, col):
         super(Soldier, self).__init__(color, row, col)
         # TODO: add image for pygame rendering
-        self.image = self.set_basic_image(name = "SOL", color = color)
+        self.image = self.set_basic_image(name="SOL", color=color)
 
     def get_actions(self, piece_id, state, actions):
         """
