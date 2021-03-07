@@ -5,6 +5,10 @@ from gym_xiangqi.board import Board
 from gym_xiangqi.piece import General, Advisor, Elephant
 from gym_xiangqi.piece import Horse, Chariot, Cannon, Soldier
 
+
+import os
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+
 class XiangQiGame:
     """
     This class represents the Xiangqi game using PyGame.
