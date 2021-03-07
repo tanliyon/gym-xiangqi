@@ -132,6 +132,7 @@ class XiangQiEnv(gym.Env):
 
         # initialize PyGame module
         self.game = XiangQiGame()
+        self.game.on_init(self.agent_piece, self.enemy_piece)
 
     def step(self, action):
         """

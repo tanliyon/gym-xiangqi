@@ -1,4 +1,5 @@
 import pygame
+import os
 from gym_xiangqi.constants import BLACK, RED
 from gym_xiangqi.board import Board
 from gym_xiangqi.piece import General, Advisor, Elephant
@@ -22,10 +23,14 @@ class XiangQiGame:
         self.winHeight = 577
         self.boardWidth = 521
         self.boardHeight = 577
+        self.piece_width = 58
+        self.piece_height = 58
         self.dim = (self.winWidth, self.winHeight)
         self.display_surf = None
+        self.agent_piece = None
+        self.enemy_piece = None
 
-    def on_init(self):
+    def on_init(self, agent_piece, enemy_piece):
         """
         Initialize/start the game with PyGame
         ex. pygame.init()
@@ -44,8 +49,11 @@ class XiangQiGame:
         # init board
         self.board_background = self.init_board()
 
-        # init pieces
-        self.b_pieces, self.r_pieces = self.init_pieces()
+        # load piece images
+        self.load_piece_images(agent_piece)
+        self.load_piece_images(enemy_piece)
+        self.agent_piece = agent_piece
+        self.enemy_piece = enemy_piece
 
         return True
 
@@ -56,7 +64,7 @@ class XiangQiGame:
         board = pygame.transform.scale(board, (self.boardWidth, self.boardHeight))
 
         return board
-
+        
     def on_event(self, event):
         """
         This routine is triggered when some kind of user/game event is detected
@@ -88,8 +96,11 @@ class XiangQiGame:
         #                 self.target_piece = None #reset target selection
         #                 self.agent_turn = False #turn switch
 
+    def on_update(self):
+        pass
+
     # get list of Piece objects and draw on board
-    def render(self, agent_pieces: list, enemy_piece: list):
+    def render(self):
         """
         Render current game state into graphics
         """
@@ -98,11 +109,11 @@ class XiangQiGame:
         
         # update all cur positions of pieces 
         # used separated loops because the number of pieces may differ
-        for b_piece in self.b_pieces:
-           self.screen.blit(b_piece.image, b_piece.get_cur_coor)  # black
+        for i in range(1, len(self.agent_piece)):
+
+            self.screen.blit(self.agent_piece[i].basic_image, self.agent_piece[i].get_cur_coor)
+            self.screen.blit(self.enemy_piece[i].basic_image, self.agent_piece[i].get_cur_coor)
            
-        for r_piece in self.r_pieces:
-           self.screen.blit(r_piece.image, r_piece.get_cur_coor)  # red
 
         pygame.display.update()
 
@@ -122,7 +133,7 @@ class XiangQiGame:
         """
         Run the game until terminating condition is achieved
         """
-        if self.on_init():
+        if self.on_init(self.agent_piece, self.enemy_piece):
             clock = pygame.time.Clock()
             self.running = True
 
@@ -132,95 +143,66 @@ class XiangQiGame:
             for event in pygame.event.get():
                 self.on_event(event)
         
-            self.render(self.r_pieces, self.b_pieces)
+            self.render()
 
         self.cleanup()
 
 # -----------------------------temp init_pieces before link to envs-------------------------------------------- #
-    def init_pieces(self):
+    def load_image(self, filename:str, color:int):
 
-        #example pieces for test
-        #this will be replaced by the pieces from env
-        ###############
+        file_path = os.path.split(os.path.relpath(__file__))[0]
+        sub_path = "/images/black_pieces/" if color else "/images/red_pieces/"
+        file_path += sub_path
+        target_file = file_path + filename
+        try:
+            image = pygame.image.load(target_file).convert()
+            image = pygame.transform.scale(image, (self.piece_width, self.piece_height))
+        except pygame.error:
+            raise SystemExit('Image Load Failure: "%s" %s' %(target_file, pygame.get_error()))
+        return image
 
-        b_pieces = []
-        r_pieces = []
+    def set_basic_image(self, name:str, color:int): 
+        filename = name + ".PNG"
+        return self.load_image(filename, color)
 
-        #b_pieces = XiangQiEnv.agent
-        #init black pieces
-        b_general = General(BLACK, row=0, col=235)
-        b_pieces.append(b_general)
-        b_advisor_1 = Advisor(BLACK, row=0, col=175)
-        b_pieces.append(b_advisor_1)
-        b_advisor_2 = Advisor(BLACK, row=0, col=290)
-        b_pieces.append(b_advisor_2)
-        b_horse_1 = Horse(BLACK, row=0, col=60)
-        b_pieces.append(b_horse_1)
-        b_horse_2 = Horse(BLACK, row=0, col=405)
-        b_pieces.append(b_horse_2)
-        b_cannon_1 = Cannon(BLACK, row=115, col=60)
-        b_pieces.append(b_cannon_1)
-        b_cannon_2 = Cannon(BLACK, row=115, col=405)
-        b_pieces.append(b_cannon_2)
-        b_chariot_1 = Chariot(BLACK, row=0, col=0)
-        b_pieces.append(b_chariot_1)
-        b_chariot_2 = Chariot(BLACK, row=0, col=467)
-        b_pieces.append(b_chariot_2)
-        b_elephant_1 = Elephant(BLACK, row=0, col=347)
-        b_pieces.append(b_elephant_1)
-        b_elephant_2 = Elephant(BLACK, row=0, col=120)
-        b_pieces.append(b_elephant_2)
-        b_soldier_1 = Soldier(BLACK, row=230, col=0)
-        b_pieces.append(b_soldier_1)
-        b_soldier_2 = Soldier(BLACK, row=230, col=120)
-        b_pieces.append(b_soldier_2)
-        b_soldier_3 = Soldier(BLACK, row=230, col=235)
-        b_pieces.append(b_soldier_3)
-        b_soldier_4 = Soldier(BLACK, row=230, col=347)
-        b_pieces.append(b_soldier_4)
-        b_soldier_5 = Soldier(BLACK, row=230, col=467)
-        b_pieces.append(b_soldier_5)
+    def set_select_image(self, name:str, color:int):
+        filename = name + "_S.PNG"
+        return self.load_image(filename, color)
 
-        #init red piecs
-        r_general = General(RED, row=524, col=235)
-        r_pieces.append(r_general)
-        r_advisor_1 = Advisor(RED, row=524, col=175)
-        r_pieces.append(r_advisor_1)
-        r_advisor_2 = Advisor(RED, row=524, col=290)
-        r_pieces.append(r_advisor_2)
-        r_horse_1 = Horse(RED, row=524, col=60)
-        r_pieces.append(r_horse_1)
-        r_horse_2 = Horse(RED, row=524, col=405)
-        r_pieces.append(r_horse_2)
-        r_cannon_1 = Cannon(RED, row=400, col=60)
-        r_pieces.append(r_cannon_1)
-        r_cannon_2 = Cannon(RED, row=400, col=405)
-        r_pieces.append(r_cannon_2)
-        r_chariot_1 = Chariot(RED, row=524, col=0)
-        r_pieces.append(r_chariot_1)
-        r_chariot_2 = Chariot(RED, row=524, col=467)
-        r_pieces.append(r_chariot_2)
-        r_elephant_1 = Elephant(RED, row=524, col=347)
-        r_pieces.append(r_elephant_1)
-        r_elephant_2 = Elephant(RED, row=524, col=120)
-        r_pieces.append(r_elephant_2)
-        r_soldier_1 = Soldier(RED, row=295, col=0)
-        r_pieces.append(r_soldier_1)
-        r_soldier_2 = Soldier(RED, row=295, col=120)
-        r_pieces.append(r_soldier_2)
-        r_soldier_3 = Soldier(RED, row=295, col=235)
-        r_pieces.append(r_soldier_3)
-        r_soldier_4 = Soldier(RED, row=295, col=347)
-        r_pieces.append(r_soldier_4)
-        r_soldier_5 = Soldier(RED, row=295, col=467)
-        r_pieces.append(r_soldier_5)
+    def load_piece_images(self, pieces: list):
         
-        return b_pieces, r_pieces
+        for i in range(len(pieces)):
+            
+            if  isinstance(pieces[i], General):
+                pieces[i].basic_image = self.set_basic_image(name="GEN", color=pieces[i].color)
+                pieces[i].select_image = self.set_select_image(name="GEN", color=pieces[i].color)
+            elif isinstance(pieces[i], Advisor):
+                pieces[i].basic_image = self.set_basic_image(name="ADV", color=pieces[i].color)
+                pieces[i].select_image = self.set_select_image(name="ADV", color=pieces[i].color)
+            elif isinstance(pieces[i], Elephant):
+                pieces[i].basic_image = self.set_basic_image(name="ELE", color=pieces[i].color)
+                pieces[i].select_image = self.set_select_image(name="ELE", color=pieces[i].color)
+            elif isinstance(pieces[i], Horse):
+                pieces[i].basic_image = self.set_basic_image(name="HRS", color=pieces[i].color)
+                pieces[i].select_image = self.set_select_image(name="HRS", color=pieces[i].color)
+            elif isinstance(pieces[i], Chariot):
+                pieces[i].basic_image = self.set_basic_image(name="CHR", color=pieces[i].color)
+                pieces[i].select_image = self.set_select_image(name="CHR", color=pieces[i].color)
+            elif isinstance(pieces[i], Cannon):
+                pieces[i].basic_image = self.set_basic_image(name="CAN", color=pieces[i].color)
+                pieces[i].select_image = self.set_select_image(name="CAN", color=pieces[i].color)
+            elif isinstance(pieces[i], Soldier):
+                pieces[i].basic_image = self.set_basic_image(name="SOL", color=pieces[i].color)
+                pieces[i].select_image = self.set_select_image(name="SOL", color=pieces[i].color)
+
 
 #-------------------------------------end--------------------------------------------#
 
 if __name__ == "__main__":
     # initializing and running the game for manual testing
-    myGame = XiangQiGame()
-    myGame.on_init()
-    myGame.run()
+    from gym_xiangqi.envs import XiangQiEnv
+    env = XiangQiEnv()
+    env.game.run()
+    #myGame = XiangQiGame()
+    #myGame.on_init()
+    #myGame.run()
