@@ -1,5 +1,4 @@
 import pygame
-import os
 from gym_xiangqi.constants import BLACK, RED
 from gym_xiangqi.board import Board
 from gym_xiangqi.piece import General, Advisor, Elephant
@@ -7,7 +6,8 @@ from gym_xiangqi.piece import Horse, Chariot, Cannon, Soldier
 
 
 import os
-os.environ["SDL_VIDEODRIVER"] = "dummy"
+#os.environ["SDL_VIDEODRIVER"] = "dummy"
+os.environ['SDL_VIDEODRIVER']='windlib'
 
 class XiangQiGame:
     """
@@ -156,7 +156,6 @@ class XiangQiGame:
 
         self.cleanup()
 
-# -----------------------------temp init_pieces before link to envs-------------------------------------------- #
     def load_image(self, filename:str, color:int):
 
         file_path = os.path.split(os.path.relpath(__file__))[0]
@@ -203,9 +202,6 @@ class XiangQiGame:
             elif isinstance(pieces[i], Soldier):
                 pieces[i].basic_image = self.set_basic_image(name="SOL", color=pieces[i].color)
                 pieces[i].select_image = self.set_select_image(name="SOL", color=pieces[i].color)
-
-
-#-------------------------------------end--------------------------------------------#
 
 if __name__ == "__main__":
     # initializing and running the game for manual testing
