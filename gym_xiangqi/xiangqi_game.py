@@ -5,9 +5,6 @@ import pygame
 from gym_xiangqi.board import Board
 
 
-os.environ["SDL_VIDEODRIVER"] = "dummy"
-
-
 class XiangQiGame:
     """
     This class represents the Xiangqi game using PyGame.
