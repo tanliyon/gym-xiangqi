@@ -42,6 +42,14 @@ SOLDIER_2 = 13
 SOLDIER_3 = 14
 SOLDIER_4 = 15
 SOLDIER_5 = 16
+# TODO: Consolidate this list with the ID to
+# prevent problems with synchronization.
+PIECE_ID_TO_NAME = [
+    "EMPTY", "GENERAL", "ADVISOR_1", "ADVISOR_2",
+    "ELEPHANT_1", "ELEPHANT_2", "HORSE_1", "HORSE_2",
+    "CHARIOT_1", "CHARIOT_2", "CANNON_1", "CANNON_2",
+    "SOLDIER_1", "SOLDIER_2", "SOLDIER_3", "SOLDIER_4", "SOLDIER_5",
+]
 
 # Piece Movement Offsets
 ORTHOGONAL = [(-1, 0), (0, 1), (1, 0), (0, -1)]
