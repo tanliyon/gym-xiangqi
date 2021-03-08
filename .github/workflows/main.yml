@@ -35,7 +35,8 @@ jobs:
 
       # Set environment variable for running PyGame window on headless server
       - name: Set SDL_VIDEODRIVER to dummy for PyGame on headless servers
-        run: export SDL_VIDEODRIVER="dummy"
+        env:
+          SDL_VIDEODRIVER: dummy
 
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module and run demo.py
