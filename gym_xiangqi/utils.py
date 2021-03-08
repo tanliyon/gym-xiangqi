@@ -1,13 +1,4 @@
-from gym_xiangqi.constants import (
-    TOTAL_POS, EMPTY, GENERAL,
-    ADVISOR_1, ADVISOR_2,
-    ELEPHANT_1, ELEPHANT_2,
-    HORSE_1, HORSE_2,
-    CHARIOT_1, CHARIOT_2,
-    CANNON_1, CANNON_2,
-    SOLDIER_1, SOLDIER_2,
-    SOLDIER_3, SOLDIER_4, SOLDIER_5
-)
+from gym_xiangqi.constants import TOTAL_POS
 
 
 def move_to_action_space(piece_id, start, end):
