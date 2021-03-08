@@ -3,6 +3,7 @@ import random
 
 from gym_xiangqi.constants import AGENT
 
+
 class RandomAgent:
     """
     This is the implementation of the simplest
@@ -18,7 +19,7 @@ class RandomAgent:
         Make a random move based on the environment.
         """
         actions = (env.agent_actions if env.turn == AGENT
-            else env.enemy_actions)
+                   else env.enemy_actions)
         legal_moves = np.where(actions == 1)[0]
         ind = random.randint(0, len(legal_moves)-1)
         return legal_moves[ind]
