@@ -40,6 +40,8 @@ jobs:
           pip install -e .
           pip install -r requirements.txt
           python examples/demo.py
+        env:
+          SDL_VIDEODRIVER: dummy
 
       # Runs unit tests and coverage report. For now, set coverage to
       # fail if it's less than 25 percent. We will adjust this number higher
@@ -47,6 +49,8 @@ jobs:
       - name: Run unit tests and coverage report
         run: |
           python -m pytest --cov=agents/ --cov=gym_xiangqi/ --cov=examples/ --cov-fail-under=25
+        env:
+          SDL_VIDEODRIVER: dummy
 
       # Run latency test to get latency report.
       - name: Run latency test

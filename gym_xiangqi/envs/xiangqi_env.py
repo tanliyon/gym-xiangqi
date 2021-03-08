@@ -131,7 +131,7 @@ class XiangQiEnv(gym.Env):
         self.get_possible_actions(self.turn)
 
         # initialize PyGame module
-        self.game = XiangQiGame()
+        self.game = None
 
     def step(self, action):
         """
@@ -204,7 +204,10 @@ class XiangQiEnv(gym.Env):
         pass
 
     def render(self, mode='human'):
-        pass
+        if self.game is None:
+            self.game = XiangQiGame()
+            self.game.on_init(self.agent_piece, self.enemy_piece)
+        self.game.render()
 
     def close(self):
         pass

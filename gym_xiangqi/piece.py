@@ -1,3 +1,7 @@
+import os
+
+import pygame
+
 from gym_xiangqi.utils import move_to_action_space, is_agent
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
@@ -5,7 +9,8 @@ from gym_xiangqi.constants import (
     PALACE_AGENT_ROW, PALACE_ENEMY_ROW, PALACE_COL,     # palace bound
     RIVER_LOW, RIVER_HIGH,                              # river bound
     MAX_REP,                                            # repetition bound
-    ALIVE, AGENT, ENEMY,                                # piece states
+    BLACK, ALIVE, AGENT, ENEMY,                         # piece states
+    COOR_DELTA, COOR_OFFSET,                            # board coordinate
 )
 
 
@@ -30,7 +35,10 @@ class Piece:
         self.row = row
         self.col = col
         self.state = ALIVE
-        self.image = None
+        self.piece_width = 58
+        self.piece_height = 58
+        self.basic_image = None
+        self.select_image = None
 
     def move(self, new_row, new_col):
         """
@@ -39,6 +47,44 @@ class Piece:
         """
         self.row = new_row
         self.col = new_col
+
+    def get_pygame_coor(self):
+        x = self.col*COOR_DELTA + COOR_OFFSET
+        y = self.row*COOR_DELTA + COOR_OFFSET
+        return (x, y)
+
+    def load_image(self, filename: str):
+        file_path = os.path.split(os.path.relpath(__file__))[0]
+
+        if self.color == BLACK:
+            sub_path = "/images/black_pieces/"
+        else:
+            sub_path = "/images/red_pieces/"
+
+        file_path += sub_path
+        target_file = file_path + filename
+
+        image = pygame.image.load(target_file).convert_alpha()
+        image = pygame.transform.scale(
+            image, (self.piece_width, self.piece_height)
+        )
+        return image
+
+    def set_basic_image(self):
+        filename = self.name + ".png"
+        self.basic_image = self.load_image(filename)
+
+    def set_select_image(self):
+        filename = self.name + "_S.png"
+        self.select_image = self.load_image(filename)
+
+    def is_alive(self):
+        return self.state
+
+    # getters
+    @property
+    def coor(self):
+        return (self.col, self.row)
 
 
 def check_action(piece_id, orig_pos, cur_pos,
@@ -102,8 +148,7 @@ class General(Piece):
 
     def __init__(self, color, row, col):
         super(General, self).__init__(color, row, col)
-        # TODO: add image for pygame rendering
-        #  self.image =
+        self.name = "GEN"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -136,8 +181,7 @@ class Advisor(Piece):
 
     def __init__(self, color, row, col):
         super(Advisor, self).__init__(color, row, col)
-        # TODO: add image for pygame rendering
-        #  self.image =
+        self.name = "ADV"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -172,8 +216,7 @@ class Elephant(Piece):
 
     def __init__(self, color, row, col):
         super(Elephant, self).__init__(color, row, col)
-        # TODO: add image for pygame rendering
-        #  self.image =
+        self.name = "ELE"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -216,8 +259,7 @@ class Horse(Piece):
 
     def __init__(self, color, row, col):
         super(Horse, self).__init__(color, row, col)
-        # TODO: add image for pygame rendering
-        #  self.image =
+        self.name = "HRS"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -259,8 +301,7 @@ class Chariot(Piece):
 
     def __init__(self, color, row, col):
         super(Chariot, self).__init__(color, row, col)
-        # TODO: add image for pygame rendering
-        #  self.image =
+        self.name = "CHR"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -283,8 +324,7 @@ class Cannon(Piece):
 
     def __init__(self, color, row, col):
         super(Cannon, self).__init__(color, row, col)
-        # TODO: add image for pygame rendering
-        #  self.image =
+        self.name = "CAN"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -346,8 +386,7 @@ class Soldier(Piece):
 
     def __init__(self, color, row, col):
         super(Soldier, self).__init__(color, row, col)
-        # TODO: add image for pygame rendering
-        #  self.image =
+        self.name = "SOL"
 
     def get_actions(self, piece_id, state, actions):
         """

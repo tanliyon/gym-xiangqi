@@ -23,7 +23,7 @@ class TestXiangQiEnv(unittest.TestCase):
         self.assertEqual(self.env.agent_color, BLACK)
         self.assertEqual(self.env.enemy_color, RED)
 
-        self.assertIsNotNone(self.env.game)
+        self.assertIsNone(self.env.game)
         self.assertIsNotNone(self.env.state)
         self.assertIsNotNone(self.env.observation_space)
         self.assertIsNotNone(self.env.action_space)
