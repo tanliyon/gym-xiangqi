@@ -33,11 +33,6 @@ jobs:
         with:
             python-version: ${{ matrix.python-version }}
 
-      # Set environment variable for running PyGame window on headless server
-      - name: Set SDL_VIDEODRIVER to dummy for PyGame on headless servers
-        env:
-          SDL_VIDEODRIVER: dummy
-
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module and run demo.py
         run: |
@@ -45,6 +40,8 @@ jobs:
           pip install -e .
           pip install -r requirements.txt
           python examples/demo.py
+        env:
+          SDL_VIDEODRIVER: dummy
 
       # Runs unit tests and coverage report. For now, set coverage to
       # fail if it's less than 25 percent. We will adjust this number higher
@@ -52,6 +49,8 @@ jobs:
       - name: Run unit tests and coverage report
         run: |
           python -m pytest --cov=agents/ --cov=gym_xiangqi/ --cov=examples/ --cov-fail-under=25
+        env:
+          SDL_VIDEODRIVER: dummy
 
       # Run latency test to get latency report.
       - name: Run latency test
