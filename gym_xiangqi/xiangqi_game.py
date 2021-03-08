@@ -1,5 +1,3 @@
-import os
-
 import pygame
 
 from gym_xiangqi.board import Board
@@ -140,4 +138,5 @@ if __name__ == "__main__":
     # initializing and running the game for manual testing
     from gym_xiangqi.envs import XiangQiEnv
     env = XiangQiEnv()
+    env.render()
     env.game.run()
