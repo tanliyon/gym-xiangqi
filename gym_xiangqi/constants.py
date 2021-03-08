@@ -79,6 +79,6 @@ MAX_REP = 9
 TOTAL_POS = BOARD_ROWS * BOARD_COLS
 
 
-#table
+""" Coordinate Conversion """
 COOR_DELTA = 57
 COOR_OFFSET = 5
