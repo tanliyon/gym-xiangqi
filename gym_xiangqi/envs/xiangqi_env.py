@@ -114,6 +114,7 @@ class XiangQiEnv(gym.Env):
 
         # action space: encodes start and target position and specific piece
         n = pow(TOTAL_POS, 2) * PIECE_CNT
+        # TODO: Figure out if action_space is still needed.
         self.action_space = spaces.Discrete(n)
 
         # initial board state
