@@ -68,7 +68,16 @@ BLACK = 1
 DEAD = 0
 ALIVE = 1
 
+# Piece Size
+P_WIDTH = 58
+P_HEIGHT = 58
+
 """ BOARD """
+
+# Board Size
+B_WIDTH = 521
+B_HEIGHT = 577
+
 # Board Dimension
 BOARD_ROWS = 10
 BOARD_COLS = 9

@@ -1,7 +1,6 @@
 import pygame
-
 from gym_xiangqi.board import Board
-
+from math import sqrt
 
 class XiangQiGame:
     """
@@ -16,16 +15,15 @@ class XiangQiGame:
     def __init__(self):
         # PyGame components
         self.running = True
-        self.FPS = 30   # for frame control in loop
+        self.FPS = 20   # loop fps
         self.winWidth = 521
         self.winHeight = 577
-        self.boardWidth = 521
-        self.boardHeight = 577
         self.dim = (self.winWidth, self.winHeight)
         self.display_surf = None
         self.agent_piece = None
         self.enemy_piece = None
         self.cur_selected = None
+        self.agent_turn = True #!@
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -58,7 +56,7 @@ class XiangQiGame:
         # set board_background
         board = Board().board_background
         board = pygame.transform.scale(
-            board, (self.boardWidth, self.boardHeight)
+            board, (Board().boardWidth, Board().boardHeight)
         )
 
         return board
@@ -71,6 +69,29 @@ class XiangQiGame:
         """
         if event.type == pygame.QUIT:
             self.running = False
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+
+            if self.agent_turn:
+
+                is_left_clicked = pygame.mouse.get_pressed()[0] #clicked: 1 not_clicked: 0
+                
+                if is_left_clicked:
+
+                    clicked_x, clicked_y = pygame.mouse.get_pos()
+                    clicked_coor = (clicked_x, clicked_y)
+
+                    if self.find_target_piece(clicked_coor):
+                        
+                        #add to list
+                        print("piece name: ", self.cur_selected.name)
+                        print("clicked: ", clicked_coor)
+                        print("real_coor: ", self.cur_selected.get_pygame_coor())
+
+                    else:
+
+                        # convert pygame_coor to real_coor
+                        # send a list: [self.cur_selected, real_coor] back to env
 
     def on_update(self):
         pass
@@ -133,6 +154,27 @@ class XiangQiGame:
             pieces[i].set_basic_image()
             pieces[i].set_select_image()
 
+
+    def find_target_piece(self, clicked_coor):
+        
+        clicked_x = clicked_coor[0]
+        clicked_y = clicked_coor[1]
+        
+        for piece in self.agent_piece[1:]:
+            
+            piece_x = piece.get_pygame_coor()[0]
+            piece_y = piece.get_pygame_coor()[1]
+
+            valid_x = (piece_x - piece.piece_width/2) < clicked_x - 25 and (piece_x + piece.piece_width/2) > clicked_x - 25 
+            valid_y = (piece_y - piece.piece_height/2) < clicked_y - 25 and (piece_y + piece.piece_height/2) > clicked_y - 25
+
+            if valid_x and valid_y:
+
+                self.cur_selected = piece
+                return True
+        
+        self.cur_selected = None
+        return False
 
 if __name__ == "__main__":
     # initializing and running the game for manual testing
