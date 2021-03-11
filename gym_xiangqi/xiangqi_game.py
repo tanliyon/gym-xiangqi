@@ -1,6 +1,7 @@
 import pygame
 from gym_xiangqi.board import Board
 from math import sqrt
+from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD, ALIVE
 
 class XiangQiGame:
     """
@@ -89,9 +90,29 @@ class XiangQiGame:
                         print("real_coor: ", self.cur_selected.get_pygame_coor())
 
                     else:
-                        pass
-                        # convert pygame_coor to real_coor
-                        # send a list: [self.cur_selected, real_coor] back to env
+
+                        valid_move = True #temp
+                        real_clicked_coor = self.convert_coor(clicked_coor)
+
+                        if valid_move:
+
+                            enemy_piece_coor = [piece.coor for piece in self.enemy_piece]
+
+                            if real_clicked_coor in enemy_piece_coor:
+
+                                self.kill_piece(real_clicked_coor) 
+                                
+                            self.cur_selected.move(real_clicked_coor[1], real_clicked_coor[0])
+                        
+                        self.agent_turn = False
+                        self.cur_selected = None
+
+    def kill_piece(self, real_clicked_coor):
+
+        for enemy in self.enemy_piece:
+            if real_clicked_coor == enemy.coor and enemy.is_alive == ALIVE:
+                enemy.is_alive == DEAD
+                break
 
     def on_update(self):
         pass
@@ -155,6 +176,20 @@ class XiangQiGame:
             pieces[i].set_select_image()
 
 
+    def convert_coor(self, clicked_coor):
+        clicked_real_x = (clicked_coor[0] - COOR_OFFSET) / COOR_DELTA
+        clicked_real_y = (clicked_coor[1] - COOR_OFFSET) / COOR_DELTA
+
+        # agent_coors = [piece.coor() for piece in self.agent_piece[1:]]
+        # print(agent_coors)
+        # distance_from_click = [sqrt(pow(coor[0] - clicked_real_x, 2) + pow(coor[1] - clicked_real_y, 2)) for coor in agent_coors[1:]]
+
+        # real_x = agent_coors[distance_from_click.index(min(distance_from_click))][0]
+        # real_y = agent_coors[distance_from_click.index(min(distance_from_click))][1]
+
+        # return (real_x, real_y)
+        return clicked_real_x, clicked_real_y
+
     def find_target_piece(self, clicked_coor):
         
         clicked_x = clicked_coor[0]
@@ -173,7 +208,6 @@ class XiangQiGame:
                 self.cur_selected = piece
                 return True
         
-        self.cur_selected = None
         return False
 
 if __name__ == "__main__":
