@@ -11,7 +11,7 @@ from gym_xiangqi.constants import (
     MAX_REP,                                            # repetition bound
     BLACK, ALIVE, AGENT, ENEMY,                         # piece states
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
-    P_WIDTH, P_HEIGHT                                       # piece width and height
+    P_WIDTH, P_HEIGHT                                   # piece width and height
 )
 
 
