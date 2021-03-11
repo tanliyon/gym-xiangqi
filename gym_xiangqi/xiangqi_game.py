@@ -89,7 +89,7 @@ class XiangQiGame:
                         print("real_coor: ", self.cur_selected.get_pygame_coor())
 
                     else:
-
+                        pass
                         # convert pygame_coor to real_coor
                         # send a list: [self.cur_selected, real_coor] back to env
 
