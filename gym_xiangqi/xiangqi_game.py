@@ -188,8 +188,10 @@ class XiangQiGame:
             piece_x = piece.get_pygame_coor()[0]
             piece_y = piece.get_pygame_coor()[1]
 
-            valid_x = (piece_x - piece.piece_width/2) < clicked_x - 25 and (piece_x + piece.piece_width/2) > clicked_x - 25 
-            valid_y = (piece_y - piece.piece_height/2) < clicked_y - 25 and (piece_y + piece.piece_height/2) > clicked_y - 25
+            valid_x = (piece_x - piece.piece_width/2) < clicked_x - 25 \
+                and (piece_x + piece.piece_width/2) > clicked_x - 25 
+            valid_y = (piece_y - piece.piece_height/2) < clicked_y - 25 \
+                and (piece_y + piece.piece_height/2) > clicked_y - 25
 
             if valid_x and valid_y:
 
@@ -205,6 +207,7 @@ class XiangQiGame:
             if real_clicked_coor == enemy.coor and enemy.is_alive():
                 enemy.state = DEAD
                 break
+
 
 if __name__ == "__main__":
     # initializing and running the game for manual testing
