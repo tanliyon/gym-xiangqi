@@ -89,22 +89,22 @@ class XiangQiGame:
 
                     else:
 
-                        real_clicked_coor = self.click_to_real_coor(clicked_coor)
+                        real_clicked_coor = self.to_real_coor(clicked_coor)
                         is_valid_move = True  # set True for test
 
                         # need to get this validity from env
                         if is_valid_move and self.cur_selected is not None:
                             enemies = self.enemy_piece[1:]
-                            enemy_piece_coor = [piece.coor for piece in enemies]
+                            enemy_piece_coor=[piece.coor for piece in enemies]
 
                             # if the coor is occupied by an enemy, kill it
                             if real_clicked_coor in enemy_piece_coor:
                                 self.kill_piece(real_clicked_coor)
 
                             # fill the coordinate with the selected agent piece
-                            real_clicked_y = real_clicked_coor[1]
-                            real_clicked_x = real_clicked_coor[0]
-                            self.cur_selected.move(real_clicked_y, real_clicked_x)
+                            real_click_y = real_clicked_coor[1]
+                            real_click_x = real_clicked_coor[0]
+                            self.cur_selected.move(real_click_y, real_click_x)
 
                         # reset piece selection and end my turn
                         self.cur_selected = None
@@ -171,7 +171,7 @@ class XiangQiGame:
             pieces[i].set_basic_image()
             pieces[i].set_select_image()
 
-    def click_to_real_coor(self, clicked_coor):
+    def to_real_coor(self, clicked_coor):
         clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
         clicked_real_y = (clicked_coor[1] - COOR_OFFSET) // COOR_DELTA
 
