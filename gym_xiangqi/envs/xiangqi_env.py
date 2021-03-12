@@ -1,5 +1,6 @@
 import gym
 from gym import spaces
+from gym.utils import seeding
 import numpy as np
 
 from gym_xiangqi.xiangqi_game import XiangQiGame
@@ -222,6 +223,10 @@ class XiangQiEnv(gym.Env):
 
     def close(self):
         self.game.cleanup()
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
 
     def init_pieces(self):
         """
