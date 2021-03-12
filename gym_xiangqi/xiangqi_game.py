@@ -95,10 +95,10 @@ class XiangQiGame:
                         # need to get this validity from env
                         if is_valid_move and self.cur_selected is not None:
                             enemies = self.enemy_piece[1:]
-                            enemy_piece_coor=[piece.coor for piece in enemies]
+                            enemy_coors = [piece.coor for piece in enemies]
 
                             # if the coor is occupied by an enemy, kill it
-                            if real_clicked_coor in enemy_piece_coor:
+                            if real_clicked_coor in enemy_coors:
                                 self.kill_piece(real_clicked_coor)
 
                             # fill the coordinate with the selected agent piece
