@@ -270,7 +270,9 @@ class XiangQiGame:
         pygame.display.update()
 
     def kill_piece(self, real_clicked_coor):
-
+        '''
+        kill the enemy piece object in the given coordinate
+        '''
         for enemy in self.enemy_piece[1:]:
 
             if real_clicked_coor == enemy.coor and enemy.is_alive():
