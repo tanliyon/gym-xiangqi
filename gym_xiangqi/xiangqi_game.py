@@ -40,7 +40,7 @@ class XiangQiGame:
 
         # set caption
         self.screen = pygame.display.set_mode(self.dim)
-        pygame.display.set_caption("AI Xiangqi(Chinese Chess) Game")
+        pygame.display.set_caption("AI Xiangqi(Chinese Chess)")
 
         # init board
         self.board_background = self.init_board()
@@ -89,14 +89,18 @@ class XiangQiGame:
                         print("clicked: ", clicked_coor)
                         print("real_coor: ", self.cur_selected.get_pygame_coor())
 
+                    elif self.cur_selected == None:
+                        pass
+
                     else:
 
-                        valid_move = True #temp
-                        real_clicked_coor = self.convert_coor(clicked_coor)
+                        is_valid_move = True #temp
+                        real_clicked_coor = self.click_to_real_coor(clicked_coor)
 
-                        if valid_move:
+                        #need to get this validity from env
+                        if is_valid_move:
 
-                            enemy_piece_coor = [piece.coor for piece in self.enemy_piece]
+                            enemy_piece_coor = [piece.coor for piece in self.enemy_piece[1:]]
 
                             if real_clicked_coor in enemy_piece_coor:
 
@@ -104,15 +108,8 @@ class XiangQiGame:
                                 
                             self.cur_selected.move(real_clicked_coor[1], real_clicked_coor[0])
                         
-                        self.agent_turn = False
+                        #self.agent_turn = False
                         self.cur_selected = None
-
-    def kill_piece(self, real_clicked_coor):
-
-        for enemy in self.enemy_piece:
-            if real_clicked_coor == enemy.coor and enemy.is_alive == ALIVE:
-                enemy.is_alive == DEAD
-                break
 
     def on_update(self):
         pass
@@ -176,18 +173,12 @@ class XiangQiGame:
             pieces[i].set_select_image()
 
 
-    def convert_coor(self, clicked_coor):
-        clicked_real_x = (clicked_coor[0] - COOR_OFFSET) / COOR_DELTA
-        clicked_real_y = (clicked_coor[1] - COOR_OFFSET) / COOR_DELTA
+    def click_to_real_coor(self, clicked_coor):
+        clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
+        clicked_real_y = (clicked_coor[1] - COOR_OFFSET) // COOR_DELTA
+        #print("clicked_coor: ", (clicked_coor[0], clicked_coor[1]))
+        #print("clicked_real_coor: ", (clicked_real_x, clicked_real_y))
 
-        # agent_coors = [piece.coor() for piece in self.agent_piece[1:]]
-        # print(agent_coors)
-        # distance_from_click = [sqrt(pow(coor[0] - clicked_real_x, 2) + pow(coor[1] - clicked_real_y, 2)) for coor in agent_coors[1:]]
-
-        # real_x = agent_coors[distance_from_click.index(min(distance_from_click))][0]
-        # real_y = agent_coors[distance_from_click.index(min(distance_from_click))][1]
-
-        # return (real_x, real_y)
         return clicked_real_x, clicked_real_y
 
     def find_target_piece(self, clicked_coor):
@@ -209,6 +200,14 @@ class XiangQiGame:
                 return True
         
         return False
+
+    def kill_piece(self, real_clicked_coor):
+
+        for enemy in self.enemy_piece[1:]:
+
+            if real_clicked_coor == enemy.coor and enemy.is_alive():
+                enemy.state = DEAD
+                break
 
 if __name__ == "__main__":
     # initializing and running the game for manual testing
