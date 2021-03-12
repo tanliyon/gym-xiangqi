@@ -2,6 +2,7 @@ import pygame
 from gym_xiangqi.board import Board
 from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD
 
+
 class XiangQiGame:
     """
     This class represents the Xiangqi game using PyGame.
@@ -23,7 +24,7 @@ class XiangQiGame:
         self.agent_piece = None
         self.enemy_piece = None
         self.cur_selected = None
-        self.agent_turn = True # temp
+        self.agent_turn = True  # temp
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -74,15 +75,16 @@ class XiangQiGame:
 
             if self.agent_turn:
 
-                is_left_clicked = pygame.mouse.get_pressed()[0] #clicked: 1 not_clicked: 0
-                
+                # clicked: 1 not_clicked: 0
+                is_left_clicked = pygame.mouse.get_pressed()[0]
+
                 if is_left_clicked:
 
                     clicked_x, clicked_y = pygame.mouse.get_pos()
                     clicked_coor = (clicked_x, clicked_y)
 
                     if self.find_target_piece(clicked_coor):
-                        
+
                         pass
                         # print("---------------------------------")
                         # print("piece name: ", self.cur_selected.name)
@@ -92,11 +94,11 @@ class XiangQiGame:
 
                     else:
 
-                        
                         real_clicked_coor = self.click_to_real_coor(clicked_coor)
                         is_valid_move = True  # set True for test
-                        
-                        if is_valid_move and self.cur_selected is not None:  # need to get this validity from env
+
+                        # need to get this validity from env
+                        if is_valid_move and self.cur_selected is not None:  
                             enemy_piece_coor = [piece.coor for piece in self.enemy_piece[1:]]
 
                             # if the coordinate is occupied by an enemy object, kill it
