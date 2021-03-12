@@ -124,9 +124,9 @@ class XiangQiGame:
                         # self.agent_turn = False # commented for test
 
         # timer decrement every second
-        elif event.type == pygame.USEREVENT+1:
+        elif event.type == pygame.USEREVENT + 1:
+
             self.counter -= 1
-            self.counter_text = self.font.render(str(self.counter), True, (0, 0, 0))
 
             # timeout event
             if self.counter == 0:
@@ -187,7 +187,7 @@ class XiangQiGame:
                 self.on_event(event)
 
             self.render()
-        
+
         self.game_over()
         time.sleep(3)
         self.cleanup()
@@ -243,11 +243,9 @@ class XiangQiGame:
 
     def init_timer(self):
         '''
-        initialize the timer and make a text to be drawn
+        initialize the timer
         '''
-        self.timer_text = "timer: " + str(self.counter)
         self.font = pygame.font.SysFont(None, 40)
-        self.final_text = self.font.render(self.timer_text, True, (128, 128, 0))
         self.timer_event = pygame.USEREVENT + 1
         pygame.time.set_timer(self.timer_event, 1000)
 
@@ -255,10 +253,10 @@ class XiangQiGame:
         '''
         update the remaining time and blit
         '''
-        self.timer_text = "timer: " + str(self.counter)
-        self.final_text = self.font.render(self.timer_text, True, (128, 128, 0))
-        text_rect = self.final_text.get_rect(centerx = 665, bottom = 50)
-        self.screen.blit(self.final_text, text_rect)
+        timer_text = "timer: " + str(self.counter)
+        final_text = self.font.render(timer_text, True, (128, 128, 0))
+        text_rect = final_text.get_rect(centerx = 665, bottom = 50)
+        self.screen.blit(final_text, text_rect)
 
     def game_over(self):
         '''
