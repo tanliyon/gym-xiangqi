@@ -1,7 +1,6 @@
 import pygame
 from gym_xiangqi.board import Board
-from math import sqrt
-from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD, ALIVE
+from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD
 
 class XiangQiGame:
     """
@@ -24,7 +23,7 @@ class XiangQiGame:
         self.agent_piece = None
         self.enemy_piece = None
         self.cur_selected = None
-        self.agent_turn = True #!@
+        self.agent_turn = True # temp
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -96,25 +95,20 @@ class XiangQiGame:
                         
                         real_clicked_coor = self.click_to_real_coor(clicked_coor)
                         is_valid_move = True # set True for test
-
-                        if self.cur_selected == None:
-                            pass
                         
-                        elif is_valid_move: #need to get this validity from env
-
+                        if is_valid_move and self.cur_selected != None: # need to get this validity from env
                             enemy_piece_coor = [piece.coor for piece in self.enemy_piece[1:]]
 
-                            #if the coordinate is occupied by an enemy object, kill it
+                            # if the coordinate is occupied by an enemy object, kill it
                             if real_clicked_coor in enemy_piece_coor:
-
                                 self.kill_piece(real_clicked_coor) 
                             
-                            #fill the coordinate with the selected agent piece
+                            # fill the coordinate with the selected agent piece
                             self.cur_selected.move(real_clicked_coor[1], real_clicked_coor[0])
                         
                         # reset piece selection and end my turn
                         self.cur_selected = None
-                        #self.agent_turn = False # commented for test
+                        # self.agent_turn = False # commented for test
 
     def on_update(self):
         pass
