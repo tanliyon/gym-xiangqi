@@ -118,9 +118,9 @@ class XiangQiGame:
                             real_click_x = real_clicked_coor[0]
                             self.cur_selected.move(real_click_y, real_click_x)
 
+                            self.counter = 10
                         # reset piece selection and end my turn
                         self.cur_selected = None
-                        self.counter = 10
                         # self.agent_turn = False # commented for test
 
         # timer decrement every second
@@ -263,10 +263,10 @@ class XiangQiGame:
         writes the "game over" message on screen center
         '''
         game_over = "GAME OVER"
-        self.font = pygame.font.SysFont(None, 100)
-        game_over_text = self.font.render(game_over, True, (128, 250, 128))
-        text_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
-        self.screen.blit(game_over_text, text_rect)
+        font = pygame.font.SysFont(None, 100)
+        game_over_text = font.render(game_over, True, (128, 250, 128))
+        t_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
+        self.screen.blit(game_over_text, t_rect)
         pygame.display.update()
 
     def kill_piece(self, real_clicked_coor):
