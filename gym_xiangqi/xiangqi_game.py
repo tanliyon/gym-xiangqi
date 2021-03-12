@@ -1,7 +1,7 @@
 import pygame
 from gym_xiangqi.board import Board
 from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD
-
+import time
 
 class XiangQiGame:
     """
@@ -17,7 +17,7 @@ class XiangQiGame:
         # PyGame components
         self.running = True
         self.FPS = 20   # loop fps
-        self.winWidth = 521
+        self.winWidth = 800
         self.winHeight = 577
         self.dim = (self.winWidth, self.winHeight)
         self.display_surf = None
@@ -25,6 +25,7 @@ class XiangQiGame:
         self.enemy_piece = None
         self.cur_selected = None
         self.agent_turn = True  # temp
+        self.counter = 10
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -37,6 +38,11 @@ class XiangQiGame:
             self.dim,
             pygame.HWSURFACE | pygame.DOUBLEBUF
         )
+        # draw screen background in white
+        self.display_surf.fill((250, 250, 250))
+
+        # init timer
+        self.init_timer()
 
         # set caption
         self.screen = pygame.display.set_mode(self.dim)
@@ -54,6 +60,9 @@ class XiangQiGame:
         return True
 
     def init_board(self):
+        '''
+        Initializes Board() and load the board image
+        '''
         # set board_background
         board = Board().board_background
         board = pygame.transform.scale(
@@ -79,16 +88,18 @@ class XiangQiGame:
                 is_left_clicked = pygame.mouse.get_pressed()[0]
 
                 if is_left_clicked:
-
+                    
+                    # get clicked coordinate
                     clicked_x, clicked_y = pygame.mouse.get_pos()
                     clicked_coor = (clicked_x, clicked_y)
 
+                    # if piece is clicked, select it
                     if self.find_target_piece(clicked_coor):
 
                         pass
-
+                    
                     else:
-
+                        # convert to real coordinate
                         real_clicked_coor = self.to_real_coor(clicked_coor)
                         is_valid_move = True  # set True for test
 
@@ -108,7 +119,17 @@ class XiangQiGame:
 
                         # reset piece selection and end my turn
                         self.cur_selected = None
+                        self.counter = 10
                         # self.agent_turn = False # commented for test
+        
+        # timer decrement every second
+        elif event.type == pygame.USEREVENT+1:
+            self.counter -= 1
+            self.counter_text = self.font.render(str(self.counter), True, (0, 0, 0))
+
+            # timeout event
+            if self.counter == 0:
+                self.running = False
 
     def on_update(self):
         pass
@@ -117,7 +138,9 @@ class XiangQiGame:
         """
         Render current game state into graphics
         """
-        # draw board
+        # draw white, board, timer, and pieces consecutively
+        self.screen.fill((250, 250, 250))
+        self.update_timer()
         self.screen.blit(self.board_background, (0, 0))
 
         # update all cur positions of pieces
@@ -163,25 +186,38 @@ class XiangQiGame:
                 self.on_event(event)
 
             self.render()
-
+        
+        self.game_over()
+        time.sleep(3)
         self.cleanup()
 
     def load_piece_images(self, pieces: list):
+        '''
+        load the image files to the corresponding piece objects
+        '''
         for i in range(1, len(pieces)):
             pieces[i].set_basic_image()
             pieces[i].set_select_image()
 
     def to_real_coor(self, clicked_coor):
+        '''
+        convert clicked coordinate to real coordinate
+        '''
         clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
         clicked_real_y = (clicked_coor[1] - COOR_OFFSET) // COOR_DELTA
 
         return clicked_real_x, clicked_real_y
 
     def find_target_piece(self, clicked_coor):
+        '''
+        search for the currently selected piece object
+        if the object is found, return True
+        if not, return False
+        '''
+        # get clicked coordinate
+        piece_x, piece_y = piece.get_pygame_coor()
 
-        clicked_x = clicked_coor[0]
-        clicked_y = clicked_coor[1]
-
+        # find the piece where the clicked coord is within its range
         for piece in self.agent_piece[1:]:
 
             piece_x = piece.get_pygame_coor()[0]
@@ -197,12 +233,42 @@ class XiangQiGame:
 
             valid_y = y_min < clicked_y and clicked_y < y_max
 
+            # if the clicked coord is within the piece range, select it
             if valid_x and valid_y:
 
                 self.cur_selected = piece
                 return True
 
         return False
+
+    def init_timer(self):
+        '''
+        initialize the timer and make a text to be drawn
+        '''
+        self.timer_name = "timer: "
+        self.font = pygame.font.SysFont(None, 40)
+        self.counter_text = self.font.render(self.timer_name + str(self.counter), True, (128, 128, 0))
+        self.timer_event = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.timer_event, 1000)
+
+    def update_timer(self):
+        '''
+        update the remaining time and blit
+        '''
+        self.counter_text = self.font.render(self.timer_name + str(self.counter), True, (128, 128, 0))
+        text_rect = self.counter_text.get_rect(centerx = 665, bottom = 50)
+        self.screen.blit(self.counter_text, text_rect)
+
+    def game_over(self):
+        '''
+        writes the "game over" message on screen center
+        '''
+        game_over = "GAME OVER"
+        self.font = pygame.font.SysFont(None, 100)
+        game_over_text = self.font.render(game_over, True, (128, 250, 128))
+        text_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
+        self.screen.blit(game_over_text, text_rect)
+        pygame.display.update()
 
     def kill_piece(self, real_clicked_coor):
 
