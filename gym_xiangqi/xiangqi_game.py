@@ -3,6 +3,7 @@ from gym_xiangqi.board import Board
 from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD
 import time
 
+
 class XiangQiGame:
     """
     This class represents the Xiangqi game using PyGame.
@@ -88,7 +89,7 @@ class XiangQiGame:
                 is_left_clicked = pygame.mouse.get_pressed()[0]
 
                 if is_left_clicked:
-                    
+
                     # get clicked coordinate
                     clicked_x, clicked_y = pygame.mouse.get_pos()
                     clicked_coor = (clicked_x, clicked_y)
@@ -97,7 +98,7 @@ class XiangQiGame:
                     if self.find_target_piece(clicked_coor):
 
                         pass
-                    
+
                     else:
                         # convert to real coordinate
                         real_clicked_coor = self.to_real_coor(clicked_coor)
@@ -121,7 +122,7 @@ class XiangQiGame:
                         self.cur_selected = None
                         self.counter = 10
                         # self.agent_turn = False # commented for test
-        
+
         # timer decrement every second
         elif event.type == pygame.USEREVENT+1:
             self.counter -= 1
@@ -215,13 +216,12 @@ class XiangQiGame:
         if not, return False
         '''
         # get clicked coordinate
-        piece_x, piece_y = piece.get_pygame_coor()
+        clicked_x, clicked_y = clicked_coor
 
         # find the piece where the clicked coord is within its range
         for piece in self.agent_piece[1:]:
 
-            piece_x = piece.get_pygame_coor()[0]
-            piece_y = piece.get_pygame_coor()[1]
+            piece_x, piece_y = piece.get_pygame_coor()
 
             x_min = piece_x - piece.piece_width/2 + 25
             x_max = piece_x + piece.piece_width/2 + 25
@@ -245,9 +245,9 @@ class XiangQiGame:
         '''
         initialize the timer and make a text to be drawn
         '''
-        self.timer_name = "timer: "
+        self.timer_text = "timer: " + str(self.counter)
         self.font = pygame.font.SysFont(None, 40)
-        self.counter_text = self.font.render(self.timer_name + str(self.counter), True, (128, 128, 0))
+        self.final_text = self.font.render(self.timer_text, True, (128, 128, 0))
         self.timer_event = pygame.USEREVENT + 1
         pygame.time.set_timer(self.timer_event, 1000)
 
@@ -255,9 +255,10 @@ class XiangQiGame:
         '''
         update the remaining time and blit
         '''
-        self.counter_text = self.font.render(self.timer_name + str(self.counter), True, (128, 128, 0))
-        text_rect = self.counter_text.get_rect(centerx = 665, bottom = 50)
-        self.screen.blit(self.counter_text, text_rect)
+        self.timer_text = "timer: " + str(self.counter)
+        self.final_text = self.font.render(self.timer_text, True, (128, 128, 0))
+        text_rect = self.final_text.get_rect(centerx = 665, bottom = 50)
+        self.screen.blit(self.final_text, text_rect)
 
     def game_over(self):
         '''
@@ -266,7 +267,7 @@ class XiangQiGame:
         game_over = "GAME OVER"
         self.font = pygame.font.SysFont(None, 100)
         game_over_text = self.font.render(game_over, True, (128, 250, 128))
-        text_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
+        text_rect = game_over_text.get_rect(center = self.screen.get_rect().center)
         self.screen.blit(game_over_text, text_rect)
         pygame.display.update()
 
