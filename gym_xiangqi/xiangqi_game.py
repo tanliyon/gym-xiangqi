@@ -39,8 +39,6 @@ class XiangQiGame:
             self.dim,
             pygame.HWSURFACE | pygame.DOUBLEBUF
         )
-        # draw screen background in white
-        self.display_surf.fill((250, 250, 250))
 
         # init timer
         self.init_timer()
@@ -118,7 +116,9 @@ class XiangQiGame:
                             real_click_x = real_clicked_coor[0]
                             self.cur_selected.move(real_click_y, real_click_x)
 
+                            #reset counter after agent turn is over
                             self.counter = 10
+
                         # reset piece selection and end my turn
                         self.cur_selected = None
                         # self.agent_turn = False # commented for test
@@ -139,13 +139,12 @@ class XiangQiGame:
         """
         Render current game state into graphics
         """
-        # draw white, board, timer, and pieces consecutively
+        # draw white background, board, timer, and pieces consecutively
         self.screen.fill((250, 250, 250))
         self.update_timer()
         self.screen.blit(self.board_background, (0, 0))
 
         # update all cur positions of pieces
-        # used separated loops because the number of pieces may differ
         for i in range(1, len(self.agent_piece)):
             if self.agent_piece[i].is_alive():
                 self.screen.blit(self.agent_piece[i].basic_image,
@@ -154,10 +153,12 @@ class XiangQiGame:
                 self.screen.blit(self.enemy_piece[i].basic_image,
                                  self.enemy_piece[i].get_pygame_coor())
 
+        # if a piece is selected and alive, load select_image instead
         if self.cur_selected is not None and self.cur_selected.is_alive():
             self.screen.blit(self.cur_selected.select_image,
                              self.cur_selected.get_pygame_coor())
 
+        # draw all on screen
         pygame.display.update()
 
     def cleanup(self):
@@ -259,7 +260,7 @@ class XiangQiGame:
 
     def game_over(self):
         '''
-        writes the "game over" message on screen, and wait for 3 seconds
+        write the "game over" message on screen and wait for 3 seconds
         '''
         game_over = "GAME OVER"
         font = pygame.font.SysFont(None, 100)
