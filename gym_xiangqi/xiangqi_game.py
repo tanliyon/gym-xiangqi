@@ -189,7 +189,6 @@ class XiangQiGame:
             self.render()
 
         self.game_over()
-        time.sleep(3)
         self.cleanup()
 
     def load_piece_images(self, pieces: list):
@@ -260,7 +259,7 @@ class XiangQiGame:
 
     def game_over(self):
         '''
-        writes the "game over" message on screen center
+        writes the "game over" message on screen, and wait for 3 seconds
         '''
         game_over = "GAME OVER"
         font = pygame.font.SysFont(None, 100)
@@ -268,6 +267,7 @@ class XiangQiGame:
         t_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(game_over_text, t_rect)
         pygame.display.update()
+        time.sleep(3)
 
     def kill_piece(self, real_clicked_coor):
         '''
