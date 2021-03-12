@@ -221,7 +221,7 @@ class XiangQiEnv(gym.Env):
         self.game.render()
 
     def close(self):
-        pass
+        self.game.cleanup()
 
     def init_pieces(self):
         """
