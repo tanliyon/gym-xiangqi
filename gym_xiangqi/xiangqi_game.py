@@ -255,7 +255,7 @@ class XiangQiGame:
         '''
         timer_text = "timer: " + str(self.counter)
         final_text = self.font.render(timer_text, True, (128, 128, 0))
-        text_rect = final_text.get_rect(centerx = 665, bottom = 50)
+        text_rect = final_text.get_rect(centerx=665, bottom=50)
         self.screen.blit(final_text, text_rect)
 
     def game_over(self):
@@ -265,7 +265,7 @@ class XiangQiGame:
         game_over = "GAME OVER"
         self.font = pygame.font.SysFont(None, 100)
         game_over_text = self.font.render(game_over, True, (128, 250, 128))
-        text_rect = game_over_text.get_rect(center = self.screen.get_rect().center)
+        text_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(game_over_text, text_rect)
         pygame.display.update()
 
