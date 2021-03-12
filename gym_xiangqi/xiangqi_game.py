@@ -86,11 +86,6 @@ class XiangQiGame:
                     if self.find_target_piece(clicked_coor):
 
                         pass
-                        # print("---------------------------------")
-                        # print("piece name: ", self.cur_selected.name)
-                        # print("clicked: ", clicked_coor)
-                        # print("real_coor: ", self.cur_selected.get_pygame_coor())
-                        # print("---------------------------------")
 
                     else:
 
@@ -98,16 +93,19 @@ class XiangQiGame:
                         is_valid_move = True  # set True for test
 
                         # need to get this validity from env
-                        if is_valid_move and self.cur_selected is not None:  
-                            enemy_piece_coor = [piece.coor for piece in self.enemy_piece[1:]]
+                        if is_valid_move and self.cur_selected is not None:
+                            enemies = self.enemy_piece[1:]
+                            enemy_piece_coor = [piece.coor for piece in enemies]
 
-                            # if the coordinate is occupied by an enemy object, kill it
+                            # if the coor is occupied by an enemy, kill it
                             if real_clicked_coor in enemy_piece_coor:
-                                self.kill_piece(real_clicked_coor) 
-                            
+                                self.kill_piece(real_clicked_coor)
+
                             # fill the coordinate with the selected agent piece
-                            self.cur_selected.move(real_clicked_coor[1], real_clicked_coor[0])
-                        
+                            real_clicked_y = real_clicked_coor[1]
+                            real_clicked_x = real_clicked_coor[0]
+                            self.cur_selected.move(real_clicked_y, real_clicked_x)
+
                         # reset piece selection and end my turn
                         self.cur_selected = None
                         # self.agent_turn = False # commented for test
@@ -180,19 +178,19 @@ class XiangQiGame:
         return clicked_real_x, clicked_real_y
 
     def find_target_piece(self, clicked_coor):
-    
+
         clicked_x = clicked_coor[0]
         clicked_y = clicked_coor[1]
 
         for piece in self.agent_piece[1:]:
-  
+
             piece_x = piece.get_pygame_coor()[0]
             piece_y = piece.get_pygame_coor()[1]
 
             x_min = piece_x - piece.piece_width/2 + 25
             x_max = piece_x + piece.piece_width/2 + 25
 
-            valid_x = x_min < clicked_x and  clicked_x < x_max 
+            valid_x = x_min < clicked_x and clicked_x < x_max
 
             y_min = piece_y - piece.piece_height/2 + 25
             y_max = piece_y + piece.piece_height/2 + 25
