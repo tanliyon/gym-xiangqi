@@ -95,10 +95,8 @@ class XiangQiEnv(gym.Env):
         self.agent_color = agent_color
         if agent_color == RED:
             self.enemy_color = BLACK
-            self.turn = AGENT
         else:
             self.enemy_color = RED
-            self.turn = ENEMY
 
         # epoch termination flag
         self._done = False
@@ -118,21 +116,22 @@ class XiangQiEnv(gym.Env):
         self.action_space = spaces.Discrete(n)
 
         # initial board state
-        self.state = np.array(self.initial_board)
+        self.state = None
 
         # instantiate piece objects
         self.agent_piece = [None for _ in range(PIECE_CNT + 1)]
         self.enemy_piece = [None for _ in range(PIECE_CNT + 1)]
-        self.init_pieces()
 
         # possible moves: binary list with same shape of action space
         #                 valid action will be represented as 1 else 0
         self.agent_actions = np.zeros((n, ))
         self.enemy_actions = np.zeros((n, ))
-        self.get_possible_actions(self.turn)
 
         # initialize PyGame module
         self.game = None
+
+        # reset all environment components to initial state
+        self.reset()
 
     def step(self, action):
         """
@@ -202,7 +201,18 @@ class XiangQiEnv(gym.Env):
         return np.array(self.state), reward, self._done, {}
 
     def reset(self):
-        pass
+        """
+        Reset all environment components to initial state
+        """
+        self.state = np.array(self.initial_board)
+        self.init_pieces()
+
+        if self.agent_color == RED:
+            self.turn = AGENT
+        else:
+            self.turn = ENEMY
+
+        self.get_possible_actions(self.turn)
 
     def render(self, mode='human'):
         if self.game is None:
