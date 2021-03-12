@@ -94,9 +94,9 @@ class XiangQiGame:
 
                         
                         real_clicked_coor = self.click_to_real_coor(clicked_coor)
-                        is_valid_move = True # set True for test
+                        is_valid_move = True  # set True for test
                         
-                        if is_valid_move and self.cur_selected != None: # need to get this validity from env
+                        if is_valid_move and self.cur_selected is not None:  # need to get this validity from env
                             enemy_piece_coor = [piece.coor for piece in self.enemy_piece[1:]]
 
                             # if the coordinate is occupied by an enemy object, kill it
@@ -171,7 +171,6 @@ class XiangQiGame:
             pieces[i].set_basic_image()
             pieces[i].set_select_image()
 
-
     def click_to_real_coor(self, clicked_coor):
         clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
         clicked_real_y = (clicked_coor[1] - COOR_OFFSET) // COOR_DELTA
@@ -179,25 +178,30 @@ class XiangQiGame:
         return clicked_real_x, clicked_real_y
 
     def find_target_piece(self, clicked_coor):
-        
+    
         clicked_x = clicked_coor[0]
         clicked_y = clicked_coor[1]
-        
+
         for piece in self.agent_piece[1:]:
-            
+  
             piece_x = piece.get_pygame_coor()[0]
             piece_y = piece.get_pygame_coor()[1]
 
-            valid_x = (piece_x - piece.piece_width/2) < clicked_x - 25 \
-                and (piece_x + piece.piece_width/2) > clicked_x - 25 
-            valid_y = (piece_y - piece.piece_height/2) < clicked_y - 25 \
-                and (piece_y + piece.piece_height/2) > clicked_y - 25
+            x_min = piece_x - piece.piece_width/2 + 25
+            x_max = piece_x + piece.piece_width/2 + 25
+
+            valid_x = x_min < clicked_x and  clicked_x < x_max 
+
+            y_min = piece_y - piece.piece_height/2 + 25
+            y_max = piece_y + piece.piece_height/2 + 25
+
+            valid_y = y_min < clicked_y and clicked_y < y_max
 
             if valid_x and valid_y:
 
                 self.cur_selected = piece
                 return True
-        
+
         return False
 
     def kill_piece(self, real_clicked_coor):
