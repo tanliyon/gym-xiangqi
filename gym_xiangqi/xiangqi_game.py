@@ -223,7 +223,6 @@ class XiangQiGame:
 
         # find the piece where the clicked coord is within its range
         for piece in self.agent_piece[1:]:
-
             piece_x, piece_y = piece.get_pygame_coor()
 
             x_min = piece_x - piece.piece_width/2 + 25
@@ -238,7 +237,6 @@ class XiangQiGame:
 
             # if the clicked coord is within the piece range, select it
             if valid_x and valid_y:
-
                 self.cur_selected = piece
                 return True
 
