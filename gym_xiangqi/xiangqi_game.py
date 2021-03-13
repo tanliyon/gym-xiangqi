@@ -85,19 +85,16 @@ class XiangQiGame:
         elif event.type == pygame.MOUSEBUTTONDOWN:
 
             if self.agent_turn:
-
                 # clicked: 1 not_clicked: 0
                 is_left_clicked = pygame.mouse.get_pressed()[0]
 
                 if is_left_clicked:
-
                     # get clicked coordinate
                     clicked_x, clicked_y = pygame.mouse.get_pos()
                     clicked_coor = (clicked_x, clicked_y)
 
                     # if piece is clicked, select it
                     if self.find_target_piece(clicked_coor):
-
                         pass
 
                     else:
@@ -128,7 +125,6 @@ class XiangQiGame:
 
         # timer decrement every second
         elif event.type == pygame.USEREVENT + 1:
-
             self.counter -= 1
 
             # timeout event
@@ -276,7 +272,6 @@ class XiangQiGame:
         kill the enemy piece object in the given coordinate
         '''
         for enemy in self.enemy_piece[1:]:
-
             if real_clicked_coor == enemy.coor and enemy.is_alive():
                 enemy.state = DEAD
                 break
