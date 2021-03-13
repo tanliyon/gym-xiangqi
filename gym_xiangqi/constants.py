@@ -5,8 +5,8 @@ the Xiangqi environment.
 
 
 """ PYGAME """
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 577
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 577
 FPS = 20
 COUNT = 10
 

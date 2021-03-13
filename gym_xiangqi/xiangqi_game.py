@@ -4,7 +4,7 @@ from gym_xiangqi.board import Board
 from gym_xiangqi.constants import (
     COOR_DELTA, COOR_OFFSET,     # variables for coordinate conversion
     DEAD,                        # dead state for piece object
-    SCREEN_WIDTH, SCREEN_HEIGHT, # window size for pygame display
+    WINDOW_WIDTH, WINDOW_HEIGHT, # window size for pygame display
     FPS,                         # fps for pygame while loop
     COUNT                        # initial timer for timer
 )
@@ -23,7 +23,7 @@ class XiangQiGame:
     def __init__(self):
         # PyGame components
         self.running = True
-        self.dim = (SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.dim = (WINDOW_WIDTH, WINDOW_HEIGHT)
         self.display_surf = None
         self.agent_piece = None
         self.enemy_piece = None
@@ -66,12 +66,11 @@ class XiangQiGame:
         Initializes Board() and load the board image
         '''
         # set board_background
-        board = Board().board_background
-        board = pygame.transform.scale(
-            board, (Board().boardWidth, Board().boardHeight)
+        board = Board()
+        board_image = pygame.transform.scale(
+            board.board_background, (board.boardWidth, board.boardHeight)
         )
-
-        return board
+        return board_image
 
     def on_event(self, event):
         """
