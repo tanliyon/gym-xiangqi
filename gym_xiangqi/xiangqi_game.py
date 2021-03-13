@@ -120,7 +120,7 @@ class XiangQiGame:
                             self.cur_selected.move(real_click_y, real_click_x)
 
                             # reset counter after agent turn is over
-                            self.counter = 10
+                            self.counter = COUNT
 
                         # reset piece selection and end my turn
                         self.cur_selected = None
