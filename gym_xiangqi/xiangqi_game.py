@@ -1,6 +1,6 @@
 import pygame
 from gym_xiangqi.board import Board
-from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD
+from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD, winWidth, winHeight
 import time
 
 
@@ -18,9 +18,7 @@ class XiangQiGame:
         # PyGame components
         self.running = True
         self.FPS = 20   # loop fps
-        self.winWidth = 800
-        self.winHeight = 577
-        self.dim = (self.winWidth, self.winHeight)
+        self.dim = (winWidth, winHeight)
         self.display_surf = None
         self.agent_piece = None
         self.enemy_piece = None
