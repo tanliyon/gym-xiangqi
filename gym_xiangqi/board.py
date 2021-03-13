@@ -1,5 +1,5 @@
 import os
-
+from gym_xiangqi.constants import BOARD_WIDTH, BOARD_HEIGHT
 import pygame
 
 
@@ -9,6 +9,8 @@ class Board:
     """
 
     def __init__(self):
+        self.boardWidth = BOARD_WIDTH
+        self.boardHeight = BOARD_HEIGHT
         self.board_background = None
         self.load_board_image()
 

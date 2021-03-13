@@ -4,6 +4,12 @@ the Xiangqi environment.
 """
 
 
+""" PYGAME """
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 577
+FPS = 20
+COUNT = 10
+
 """ POINTS """
 ILLEGAL_MOVE = -10
 
@@ -68,7 +74,15 @@ BLACK = 1
 DEAD = 0
 ALIVE = 1
 
+# Piece Size
+PIECE_WIDTH = 58
+PIECE_HEIGHT = 58
+
 """ BOARD """
+# Board Size
+BOARD_WIDTH = 521
+BOARD_HEIGHT = 577
+
 # Board Dimension
 BOARD_ROWS = 10
 BOARD_COLS = 9
@@ -85,7 +99,6 @@ RIVER_HIGH = 5
 """ OTHER """
 MAX_REP = 9
 TOTAL_POS = BOARD_ROWS * BOARD_COLS
-
 
 """ Coordinate Conversion """
 COOR_DELTA = 57
