@@ -1,6 +1,6 @@
 import pygame
 from gym_xiangqi.board import Board
-from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD, winWidth, winHeight
+from gym_xiangqi.constants import COOR_DELTA, COOR_OFFSET, DEAD, winWidth, winHeight, FPS, COUNT
 import time
 
 
@@ -17,14 +17,13 @@ class XiangQiGame:
     def __init__(self):
         # PyGame components
         self.running = True
-        self.FPS = 20   # loop fps
         self.dim = (winWidth, winHeight)
         self.display_surf = None
         self.agent_piece = None
         self.enemy_piece = None
         self.cur_selected = None
         self.agent_turn = True  # temp
-        self.counter = 10
+        self.counter = COUNT
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -181,7 +180,7 @@ class XiangQiGame:
 
         # TODO: this is just a high-level overview
         while self.running:
-            clock.tick(self.FPS)
+            clock.tick(FPS)
             for event in pygame.event.get():
                 self.on_event(event)
 

@@ -11,7 +11,7 @@ from gym_xiangqi.constants import (
     MAX_REP,                                            # repetition bound
     BLACK, ALIVE, AGENT, ENEMY,                         # piece states
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
-    P_WIDTH, P_HEIGHT                                   # piece sizes
+    PIECE_WIDTH, PIECE_HEIGHT                                   # piece sizes
 )
 
 
@@ -36,8 +36,8 @@ class Piece:
         self.row = row
         self.col = col
         self.state = ALIVE
-        self.piece_width = P_WIDTH
-        self.piece_height = P_HEIGHT
+        self.piece_width = PIECE_WIDTH
+        self.piece_height = PIECE_HEIGHT
         self.basic_image = None
         self.select_image = None
 

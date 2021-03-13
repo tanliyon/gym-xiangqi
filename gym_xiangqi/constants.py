@@ -4,9 +4,11 @@ the Xiangqi environment.
 """
 
 
-""" PYGAME WINDOW """
+""" PYGAME """
 winWidth = 800
 winHeight = 577
+FPS = 20   # loop fps
+COUNT = 10 # timer
 
 """ POINTS """
 ILLEGAL_MOVE = -10
@@ -73,13 +75,13 @@ DEAD = 0
 ALIVE = 1
 
 # Piece Size
-P_WIDTH = 58
-P_HEIGHT = 58
+PIECE_WIDTH = 58
+PIECE_HEIGHT = 58
 
 """ BOARD """
 # Board Size
-B_WIDTH = 521
-B_HEIGHT = 577
+BOARD_WIDTH = 521
+BOARD_HEIGHT = 577
 
 # Board Dimension
 BOARD_ROWS = 10
