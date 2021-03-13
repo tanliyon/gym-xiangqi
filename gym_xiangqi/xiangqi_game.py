@@ -4,7 +4,7 @@ from gym_xiangqi.board import Board
 from gym_xiangqi.constants import (
     COOR_DELTA, COOR_OFFSET,     # variables for coordinate conversion
     DEAD,                        # dead state for piece object
-    WINDOW_WIDTH, WINDOW_HEIGHT, # window size for pygame display
+    SCREEN_WIDTH, SCREEN_HEIGHT, # window size for pygame display
     FPS,                         # fps for pygame while loop
     COUNT                        # initial timer for timer
 )
@@ -23,7 +23,7 @@ class XiangQiGame:
     def __init__(self):
         # PyGame components
         self.running = True
-        self.dim = (WINDOW_WIDTH, WINDOW_HEIGHT)
+        self.dim = (SCREEN_WIDTH, SCREEN_HEIGHT)
         self.display_surf = None
         self.agent_piece = None
         self.enemy_piece = None
