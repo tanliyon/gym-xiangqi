@@ -7,8 +7,8 @@ the Xiangqi environment.
 """ PYGAME """
 winWidth = 800
 winHeight = 577
-FPS = 20   # loop fps
-COUNT = 10 # timer
+FPS = 20
+COUNT = 10
 
 """ POINTS """
 ILLEGAL_MOVE = -10
