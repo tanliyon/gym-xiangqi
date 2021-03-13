@@ -48,8 +48,8 @@ class TestXiangQiEnv(unittest.TestCase):
             # Test using a random string.
             length = random.randint(0, 15)
             choices = (string.ascii_letters +
-                    string.punctuation +
-                    string.digits)
+                       string.punctuation +
+                       string.digits)
             action = "".join(random.choice(choices) for i in range(length))
             self.env.step(action)
 
