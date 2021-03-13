@@ -1,4 +1,6 @@
 import unittest
+import random
+import string
 
 from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
 from gym_xiangqi.constants import (
@@ -35,7 +37,21 @@ class TestXiangQiEnv(unittest.TestCase):
         verify action input
         """
         with self.assertRaises(AssertionError):
-            self.env.step(-1)
+            # Test using a random negative int.
+            action = random.randint(-10000, -1)
+            self.env.step(action)
+
+            # Test using a random float.
+            action = random.uniform(-10000, 10000)
+            self.env.step(action)
+
+            # Test using a random string.
+            length = random.randint(0, 15)
+            choices = (string.ascii_letters +
+                    string.punctuation +
+                    string.digits)
+            action = "".join(random.choice(choices) for i in range(length))
+            self.env.step(action)
 
     def test_env_step_illegal_move(self):
         """
