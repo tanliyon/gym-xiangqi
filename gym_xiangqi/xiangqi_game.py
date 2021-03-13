@@ -2,11 +2,11 @@ import pygame
 import time
 from gym_xiangqi.board import Board
 from gym_xiangqi.constants import (
-    COOR_DELTA, COOR_OFFSET,     # variables for coordinate conversion
-    DEAD,                        # dead state for piece object
-    WINDOW_WIDTH, WINDOW_HEIGHT, # window size for pygame display
-    FPS,                         # fps for pygame while loop
-    COUNT                        # initial timer for timer
+    COOR_DELTA, COOR_OFFSET,      # variables for coordinate conversion
+    DEAD,                         # dead state for piece object
+    WINDOW_WIDTH, WINDOW_HEIGHT,  # window size for pygame display
+    FPS,                          # fps for pygame while loop
+    COUNT                         # initial timer for timer
 )
 
 
