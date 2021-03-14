@@ -228,7 +228,8 @@ class XiangQiEnv(gym.Env):
         """
         Free up resources and gracefully exit
         """
-        self.game.cleanup()
+        if self.game:
+            self.game.cleanup()
 
     def seed(self, seed=None):
         """
