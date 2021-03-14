@@ -2,8 +2,8 @@ from agents.random_agent import RandomAgent
 
 import gym
 
-
 MAX_ROUNDS = 500
+
 
 def test_random_agent_play_itself():
     """
@@ -20,5 +20,5 @@ def test_random_agent_play_itself():
         _, _, done, _ = env.step(action)
         round_count += 1
         if round_count > MAX_ROUNDS:
-        	break
+            break
     env.close()
