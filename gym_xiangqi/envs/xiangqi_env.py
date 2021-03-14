@@ -1,5 +1,6 @@
 import gym
 from gym import spaces
+from gym.utils import seeding
 import numpy as np
 
 from gym_xiangqi.xiangqi_game import XiangQiGame
@@ -215,13 +216,26 @@ class XiangQiEnv(gym.Env):
         self.get_possible_actions(self.turn)
 
     def render(self, mode='human'):
+        """
+        Render current game state with PyGame
+        """
         if self.game is None:
             self.game = XiangQiGame()
             self.game.on_init(self.agent_piece, self.enemy_piece)
         self.game.render()
 
     def close(self):
-        pass
+        """
+        Free up resources and gracefully exit
+        """
+        self.game.cleanup()
+
+    def seed(self, seed=None):
+        """
+        Generate random seed value used to reproduce the current game
+        """
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
 
     def init_pieces(self):
         """

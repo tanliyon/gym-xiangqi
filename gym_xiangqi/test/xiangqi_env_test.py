@@ -115,6 +115,16 @@ class TestXiangQiEnv(unittest.TestCase):
         self.assertEqual(reward, PIECE_POINTS[GENERAL])
         self.assertEqual(self.env.enemy_piece[GENERAL].state, DEAD)
 
+    def test_env_close(self):
+        self.env.render()
+        self.env.close()
+
+    def test_env_seed(self):
+        seed_list = self.env.seed()
+        self.assertIsNotNone(seed_list)
+        self.assertIsInstance(seed_list, list)
+        self.assertIsInstance(seed_list[0], int)
+
 
 if __name__ == "__main__":
     unittest.main()
