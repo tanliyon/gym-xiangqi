@@ -170,8 +170,10 @@ class XiangQiEnv(gym.Env):
             pieces = self.enemy_piece
             possible_actions = self.enemy_actions
 
-        # if illegal move is given, penalize agent
+        # if illegal move is given, penalize agent: flying general, etc.
         if possible_actions[action] == 0:
+            return np.array(self.state), ILLEGAL_MOVE, False, {}
+        if self.check_flying_general(action):
             return np.array(self.state), ILLEGAL_MOVE, False, {}
 
         # if legal move is given, move the piece
@@ -316,3 +318,31 @@ class XiangQiEnv(gym.Env):
             all_possible_actions >= piece_action_id_start]
         return all_possible_actions[
             all_possible_actions < piece_action_id_end]
+
+    def check_flying_general(self, action):
+        """
+        Check if given input action results in flying general
+
+        Parameters:
+            action (int): action value in the range of env's action space
+        """
+        piece_id, start, end = action_space_to_move(action)
+
+        # simulate input action without altering current game state
+        new_state = np.array(self.state)
+        new_state[start] = EMPTY
+        new_state[end] = piece_id * self.turn
+
+        enemy_general = self.enemy_piece[GENERAL]
+        agent_general = self.agent_piece[GENERAL]
+
+        # check if they are in the same column
+        if enemy_general.col != agent_general.col:
+            return False
+
+        # check if anything is in between the two generals
+        c = enemy_general.col
+        for r in range(BOARD_ROWS):
+            if new_state[r][c] != EMPTY:
+                return False
+        return True
