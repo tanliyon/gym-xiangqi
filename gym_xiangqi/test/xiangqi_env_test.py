@@ -14,6 +14,11 @@ from gym_xiangqi.constants import (
 
 class TestXiangQiEnv(unittest.TestCase):
 
+    def assertStateEqual(self, obs, new_obs):
+        for i in range(BOARD_ROWS):
+            for j in range(BOARD_COLS):
+                self.assertEqual(obs[i][j], new_obs[i][j])
+
     def setUp(self):
         self.env = XiangQiEnv()
 
@@ -53,6 +58,23 @@ class TestXiangQiEnv(unittest.TestCase):
             action = "".join(random.choice(choices) for i in range(length))
             self.env.step(action)
 
+    def test_flying_general(self):
+        """
+        Verification of flying general condition checker
+        Given an action that results in flying general, the environment has
+        to reject and penalize the agent
+        """
+        # pre-defined actions tht will result in a flying general situation
+        actions = [78727, 75172, 78961, 74938, 75720, 78177]
+
+        for action in actions:
+            obs = self.env.state
+            new_obs, reward, _, _ = self.env.step(action)
+
+        # check that our state is preserved and the reward is a penalty
+        self.assertStateEqual(obs, new_obs)
+        self.assertEqual(reward, ILLEGAL_MOVE)
+
     def test_env_step_illegal_move(self):
         """
         verify agent with illegal move
@@ -60,9 +82,7 @@ class TestXiangQiEnv(unittest.TestCase):
         obs = self.env.state
         new_obs, reward, done, info = self.env.step(0)
 
-        for i in range(BOARD_ROWS):
-            for j in range(BOARD_COLS):
-                self.assertEqual(obs[i][j], new_obs[i][j])
+        self.assertStateEqual(obs, new_obs)
         self.assertEqual(reward, ILLEGAL_MOVE)
         self.assertEqual(done, False)
 
