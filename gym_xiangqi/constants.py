@@ -11,8 +11,6 @@ FPS = 20
 COUNT = 10
 
 """ POINTS """
-ILLEGAL_MOVE = -10
-
 PIECE_POINTS = [
     0.,                     # EMPTY: No point for empty grid
     float('inf'),           # GENERAL: Priceless for the general
@@ -23,6 +21,10 @@ PIECE_POINTS = [
     4.5, 4.5,               # CANNON: 4.5 points
     1., 1., 1., 1., 1.,     # SOLDIER: 1.0 point (2.0 after crossing river)
 ]
+
+ILLEGAL_MOVE = -10
+WIN = PIECE_POINTS[1]
+LOSE = -PIECE_POINTS[1]
 
 """ PIECE """
 AGENT = 1
