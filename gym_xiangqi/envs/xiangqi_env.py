@@ -225,12 +225,6 @@ class XiangQiEnv(gym.Env):
         self.turn *= -1     # AGENT (1) -> ENEMY (-1) and vice versa
         self.get_possible_actions(self.turn)
 
-        # Stalemate checking
-        agent_sm = self.turn == AGENT and not np.where(self.agent_actions == 1)
-        enemy_sm = self.turn == ENEMY and not np.where(self.enemy_actions == 1)
-        if agent_sm or enemy_sm:
-            self._done = True
-
         return np.array(self.state), reward, self._done, {}
 
     def reset(self):
