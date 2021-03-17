@@ -128,7 +128,7 @@ class XiangQiEnv(gym.Env):
         self.agent_actions = np.zeros((n, ))
         self.enemy_actions = np.zeros((n, ))
 
-        # history of consecutive checks made ot be used to ban perpetual check
+        # history of consecutive jiangs (will be used to ban perpetual check)
         self.agent_jiang_history = None
         self.enemy_jiang_history = None
 
