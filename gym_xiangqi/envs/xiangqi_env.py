@@ -12,7 +12,7 @@ from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
-    ILLEGAL_MOVE, PIECE_POINTS, LOSE,
+    ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
     AGENT, ENEMY, EMPTY, GENERAL,
 )
 
@@ -203,16 +203,23 @@ class XiangQiEnv(gym.Env):
         if abs(rm_piece_id) == GENERAL:
             self._done = True
 
-        # check for perpetual checking
-        # check if "Jiang" is announced due to last move
+        # check for perpetual check (check in Xiangqi is called jiang)
         is_jiang, jiang_action = self.check_jiang()
+
+        # check if the player is making consecutive jiang's
         if is_jiang:
             if jiang_action not in jiang_history:
                 jiang_history[jiang_action] = 0
             jiang_history[jiang_action] += 1
-            if jiang_history[jiang_action] == 3:
+            if jiang_history[jiang_action] == 4:
                 self._done = True
                 return np.array(self.state), LOSE, self._done, {}
+            reward += JIANG_POINT
+        else:   # reset history if jiang spree has stopped
+            if self.turn == AGENT:
+                self.agent_jiang_history = {}
+            else:
+                self.enemy_jiang_history = {}
 
         # self-play: agent switches turn between agent and enemy side
         self.turn *= -1     # AGENT (1) -> ENEMY (-1) and vice versa

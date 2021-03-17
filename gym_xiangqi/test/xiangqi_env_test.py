@@ -6,8 +6,8 @@ from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
 from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     RED, BLACK, DEAD,
-    ILLEGAL_MOVE, PIECE_POINTS,
-    EMPTY, GENERAL, CANNON_1, SOLDIER_3,
+    ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
+    EMPTY, GENERAL, CANNON_1, HORSE_2,
     AGENT, ENEMY,
 )
 
@@ -105,19 +105,16 @@ class TestXiangQiEnv(unittest.TestCase):
 
     def test_env_step_reward(self):
         """
-        Simulates Agent (red) cannon taking a black soldier
-        78727: Agent CANNON_1 (7, 1) -> (7, 4)
-        75172: Enemy CANNON_1 (2, 7) -> (2, 4)
-        78961: Agent CANNON_1 (7, 4) -> (3, 4)
+        Simulates Agent (red) cannon taking a black horse
+        78661: Agent CANNON_1 (7, 1) -> (0, 1)
         """
-        actions = [78727, 75172, 78961]
-        for action in actions:
-            obs, reward, done, info = self.env.step(action)
-        self.assertEqual(obs[7][4], EMPTY)
-        self.assertEqual(obs[3][4], CANNON_1)
-        self.assertEqual(reward, PIECE_POINTS[SOLDIER_3])
+        action = 78661
+        obs, reward, done, info = self.env.step(action)
+        self.assertEqual(obs[7][1], EMPTY)
+        self.assertEqual(obs[0][1], CANNON_1)
+        self.assertEqual(reward, PIECE_POINTS[HORSE_2])
         self.assertEqual(done, False)
-        self.assertEqual(self.env.enemy_piece[SOLDIER_3].state, DEAD)
+        self.assertEqual(self.env.enemy_piece[HORSE_2].state, DEAD)
 
     def test_env_step_done(self):
         """
@@ -134,6 +131,32 @@ class TestXiangQiEnv(unittest.TestCase):
         self.assertEqual(done, True)
         self.assertEqual(reward, PIECE_POINTS[GENERAL])
         self.assertEqual(self.env.enemy_piece[GENERAL].state, DEAD)
+
+    def test_perpetual_check(self):
+        """
+        simulate a perpetual checking situation
+        64062:      Chariot 1 (red)     (9, 0) -> (8, 0)
+        57437:      Chariot 1 (black)   (0, 8) -> (1, 8)
+        63255:      Chariot 1 (red)     (8, 0) -> (8, 3)
+        373:        General (black)     (0, 4) -> (1, 4)
+        63462:      Chariot 1 (red)     (8, 3) -> (1, 3)
+        --------------- REPETITION START ---------------
+        1192:       General (black)     (1, 4) -> (2, 4)
+        57801:      Chariot 1 (red)     (1, 3) -> (2, 3)
+        1993:       General (black)     (2, 4) -> (1, 4)
+        58602:      Chariot 1 (red)     (2, 3) -> (1, 3)
+        ---------------- REPETITION END ----------------
+        """
+        for action in [64062, 57437, 63255, 373, 63462]:
+            obs, reward, done, _ = self.env.step(action)
+            self.assertFalse(done)
+        self.assertEqual(reward, JIANG_POINT)
+
+        for _ in range(3):
+            for action in [1192, 57801, 1993, 58602]:
+                _, reward, done, _ = self.env.step(action)
+        self.assertEqual(reward, LOSE)
+        self.assertTrue(done)
 
     def test_env_close(self):
         self.env.render()

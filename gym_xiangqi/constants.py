@@ -22,7 +22,8 @@ PIECE_POINTS = [
     1., 1., 1., 1., 1.,     # SOLDIER: 1.0 point (2.0 after crossing river)
 ]
 
-ILLEGAL_MOVE = -10
+ILLEGAL_MOVE = -10.
+JIANG_POINT = 10.
 WIN = PIECE_POINTS[1]
 LOSE = -PIECE_POINTS[1]
 
