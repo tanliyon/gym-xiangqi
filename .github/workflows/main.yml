@@ -36,9 +36,9 @@ jobs:
       # before install
       - name: before install
         run: |
-          pip install -y portaudio19-dev
-          pip install -y libasound2-dev alsa-utils alsa-oss
-          pip install -y lame
+          pip install portaudio19-dev
+          pip install libasound2-dev alsa-utils alsa-oss
+          pip install lame
           pip install linux-modules-extra-$(uname -r)
           sudo bash test/prep-dummy-soundcard.sh
 
