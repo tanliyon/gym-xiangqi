@@ -33,11 +33,6 @@ jobs:
         with:
             python-version: ${{ matrix.python-version }}
 
-      # # before install
-      # - name: before install
-      #   run: |
-      #     sudo apt-get install libasound2 alsa-utils alsa-oss
-
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
         run: |
@@ -53,7 +48,7 @@ jobs:
           python -m pytest --cov=agents/ --cov=gym_xiangqi/ --cov=examples/ --cov-fail-under=25
         env:
           SDL_VIDEODRIVER: dummy
-          AUDIODEV: null
+          SDL_AUDIODRIVER: dsp
 
       # Run latency test to get latency report.
       - name: Run latency test

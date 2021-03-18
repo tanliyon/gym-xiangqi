@@ -45,15 +45,15 @@ class Piece:
         self.mini_image = None
 
         # sound effect for piece movements
-        sound = Sound()
-        self.move_sound = sound.piece_move
+        #sound = Sound()
+        #self.move_sound = sound.piece_move
 
     def move(self, new_row, new_col):
         """
         Take one move among given piece's allowed moves
         Update piece's coordinates internally
         """
-        self.move_sound.play()
+        #self.move_sound.play()
         self.row = new_row
         self.col = new_col
 
