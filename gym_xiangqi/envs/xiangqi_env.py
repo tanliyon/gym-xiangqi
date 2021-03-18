@@ -12,7 +12,7 @@ from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
-    ILLEGAL_MOVE, PIECE_POINTS,
+    ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
     AGENT, ENEMY, EMPTY, GENERAL,
 )
 
@@ -128,6 +128,10 @@ class XiangQiEnv(gym.Env):
         self.agent_actions = np.zeros((n, ))
         self.enemy_actions = np.zeros((n, ))
 
+        # history of consecutive jiangs (will be used to ban perpetual check)
+        self.agent_jiang_history = None
+        self.enemy_jiang_history = None
+
         # initialize PyGame module
         self.game = None
 
@@ -166,12 +170,16 @@ class XiangQiEnv(gym.Env):
         if self.turn == AGENT:
             pieces = self.agent_piece
             possible_actions = self.agent_actions
+            jiang_history = self.agent_jiang_history
         else:
             pieces = self.enemy_piece
             possible_actions = self.enemy_actions
+            jiang_history = self.enemy_jiang_history
 
-        # if illegal move is given, penalize agent
+        # check for illegal move, flying general, etc. and penalize the agent
         if possible_actions[action] == 0:
+            return np.array(self.state), ILLEGAL_MOVE, False, {}
+        if self.check_flying_general(action):
             return np.array(self.state), ILLEGAL_MOVE, False, {}
 
         # if legal move is given, move the piece
@@ -195,6 +203,24 @@ class XiangQiEnv(gym.Env):
         if abs(rm_piece_id) == GENERAL:
             self._done = True
 
+        # check for perpetual check (check in Xiangqi is called jiang)
+        is_jiang, jiang_action = self.check_jiang()
+
+        # check if the player is making consecutive jiang's
+        if is_jiang:
+            if jiang_action not in jiang_history:
+                jiang_history[jiang_action] = 0
+            jiang_history[jiang_action] += 1
+            if jiang_history[jiang_action] == 4:
+                self._done = True
+                return np.array(self.state), LOSE, self._done, {}
+            reward += JIANG_POINT
+        else:   # reset history if jiang spree has stopped
+            if self.turn == AGENT:
+                self.agent_jiang_history = {}
+            else:
+                self.enemy_jiang_history = {}
+
         # self-play: agent switches turn between agent and enemy side
         self.turn *= -1     # AGENT (1) -> ENEMY (-1) and vice versa
         self.get_possible_actions(self.turn)
@@ -207,6 +233,9 @@ class XiangQiEnv(gym.Env):
         """
         self.state = np.array(self.initial_board)
         self.init_pieces()
+
+        self.agent_jiang_history = {}
+        self.enemy_jiang_history = {}
 
         if self.agent_color == RED:
             self.turn = AGENT
@@ -310,3 +339,55 @@ class XiangQiEnv(gym.Env):
             all_possible_actions >= piece_action_id_start]
         return all_possible_actions[
             all_possible_actions < piece_action_id_end]
+
+    def check_flying_general(self, action):
+        """
+        Check if given input action results in flying general
+
+        Parameters:
+            action (int): action value in the range of env's action space
+        """
+        piece_id, (r1, c1), (r2, c2) = action_space_to_move(action)
+
+        # simulate input action without altering current game state
+        new_state = np.array(self.state)
+        new_state[r1][c1] = EMPTY
+        new_state[r2][c2] = piece_id * self.turn
+
+        enemy_gen = self.enemy_piece[GENERAL]
+        agent_gen = self.agent_piece[GENERAL]
+
+        # check if they are in the same column
+        if enemy_gen.col != agent_gen.col:
+            return False
+
+        # check if anything is in between the two generals
+        c = enemy_gen.col
+        for r in range(enemy_gen.row+1, agent_gen.row):
+            if new_state[r][c] != EMPTY:
+                return False
+        return True
+
+    def check_jiang(self):
+        """
+        Check if the general is in threat (i.e it is check or "jiang")
+        by any of current player's pieces
+        """
+        # This is OPPONENT General
+        if self.turn == AGENT:
+            general = self.enemy_piece[GENERAL]
+            actions = self.agent_actions
+        else:
+            general = self.agent_piece[GENERAL]
+            actions = self.enemy_actions
+
+        # update current player's moves
+        self.get_possible_actions(self.turn)
+
+        # iterate through possible moves of current player's pieces
+        actions = np.where(actions == 1)[0]
+        for action in actions:
+            _, _, (target_r, target_c) = action_space_to_move(action)
+            if target_r == general.row and target_c == general.col:
+                return True, action
+        return False, -1
