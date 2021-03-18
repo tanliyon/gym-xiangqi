@@ -63,7 +63,7 @@ class XiangQiGame:
         self.agent_piece = agent_piece
         self.enemy_piece = enemy_piece
 
-        #play bgm
+        # play bgm
         self.play_bgm()
 
         return True
@@ -281,7 +281,7 @@ class XiangQiGame:
 
     def init_kills(self):
         '''
-        initialize the images of dead pieces
+        write 'agent kills: ' and 'enemy kills: ' on screen
         '''
         self.kill_font = pygame.font.SysFont(None, 40)
 
