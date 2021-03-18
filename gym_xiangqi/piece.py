@@ -81,18 +81,18 @@ class Piece:
 
     def set_basic_image(self):
         filename = self.name + ".png"
-        self.basic_image = (self.load_image(filename, 
+        self.basic_image = (self.load_image(filename,
                             self.piece_width, self.piece_height))
 
     def set_select_image(self):
         filename = self.name + "_S.png"
-        self.select_image = (self.load_image(filename, 
-                            self.piece_width, self.piece_height))
+        self.select_image = (self.load_image(filename,
+                             self.piece_width, self.piece_height))
 
     def set_mini_image(self):
         filename = self.name + ".png"
-        self.mini_image = (self.load_image(filename, 
-                        self.mini_piece_width, self.mini_piece_height))
+        self.mini_image = (self.load_image(filename,
+                           self.mini_piece_width, self.mini_piece_height))
 
     def is_alive(self):
         return self.state
