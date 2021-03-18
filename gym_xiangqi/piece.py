@@ -1,7 +1,6 @@
 import os
-
 import pygame
-
+from gym_xiangqi.sound import Sound
 from gym_xiangqi.utils import move_to_action_space, is_agent
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
@@ -45,11 +44,16 @@ class Piece:
         self.select_image = None
         self.mini_image = None
 
+        # sound effect for piece movements
+        sound = Sound()
+        self.move_sound = sound.piece_move
+
     def move(self, new_row, new_col):
         """
         Take one move among given piece's allowed moves
         Update piece's coordinates internally
         """
+        self.move_sound.play()
         self.row = new_row
         self.col = new_col
 

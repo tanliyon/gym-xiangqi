@@ -1,5 +1,7 @@
 import pygame
 import time
+
+from gym_xiangqi.sound import Sound
 from gym_xiangqi.board import Board
 from gym_xiangqi.constants import (
     COOR_DELTA, COOR_OFFSET,      # variables for coordinate conversion
@@ -32,7 +34,7 @@ class XiangQiGame:
         self.counter = COUNT
         self.agent_kills = []
         self.enemy_kills = []
-
+        
     def on_init(self, agent_piece, enemy_piece):
         """
         Initialize/start the game with PyGame
@@ -61,6 +63,9 @@ class XiangQiGame:
         self.agent_piece = agent_piece
         self.enemy_piece = enemy_piece
 
+        #play bgm
+        self.play_bgm()
+
         return True
 
     def init_board(self):
@@ -73,6 +78,10 @@ class XiangQiGame:
             board.board_background, (board.boardWidth, board.boardHeight)
         )
         return board_image
+    
+    def play_bgm(self):
+        sound = Sound()
+        sound.play_bgm()
 
     def on_event(self, event):
         """
@@ -195,7 +204,6 @@ class XiangQiGame:
             clock = pygame.time.Clock()
             self.running = True
 
-        # TODO: this is just a high-level overview
         while self.running:
             clock.tick(FPS)
             for event in pygame.event.get():
@@ -299,7 +307,6 @@ class XiangQiGame:
     def kill_piece(self, real_clicked_coor):
         '''
         kill the enemy piece object in the given coordinate
-        add 1 to the current agent score
         '''
         for enemy in self.enemy_piece[1:]:
             if real_clicked_coor == enemy.coor and enemy.is_alive():

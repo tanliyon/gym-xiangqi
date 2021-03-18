@@ -7,7 +7,6 @@ class Board:
     """
     A class for Xianqi Board
     """
-
     def __init__(self):
         self.boardWidth = BOARD_WIDTH
         self.boardHeight = BOARD_HEIGHT
