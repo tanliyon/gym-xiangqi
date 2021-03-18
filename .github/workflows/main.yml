@@ -36,7 +36,7 @@ jobs:
       # before install
       - name: before install
         run: |
-          apt-get install libpulse0:i386
+          pip install libpulse0:i386
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
         run: |
