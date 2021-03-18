@@ -1,6 +1,7 @@
 import pygame
 import os
 
+
 class Sound:
 
     """
@@ -15,9 +16,9 @@ class Sound:
         # init pygame mixer
         pygame.mixer.init()
 
-        #load sound effet for piece movements
+        # load sound effet for piece movements
         self.load_piece_move()
-    
+
     # load background music
     def play_bgm(self):
         file_path = os.path.split(os.path.abspath(__file__))[0]

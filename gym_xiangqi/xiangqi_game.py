@@ -34,7 +34,7 @@ class XiangQiGame:
         self.counter = COUNT
         self.agent_kills = []
         self.enemy_kills = []
-        
+
     def on_init(self, agent_piece, enemy_piece):
         """
         Initialize/start the game with PyGame
@@ -78,7 +78,7 @@ class XiangQiGame:
             board.board_background, (board.boardWidth, board.boardHeight)
         )
         return board_image
-    
+
     def play_bgm(self):
         sound = Sound()
         sound.play_bgm()
@@ -176,7 +176,7 @@ class XiangQiGame:
             self.screen.blit(self.agent_kills[i], (x, y))
 
         for i in range(len(self.enemy_kills)):
-            # keep minimis within the box  
+            # keep minimis within the box
             x = 530 + (i * 35) % 245
             y = 160 + (i // 7) * 35
             self.screen.blit(self.enemy_kills[i], (x, y))
@@ -301,9 +301,9 @@ class XiangQiGame:
         '''
         self.init_kills()
 
-        self.agent_kills = ([enemy.mini_image for enemy in self.enemy_piece[1:] 
+        self.agent_kills = ([enemy.mini_image for enemy in self.enemy_piece[1:]
                             if enemy.state == DEAD])
-        self.enemy_kills = ([agent.mini_image for agent in self.agent_piece[1:] 
+        self.enemy_kills = ([agent.mini_image for agent in self.agent_piece[1:]
                             if agent.state == DEAD])
 
     def kill_piece(self, real_clicked_coor):
@@ -326,6 +326,7 @@ class XiangQiGame:
         self.screen.blit(game_over_text, t_rect)
         pygame.display.update()
         time.sleep(3)
+
 
 if __name__ == "__main__":
     # initializing and running the game for manual testing
