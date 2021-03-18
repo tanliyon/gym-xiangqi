@@ -33,11 +33,6 @@ jobs:
         with:
             python-version: ${{ matrix.python-version }}
 
-      # before
-      - name: before install
-        run: |
-          sudo apt-get install pulseaudio
-
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
         run: |
