@@ -301,8 +301,10 @@ class XiangQiGame:
         '''
         self.init_kills()
 
-        self.agent_kills = [enemy.mini_image for enemy in self.enemy_piece[1:] if enemy.state == DEAD]
-        self.enemy_kills = [agent.mini_image for agent in self.agent_piece[1:] if agent.state == DEAD]
+        self.agent_kills = ([enemy.mini_image for enemy in self.enemy_piece[1:] 
+                            if enemy.state == DEAD])
+        self.enemy_kills = ([agent.mini_image for agent in self.agent_piece[1:] 
+                            if agent.state == DEAD])
 
     def kill_piece(self, real_clicked_coor):
         '''
