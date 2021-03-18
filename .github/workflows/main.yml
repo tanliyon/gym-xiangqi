@@ -36,7 +36,6 @@ jobs:
       # before install
       - name: before install
         run: |
-          pip install apt-get update -qq
           pip install -y portaudio19-dev
           pip install -y libasound2-dev alsa-utils alsa-oss
           pip install -y lame
