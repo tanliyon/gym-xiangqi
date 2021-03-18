@@ -36,7 +36,7 @@ jobs:
       # before install
       - name: before install
         run: |
-          sudo apt-get install libasound2-dev alsa-utils alsa-oss
+          sudo apt-get install libasound2 alsa-utils alsa-oss
 
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
