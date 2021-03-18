@@ -37,7 +37,6 @@ jobs:
       - name: before install
         run: |
           sudo apt-get update -qq
-          sudo -E su travis -c -a -G audio
           sudo apt-get install -y portaudio19-dev
           sudo apt-get install -y libasound2-dev alsa-utils alsa-oss
           sudo apt-get install -y lame
