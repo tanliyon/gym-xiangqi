@@ -6,7 +6,7 @@ from gym_xiangqi.constants import (
     DEAD,                         # dead state for piece object
     WINDOW_WIDTH, WINDOW_HEIGHT,  # window size for pygame display
     FPS,                          # fps for pygame while loop
-    COUNT                         # initial timer for timer
+    COUNT                         # initial time for timer
 )
 
 
@@ -30,6 +30,8 @@ class XiangQiGame:
         self.cur_selected = None
         self.agent_turn = True  # temp
         self.counter = COUNT
+        self.agent_kills = []
+        self.enemy_kills = []
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -140,6 +142,7 @@ class XiangQiGame:
         # draw white background, board, timer, and pieces consecutively
         self.screen.fill((250, 250, 250))
         self.update_timer()
+        self.update_kills()
         self.screen.blit(self.board_background, (0, 0))
 
         # update all cur positions of pieces
@@ -155,6 +158,19 @@ class XiangQiGame:
         if self.cur_selected is not None and self.cur_selected.is_alive():
             self.screen.blit(self.cur_selected.select_image,
                              self.cur_selected.get_pygame_coor())
+
+        # update agent_kills and enemy_kills
+        for i in range(len(self.agent_kills)):
+            # keep minimis within the box
+            x = 530 + (i * 35) % 245
+            y = 360 + (i // 7) * 35
+            self.screen.blit(self.agent_kills[i], (x, y))
+
+        for i in range(len(self.enemy_kills)):
+            # keep minimis within the box  
+            x = 530 + (i * 35) % 245
+            y = 160 + (i // 7) * 35
+            self.screen.blit(self.enemy_kills[i], (x, y))
 
         # draw all on screen
         pygame.display.update()
@@ -197,6 +213,7 @@ class XiangQiGame:
         for i in range(1, len(pieces)):
             pieces[i].set_basic_image()
             pieces[i].set_select_image()
+            pieces[i].set_mini_image()
 
     def to_real_coor(self, clicked_coor):
         '''
@@ -254,6 +271,41 @@ class XiangQiGame:
         text_rect = final_text.get_rect(centerx=665, bottom=50)
         self.screen.blit(final_text, text_rect)
 
+    def init_kills(self):
+        '''
+        initialize the images of dead pieces
+        '''
+        self.kill_font = pygame.font.SysFont(None, 40)
+
+        kill_text = "agent kills: "
+        final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
+        text_rect = final_text.get_rect(centerx=610, bottom=350)
+        self.screen.blit(final_text, text_rect)
+
+        kill_text = "enemy kills: "
+        final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
+        text_rect = final_text.get_rect(centerx=610, bottom=150)
+        self.screen.blit(final_text, text_rect)
+
+    def update_kills(self):
+        '''
+        update the kills for both side
+        '''
+        self.init_kills()
+
+        self.agent_kills = [enemy.mini_image for enemy in self.enemy_piece[1:] if enemy.state == DEAD]
+        self.enemy_kills = [agent.mini_image for agent in self.agent_piece[1:] if agent.state == DEAD]
+
+    def kill_piece(self, real_clicked_coor):
+        '''
+        kill the enemy piece object in the given coordinate
+        add 1 to the current agent score
+        '''
+        for enemy in self.enemy_piece[1:]:
+            if real_clicked_coor == enemy.coor and enemy.is_alive():
+                enemy.state = DEAD
+                break
+
     def game_over(self):
         '''
         write the "game over" message on screen and wait for 3 seconds
@@ -265,16 +317,6 @@ class XiangQiGame:
         self.screen.blit(game_over_text, t_rect)
         pygame.display.update()
         time.sleep(3)
-
-    def kill_piece(self, real_clicked_coor):
-        '''
-        kill the enemy piece object in the given coordinate
-        '''
-        for enemy in self.enemy_piece[1:]:
-            if real_clicked_coor == enemy.coor and enemy.is_alive():
-                enemy.state = DEAD
-                break
-
 
 if __name__ == "__main__":
     # initializing and running the game for manual testing

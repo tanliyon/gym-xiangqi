@@ -11,7 +11,8 @@ from gym_xiangqi.constants import (
     MAX_REP,                                            # repetition bound
     BLACK, ALIVE, AGENT, ENEMY,                         # piece states
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
-    PIECE_WIDTH, PIECE_HEIGHT                           # piece sizes
+    PIECE_WIDTH, PIECE_HEIGHT,                           # piece sizes
+    MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT                 # mini piece sizes
 )
 
 
@@ -38,8 +39,11 @@ class Piece:
         self.state = ALIVE
         self.piece_width = PIECE_WIDTH
         self.piece_height = PIECE_HEIGHT
+        self.mini_piece_width = MINI_PIECE_WIDTH
+        self.mini_piece_height = MINI_PIECE_HEIGHT
         self.basic_image = None
         self.select_image = None
+        self.mini_image = None
 
     def move(self, new_row, new_col):
         """
@@ -54,7 +58,7 @@ class Piece:
         y = self.row*COOR_DELTA + COOR_OFFSET
         return (x, y)
 
-    def load_image(self, filename: str):
+    def load_image(self, filename: str, piece_width, piece_height):
         file_path = os.path.split(os.path.relpath(__file__))[0]
 
         if self.color == BLACK:
@@ -67,17 +71,21 @@ class Piece:
 
         image = pygame.image.load(target_file).convert_alpha()
         image = pygame.transform.scale(
-            image, (self.piece_width, self.piece_height)
+            image, (piece_width, piece_height)
         )
         return image
 
     def set_basic_image(self):
         filename = self.name + ".png"
-        self.basic_image = self.load_image(filename)
+        self.basic_image = self.load_image(filename, self.piece_width, self.piece_height)
 
     def set_select_image(self):
         filename = self.name + "_S.png"
-        self.select_image = self.load_image(filename)
+        self.select_image = self.load_image(filename, self.piece_width, self.piece_height)
+
+    def set_mini_image(self):
+        filename = self.name + ".png"
+        self.mini_image = self.load_image(filename, self.mini_piece_width, self.mini_piece_height)
 
     def is_alive(self):
         return self.state
