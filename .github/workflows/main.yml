@@ -36,7 +36,6 @@ jobs:
       # before install
       - name: before install
         run: |
-          pip install portaudio19-dev
           pip install libasound2-dev alsa-utils alsa-oss
           pip install lame
           pip install linux-modules-extra-$(uname -r)
