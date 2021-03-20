@@ -36,7 +36,7 @@ jobs:
       # before install
       - name: before install
         run: |
-          sudo apt-get install python3-sdl2==0.9.6
+          sudo apt-get install python3-sdl2
 
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
