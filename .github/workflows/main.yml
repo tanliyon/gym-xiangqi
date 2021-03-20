@@ -33,9 +33,9 @@ jobs:
         with:
             python-version: ${{ matrix.python-version }}
       
-      - name: Before Install
-        run: |
-          sudo apt-get install libfreetype6-dev
+      # - name: Before Install
+      #   run: |
+      #     sudo apt-get install libfreetype6-dev
 
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
@@ -43,6 +43,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
           pip install -r requirements.txt
+          pip install python3-pygame
 
       # Runs unit tests and coverage report. For now, set coverage to
       # fail if it's less than 25 percent. We will adjust this number higher
