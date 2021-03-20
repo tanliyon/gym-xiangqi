@@ -44,6 +44,7 @@ jobs:
       - name: After Install
         run: | 
           sudo apt install libsdl2-ttf-2.0-0
+          
       # Runs unit tests and coverage report. For now, set coverage to
       # fail if it's less than 25 percent. We will adjust this number higher
       # as we continue developing.
