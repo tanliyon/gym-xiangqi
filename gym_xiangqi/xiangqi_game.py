@@ -200,7 +200,7 @@ class XiangQiGame:
               multiple of 8 (ex] 8, 16), has to start a new line.
               Otherwise, the pieces will overlap and turn invisible.
 
-            The modulo for y has not been set since we have enough spaces 
+            The modulo for y has not been set since we have enough spaces
             on the screen to handle the pieces even if they were all dead.
             '''
             x = 530 + (i * 35) % 245
