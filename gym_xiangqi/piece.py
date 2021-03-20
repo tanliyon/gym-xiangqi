@@ -10,8 +10,9 @@ from gym_xiangqi.constants import (
     MAX_REP,                                            # repetition bound
     BLACK, ALIVE, AGENT, ENEMY,                         # piece states
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
-    PIECE_WIDTH, PIECE_HEIGHT,                           # piece sizes
-    MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT                 # mini piece sizes
+    PIECE_WIDTH, PIECE_HEIGHT,                          # piece sizes
+    MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT,                # mini piece sizes
+    PATH_TO_BLACK, PATH_TO_RED                          # file paths to pieces
 )
 
 
@@ -45,15 +46,15 @@ class Piece:
         self.mini_image = None
 
         # sound effect for piece movements
-        #sound = Sound()
-        #self.move_sound = sound.piece_move
+        sound = Sound()
+        self.move_sound = sound.piece_move
 
     def move(self, new_row, new_col):
         """
         Take one move among given piece's allowed moves
         Update piece's coordinates internally
         """
-        #self.move_sound.play()
+        self.move_sound.play()
         self.row = new_row
         self.col = new_col
 
@@ -63,17 +64,13 @@ class Piece:
         return (x, y)
 
     def load_image(self, filename: str, piece_width, piece_height):
-        file_path = os.path.split(os.path.relpath(__file__))[0]
 
         if self.color == BLACK:
-            sub_path = "/images/black_pieces/"
+            file_path = PATH_TO_BLACK
         else:
-            sub_path = "/images/red_pieces/"
+            file_path = PATH_TO_RED
 
-        file_path += sub_path
-        target_file = file_path + filename
-
-        image = pygame.image.load(target_file).convert_alpha()
+        image = pygame.image.load(file_path + filename).convert_alpha()
         image = pygame.transform.scale(
             image, (piece_width, piece_height)
         )

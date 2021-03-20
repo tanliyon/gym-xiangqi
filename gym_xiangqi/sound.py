@@ -1,5 +1,6 @@
 import pygame
 import os
+from gym_xiangqi.constants import PATH_TO_SOUNDS
 
 
 class Sound:
@@ -22,13 +23,11 @@ class Sound:
 
     # load background music
     def play_bgm(self):
-        file_path = os.path.split(os.path.abspath(__file__))[0]
-        target_file = file_path + "/sounds/bgm.mp3"
-        pygame.mixer.music.load(target_file)
+        filename = "bgm.mp3"
+        pygame.mixer.music.load(PATH_TO_SOUNDS + filename)
         pygame.mixer.music.play(-1)
 
     # load the sound effect for piece movements
     def load_piece_move(self):
-        file_path = os.path.split(os.path.abspath(__file__))[0]
-        target_file = file_path + "/sounds/piece_move.mp3"
-        self.piece_move = pygame.mixer.Sound(target_file)
+        filename = "piece_move.mp3"
+        self.piece_move = pygame.mixer.Sound(PATH_TO_SOUNDS + filename)
