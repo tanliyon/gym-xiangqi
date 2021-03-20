@@ -13,6 +13,9 @@ class Sound:
         self.bgm = None
         self.piece_move = None
 
+        # init pygame mixer
+        pygame.mixer.init()
+
         # load sound effet for piece movements
         self.load_piece_move()
 

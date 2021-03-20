@@ -80,7 +80,6 @@ class XiangQiGame:
         return board_image
 
     def init_sound(self):
-        pygame.mixer.init()
         sound = Sound()  # init Sound()
         sound.play_bgm()  # play bgm on_init
 
