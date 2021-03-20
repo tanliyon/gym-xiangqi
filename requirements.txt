@@ -2,4 +2,4 @@ pytest==6.2.2
 pytest-mock==3.5.1
 pytest-cov==2.11.1
 radon==4.3.2
-libpulse0==1.1.1
+libpulse0==14.2.2
