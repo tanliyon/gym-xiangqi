@@ -1,4 +1,3 @@
-import os
 import pygame
 from gym_xiangqi.sound import Sound
 from gym_xiangqi.utils import move_to_action_space, is_agent
@@ -70,7 +69,8 @@ class Piece:
         else:
             file_path = PATH_TO_RED
 
-        image = pygame.image.load(file_path + filename).convert_alpha()
+        target_file = file_path + filename
+        image = pygame.image.load(target_file).convert_alpha()
         image = pygame.transform.scale(
             image, (piece_width, piece_height)
         )

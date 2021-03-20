@@ -1,5 +1,4 @@
 import pygame
-import os
 from gym_xiangqi.constants import PATH_TO_SOUNDS
 
 
@@ -30,4 +29,5 @@ class Sound:
     # load the sound effect for piece movements
     def load_piece_move(self):
         filename = "piece_move.mp3"
-        self.piece_move = pygame.mixer.Sound(PATH_TO_SOUNDS + filename)
+        target_file = PATH_TO_SOUNDS + filename
+        self.piece_move = pygame.mixer.Sound(target_file)
