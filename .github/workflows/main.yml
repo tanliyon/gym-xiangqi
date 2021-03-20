@@ -34,9 +34,8 @@ jobs:
             python-version: ${{ matrix.python-version }}
 
       - name: Before Install
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgbm-dev
+        run:
+          sudo apt-get install libudev0:i386
           
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
