@@ -16,3 +16,4 @@ class Board:
         filename = "BOARD.png"
         target_file = PATH_TO_BOARD + filename
         self.board_background = pygame.image.load(target_file).convert_alpha()
+        
