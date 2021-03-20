@@ -33,6 +33,11 @@ jobs:
         with:
             python-version: ${{ matrix.python-version }}
 
+      # before install
+      - name: before install
+        run: |
+          pip install libpulse0:i386
+
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
         run: |
@@ -40,11 +45,7 @@ jobs:
           pip install -e .
           pip install -r requirements.txt
           pip install python-pulseaudio-profiles==0.0.2
-      
-      - name: After Install
-        run: | 
-          sudo apt install libsdl2-ttf-2.0-0
-          
+
       # Runs unit tests and coverage report. For now, set coverage to
       # fail if it's less than 25 percent. We will adjust this number higher
       # as we continue developing.
