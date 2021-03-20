@@ -39,11 +39,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
           pip install -r requirements.txt
+          pip install python-pulseaudio-profiles==0.0.2
 
-      - name: Before Install
-        run: |
-          sudo apt install libsdl2-ttf-2.0-0
-          
       # Runs unit tests and coverage report. For now, set coverage to
       # fail if it's less than 25 percent. We will adjust this number higher
       # as we continue developing.
@@ -52,6 +49,7 @@ jobs:
           python -m pytest --cov=agents/ --cov=gym_xiangqi/ --cov=examples/ --cov-fail-under=25
         env:
           SDL_VIDEODRIVER: dummy
+          AUDIODEV: null
           SDL_AUDIODRIVER: null
 
       # Run latency test to get latency report.
