@@ -80,8 +80,8 @@ class XiangQiGame:
         return board_image
 
     def init_sound(self):
-        sound = Sound() # init Sound()
-        sound.play_bgm() # play bgm on_init
+        sound = Sound()  # init Sound()
+        sound.play_bgm()  # play bgm on_init
 
         # load move_sound to piece obj
         for i in range(1, len(self.agent_piece)):
