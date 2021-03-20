@@ -37,8 +37,9 @@ jobs:
         run: |
           sudo apt-get install python-dev libsdl-image1.2-dev libsdl-mixer1.2-dev 
           sudo apt-get install libsdl-ttf2.0-dev libsdl1.2-dev libsmpeg-dev 
-          sudo apt-get install python-numpy subversion libportmidi-dev ffmpeg 
-          sudo apt-get install libswscale-dev libavformat-dev libavcodec-dev
+          
+# sudo apt-get install python-numpy subversion libportmidi-dev ffmpeg 
+# sudo apt-get install libswscale-dev libavformat-dev libavcodec-dev
 
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
