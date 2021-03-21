@@ -1,12 +1,13 @@
 import pygame
 import time
+
 from gym_xiangqi.board import Board
 from gym_xiangqi.constants import (
     COOR_DELTA, COOR_OFFSET,      # variables for coordinate conversion
     DEAD,                         # dead state for piece object
     WINDOW_WIDTH, WINDOW_HEIGHT,  # window size for pygame display
     FPS,                          # fps for pygame while loop
-    COUNT                         # initial timer for timer
+    COUNT                         # initial time for timer
 )
 
 
@@ -30,6 +31,8 @@ class XiangQiGame:
         self.cur_selected = None
         self.agent_turn = True  # temp
         self.counter = COUNT
+        self.agent_kills = []
+        self.enemy_kills = []
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -140,6 +143,7 @@ class XiangQiGame:
         # draw white background, board, timer, and pieces consecutively
         self.screen.fill((250, 250, 250))
         self.update_timer()
+        self.update_kills()
         self.screen.blit(self.board_background, (0, 0))
 
         # update all cur positions of pieces
@@ -155,6 +159,51 @@ class XiangQiGame:
         if self.cur_selected is not None and self.cur_selected.is_alive():
             self.screen.blit(self.cur_selected.select_image,
                              self.cur_selected.get_pygame_coor())
+
+        # update agent_kills and enemy_kills
+        for i in range(len(self.agent_kills)):
+
+            # keep minimis within the box
+            '''
+            The coordinates (x,y) are determined based on the number of
+            current kills that the agent or the enemy has during the game.
+
+            These are implemented in two different loops because
+            the number of dead pieces on both sides may differ during the game.
+
+            x:
+
+            - The x offsets 530 indicate the starting x coordinate for display.
+
+            - (i * 35) indicates the step size that considers both PIECE_WIDTH
+              and proper spacing between the pieces to be listed.
+
+            - Modulo 245 is from the following calculation.
+              (WINDOW_WIDTH - BOARD_WIDTH - PIECE_WIDTH/2 - 5).
+              This modulo sets the max number of pieces in each row to 7,
+              therefore keeps the listed pieces within the pygame screen.
+
+            y:
+
+            - The y offsets 360 and 160 indicate the starting y coordinate
+              for 'agent kills' and 'enemy kills' respectively.
+
+            - (i // 7) * 35 indicates that every piece in the position of
+              multiple of 8 (ex] 8, 16), has to start a new line.
+              Otherwise, the pieces will overlap and turn invisible.
+
+            The modulo for y has not been set since we have enough spaces
+            on the screen to handle the pieces even if they were all dead.
+            '''
+            x = 530 + (i * 35) % 245
+            y = 360 + (i // 7) * 35
+            self.screen.blit(self.agent_kills[i], (x, y))
+
+        for i in range(len(self.enemy_kills)):
+            # keep minimis within the box
+            x = 530 + (i * 35) % 245
+            y = 160 + (i // 7) * 35
+            self.screen.blit(self.enemy_kills[i], (x, y))
 
         # draw all on screen
         pygame.display.update()
@@ -179,7 +228,6 @@ class XiangQiGame:
             clock = pygame.time.Clock()
             self.running = True
 
-        # TODO: this is just a high-level overview
         while self.running:
             clock.tick(FPS)
             for event in pygame.event.get():
@@ -197,6 +245,7 @@ class XiangQiGame:
         for i in range(1, len(pieces)):
             pieces[i].set_basic_image()
             pieces[i].set_select_image()
+            pieces[i].set_mini_image()
 
     def to_real_coor(self, clicked_coor):
         '''
@@ -254,6 +303,42 @@ class XiangQiGame:
         text_rect = final_text.get_rect(centerx=665, bottom=50)
         self.screen.blit(final_text, text_rect)
 
+    def init_kills(self):
+        '''
+        write 'agent kills: ' and 'enemy kills: ' on screen
+        '''
+        self.kill_font = pygame.font.SysFont(None, 40)
+
+        kill_text = "agent kills: "
+        final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
+        text_rect = final_text.get_rect(centerx=610, bottom=350)
+        self.screen.blit(final_text, text_rect)
+
+        kill_text = "enemy kills: "
+        final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
+        text_rect = final_text.get_rect(centerx=610, bottom=150)
+        self.screen.blit(final_text, text_rect)
+
+    def update_kills(self):
+        '''
+        update the kills for both side
+        '''
+        self.init_kills()
+
+        self.agent_kills = ([enemy.mini_image for enemy in self.enemy_piece[1:]
+                            if enemy.state == DEAD])
+        self.enemy_kills = ([agent.mini_image for agent in self.agent_piece[1:]
+                            if agent.state == DEAD])
+
+    def kill_piece(self, real_clicked_coor):
+        '''
+        kill the enemy piece object in the given coordinate
+        '''
+        for enemy in self.enemy_piece[1:]:
+            if real_clicked_coor == enemy.coor and enemy.is_alive():
+                enemy.state = DEAD
+                break
+
     def game_over(self):
         '''
         write the "game over" message on screen and wait for 3 seconds
@@ -265,15 +350,6 @@ class XiangQiGame:
         self.screen.blit(game_over_text, t_rect)
         pygame.display.update()
         time.sleep(3)
-
-    def kill_piece(self, real_clicked_coor):
-        '''
-        kill the enemy piece object in the given coordinate
-        '''
-        for enemy in self.enemy_piece[1:]:
-            if real_clicked_coor == enemy.coor and enemy.is_alive():
-                enemy.state = DEAD
-                break
 
 
 if __name__ == "__main__":
