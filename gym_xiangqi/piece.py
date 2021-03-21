@@ -1,4 +1,5 @@
 import pygame
+
 from gym_xiangqi.utils import move_to_action_space, is_agent
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
@@ -35,10 +36,6 @@ class Piece:
         self.row = row
         self.col = col
         self.state = ALIVE
-        self.piece_width = PIECE_WIDTH
-        self.piece_height = PIECE_HEIGHT
-        self.mini_piece_width = MINI_PIECE_WIDTH
-        self.mini_piece_height = MINI_PIECE_HEIGHT
         self.basic_image = None
         self.select_image = None
         self.mini_image = None
@@ -57,7 +54,6 @@ class Piece:
         return (x, y)
 
     def load_image(self, filename: str, piece_width, piece_height):
-
         if self.color == BLACK:
             file_path = PATH_TO_BLACK
         else:
@@ -73,17 +69,17 @@ class Piece:
     def set_basic_image(self):
         filename = self.name + ".png"
         self.basic_image = (self.load_image(filename,
-                            self.piece_width, self.piece_height))
+                            PIECE_WIDTH, PIECE_HEIGHT))
 
     def set_select_image(self):
         filename = self.name + "_S.png"
         self.select_image = (self.load_image(filename,
-                             self.piece_width, self.piece_height))
+                             PIECE_WIDTH, PIECE_HEIGHT))
 
     def set_mini_image(self):
         filename = self.name + ".png"
         self.mini_image = (self.load_image(filename,
-                           self.mini_piece_width, self.mini_piece_height))
+                           MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT))
 
     def is_alive(self):
         return self.state
