@@ -49,7 +49,7 @@ jobs:
         env:
           SDL_VIDEODRIVER: dummy
           SDL_AUDIODRIVER: alsa
-          AUDIODEV: null
+          AUDIODEV: pulse
 
       # Run latency test to get latency report.
       - name: Run latency test
