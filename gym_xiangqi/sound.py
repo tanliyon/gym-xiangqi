@@ -17,9 +17,6 @@ class Sound:
         pygame.init()
         pygame.mixer.init()
 
-        # load sound effet for piece movements
-        self.load_piece_move()
-
     # load background music
     def play_bgm(self):
         filename = "bgm.mp3"

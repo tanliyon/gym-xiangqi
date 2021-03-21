@@ -81,6 +81,7 @@ class XiangQiGame:
 
     def init_sound(self):
         sound = Sound()  # init Sound()
+        sound.load_piece_move()
         sound.play_bgm()  # play bgm on_init
 
         # load move_sound to piece obj
