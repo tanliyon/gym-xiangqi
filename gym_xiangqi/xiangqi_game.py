@@ -1,6 +1,7 @@
 import pygame
 import time
 
+from gym_xiangqi.sound import Sound
 from gym_xiangqi.board import Board
 from gym_xiangqi.constants import (
     COOR_DELTA, COOR_OFFSET,      # variables for coordinate conversion
@@ -62,6 +63,9 @@ class XiangQiGame:
         self.agent_piece = agent_piece
         self.enemy_piece = enemy_piece
 
+        # play bgm
+        self.init_sound()
+
         return True
 
     def init_board(self):
@@ -74,6 +78,15 @@ class XiangQiGame:
             board.board_background, (board.boardWidth, board.boardHeight)
         )
         return board_image
+
+    def init_sound(self):
+        sound = Sound()  # init Sound()
+        sound.play_bgm()  # play bgm on_init
+
+        # load move_sound to piece obj
+        for i in range(1, len(self.agent_piece)):
+            self.agent_piece[i].move_sound = sound.piece_move
+            self.enemy_piece[i].move_sound = sound.piece_move
 
     def on_event(self, event):
         """
@@ -161,40 +174,40 @@ class XiangQiGame:
                              self.cur_selected.get_pygame_coor())
 
         # update agent_kills and enemy_kills
-        '''
-        The coordinates (x,y) are determined based on the number of
-        current kills that the agent or the enemy has during the game.
-
-        These are implemented in two different loops because
-        the number of dead pieces on both sides may differ during the game.
-
-        x:
-
-        - The x offsets 530 indicate the starting x coordinate on screen.
-
-        - (i * 35) indicates the step size that considers both PIECE_WIDTH
-            and proper spacing between the pieces to be listed.
-
-        - Modulo 245 is from the following calculation.
-            (WINDOW_WIDTH - BOARD_WIDTH - PIECE_WIDTH/2 - 5).
-            This modulo only allows the max number of pieces in each row to 7,
-            therefore keeps the listed pieces within the pygame screen.
-
-        y:
-
-        - The y offsets 360 and 160 indicate the starting y coordinate
-            for 'agent kills' and 'enemy kills' respectively on screen.
-
-        - (i // 7) * 35 indicates that every piece in the position of
-            multiple of 8 (ex] 8, 16), has to start a new line.
-            Otherwise, the pieces will overlap and turn invisible.
-
-        The modulo for y needed not to be set since we have enough spaces
-        on the screen to handle the pieces even if they were all dead.
-        '''
         for i in range(len(self.agent_kills)):
 
             # keep minimis within the box
+            '''
+            The coordinates (x,y) are determined based on the number of
+            current kills that the agent or the enemy has during the game.
+
+            These are implemented in two different loops because
+            the number of dead pieces on both sides may differ during the game.
+
+            x:
+
+            - The x offsets 530 indicate the starting x coordinate for display.
+
+            - (i * 35) indicates the step size that considers both PIECE_WIDTH
+              and proper spacing between the pieces to be listed.
+
+            - Modulo 245 is from the following calculation.
+              (WINDOW_WIDTH - BOARD_WIDTH - PIECE_WIDTH/2 - 5).
+              This modulo sets the max number of pieces in each row to 7,
+              therefore keeps the listed pieces within the pygame screen.
+
+            y:
+
+            - The y offsets 360 and 160 indicate the starting y coordinate
+              for 'agent kills' and 'enemy kills' respectively.
+
+            - (i // 7) * 35 indicates that every piece in the position of
+              multiple of 8 (ex] 8, 16), has to start a new line.
+              Otherwise, the pieces will overlap and turn invisible.
+
+            The modulo for y has not been set since we have enough spaces
+            on the screen to handle the pieces even if they were all dead.
+            '''
             x = 530 + (i * 35) % 245
             y = 360 + (i // 7) * 35
             self.screen.blit(self.agent_kills[i], (x, y))
