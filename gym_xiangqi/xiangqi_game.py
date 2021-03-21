@@ -66,7 +66,7 @@ class XiangQiGame:
 
         # play bgm
         self.init_sound()
-        
+
         return True
 
     def init_board(self):
