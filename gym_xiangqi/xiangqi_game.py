@@ -84,7 +84,7 @@ class XiangQiGame:
         sound = Sound()  # init Sound()
 
         filename = "piece_move.mp3"
-        target_file = "여기"+PATH_TO_SOUNDS + filename
+        target_file = PATH_TO_SOUNDS + filename
         sound.piece_move = pygame.mixer.Sound(target_file)
         sound.play_bgm()  # play bgm on_init
 
