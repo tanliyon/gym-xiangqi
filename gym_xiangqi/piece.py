@@ -36,6 +36,10 @@ class Piece:
         self.row = row
         self.col = col
         self.state = ALIVE
+        self.piece_width = PIECE_WIDTH
+        self.piece_height = PIECE_HEIGHT
+        self.mini_piece_width = MINI_PIECE_WIDTH
+        self.mini_piece_height = MINI_PIECE_HEIGHT
         self.basic_image = None
         self.select_image = None
         self.mini_image = None
@@ -69,17 +73,17 @@ class Piece:
     def set_basic_image(self):
         filename = self.name + ".png"
         self.basic_image = (self.load_image(filename,
-                            PIECE_WIDTH, PIECE_HEIGHT))
+                            self.piece_width, self.piece_height))
 
     def set_select_image(self):
         filename = self.name + "_S.png"
         self.select_image = (self.load_image(filename,
-                             PIECE_WIDTH, PIECE_HEIGHT))
+                             self.piece_width, self.piece_height))
 
     def set_mini_image(self):
         filename = self.name + ".png"
         self.mini_image = (self.load_image(filename,
-                           MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT))
+                           self.mini_piece_width, self.mini_piece_height))
 
     def is_alive(self):
         return self.state
