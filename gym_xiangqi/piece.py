@@ -1,5 +1,4 @@
 import pygame
-
 from gym_xiangqi.utils import move_to_action_space, is_agent
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
@@ -43,12 +42,15 @@ class Piece:
         self.basic_image = None
         self.select_image = None
         self.mini_image = None
+        self.move_sound = None
 
     def move(self, new_row, new_col):
         """
         Take one move among given piece's allowed moves
         Update piece's coordinates internally
         """
+        if self.move_sound is not None:
+            self.move_sound.play()
         self.row = new_row
         self.col = new_col
 
@@ -58,6 +60,7 @@ class Piece:
         return (x, y)
 
     def load_image(self, filename: str, piece_width, piece_height):
+
         if self.color == BLACK:
             file_path = PATH_TO_BLACK
         else:
