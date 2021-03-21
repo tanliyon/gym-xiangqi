@@ -1,4 +1,5 @@
 import pygame
+
 from gym_xiangqi.utils import move_to_action_space, is_agent
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
@@ -57,7 +58,6 @@ class Piece:
         return (x, y)
 
     def load_image(self, filename: str, piece_width, piece_height):
-
         if self.color == BLACK:
             file_path = PATH_TO_BLACK
         else:

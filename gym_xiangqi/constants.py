@@ -1,16 +1,13 @@
-import os
-
 """
 This file contains all the constants used throughout
 the Xiangqi environment.
 """
 
 """ PATHS """
-ABS_PATH = os.path.split(os.path.abspath(__file__))[0]
-PATH_TO_SOUNDS = ABS_PATH + "/sounds/"
-PATH_TO_BOARD = ABS_PATH + "/images/board/"
-PATH_TO_BLACK = ABS_PATH + "/images/black_pieces/"
-PATH_TO_RED = ABS_PATH + "/images/red_pieces/"
+PATH_TO_SOUNDS = "gym_xiangqi/sounds/"
+PATH_TO_BOARD = "gym_xiangqi/images/board/"
+PATH_TO_BLACK = "gym_xiangqi/images/black_pieces/"
+PATH_TO_RED = "gym_xiangqi/images/red_pieces/"
 
 """ PYGAME """
 WINDOW_WIDTH = 800
