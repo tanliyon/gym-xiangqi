@@ -81,8 +81,8 @@ class XiangQiGame:
         return board_image
 
     def init_sound(self):
+        pygame.mixer.init()
         sound = Sound()  # init Sound()
-
         filename = "piece_move.mp3"
         target_file = PATH_TO_SOUNDS + filename
         sound.piece_move = pygame.mixer.Sound(target_file)
