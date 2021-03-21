@@ -1,7 +1,7 @@
 # This is a basic workflow to help you get started with Actions
 
 name: CI
-  export AUDIODEV=null
+
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -48,6 +48,7 @@ jobs:
           python -m pytest --cov=agents/ --cov=gym_xiangqi/ --cov=examples/ --cov-fail-under=25
         env:
           SDL_VIDEODRIVER: dummy
+          AUDIODEV: null
 
       # Run latency test to get latency report.
       - name: Run latency test
