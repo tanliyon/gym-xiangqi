@@ -2,6 +2,7 @@ import time
 
 import pygame
 
+from gym_xiangqi.sound import Sound
 from gym_xiangqi.board import Board
 from gym_xiangqi.constants import (
     COOR_DELTA, COOR_OFFSET,      # variables for coordinate conversion
@@ -63,6 +64,9 @@ class XiangQiGame:
         self.agent_piece = agent_piece
         self.enemy_piece = enemy_piece
 
+        # play bgm
+        self.init_sound()
+        
         return True
 
     def init_board(self):
@@ -75,6 +79,15 @@ class XiangQiGame:
             board.board_background, (board.boardWidth, board.boardHeight)
         )
         return board_image
+
+    def init_sound(self):
+        sound = Sound()
+        sound.play_bgm()  # play bgm on_init
+
+        # load move_sound to piece objects
+        for i in range(1, len(self.agent_piece)):
+            self.agent_piece[i].move_sound = sound.piece_move
+            self.enemy_piece[i].move_sound = sound.piece_move
 
     def on_event(self, event):
         """
