@@ -8,7 +8,7 @@ from gym_xiangqi.constants import (
     DEAD,                         # dead state for piece object
     WINDOW_WIDTH, WINDOW_HEIGHT,  # window size for pygame display
     FPS,                          # fps for pygame while loop
-    COUNT                         # initial time for timer
+    COUNT,                         # initial time for timer
     PATH_TO_SOUNDS
 )
 
