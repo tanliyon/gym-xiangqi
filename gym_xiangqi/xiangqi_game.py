@@ -8,7 +8,7 @@ from gym_xiangqi.constants import (
     DEAD,                         # dead state for piece object
     WINDOW_WIDTH, WINDOW_HEIGHT,  # window size for pygame display
     FPS,                          # fps for pygame while loop
-    COUNT,                         # initial time for timer
+    COUNT,                        # initial time for timer
     PATH_TO_SOUNDS
 )
 
@@ -84,7 +84,7 @@ class XiangQiGame:
         sound = Sound()  # init Sound()
 
         filename = "piece_move.mp3"
-        target_file = PATH_TO_SOUNDS + filename
+        target_file = "여기"+PATH_TO_SOUNDS + filename
         sound.piece_move = pygame.mixer.Sound(target_file)
         sound.play_bgm()  # play bgm on_init
 
