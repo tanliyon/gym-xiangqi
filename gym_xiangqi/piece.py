@@ -1,7 +1,4 @@
-import os
-
 import pygame
-
 from gym_xiangqi.utils import move_to_action_space, is_agent
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
@@ -11,7 +8,9 @@ from gym_xiangqi.constants import (
     MAX_REP,                                            # repetition bound
     BLACK, ALIVE, AGENT, ENEMY,                         # piece states
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
-    PIECE_WIDTH, PIECE_HEIGHT                           # piece sizes
+    PIECE_WIDTH, PIECE_HEIGHT,                          # piece sizes
+    MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT,                # mini piece sizes
+    PATH_TO_BLACK, PATH_TO_RED                          # file paths to pieces
 )
 
 
@@ -38,8 +37,11 @@ class Piece:
         self.state = ALIVE
         self.piece_width = PIECE_WIDTH
         self.piece_height = PIECE_HEIGHT
+        self.mini_piece_width = MINI_PIECE_WIDTH
+        self.mini_piece_height = MINI_PIECE_HEIGHT
         self.basic_image = None
         self.select_image = None
+        self.mini_image = None
 
     def move(self, new_row, new_col):
         """
@@ -54,30 +56,34 @@ class Piece:
         y = self.row*COOR_DELTA + COOR_OFFSET
         return (x, y)
 
-    def load_image(self, filename: str):
-        file_path = os.path.split(os.path.relpath(__file__))[0]
+    def load_image(self, filename: str, piece_width, piece_height):
 
         if self.color == BLACK:
-            sub_path = "/images/black_pieces/"
+            file_path = PATH_TO_BLACK
         else:
-            sub_path = "/images/red_pieces/"
+            file_path = PATH_TO_RED
 
-        file_path += sub_path
         target_file = file_path + filename
-
         image = pygame.image.load(target_file).convert_alpha()
         image = pygame.transform.scale(
-            image, (self.piece_width, self.piece_height)
+            image, (piece_width, piece_height)
         )
         return image
 
     def set_basic_image(self):
         filename = self.name + ".png"
-        self.basic_image = self.load_image(filename)
+        self.basic_image = (self.load_image(filename,
+                            self.piece_width, self.piece_height))
 
     def set_select_image(self):
         filename = self.name + "_S.png"
-        self.select_image = self.load_image(filename)
+        self.select_image = (self.load_image(filename,
+                             self.piece_width, self.piece_height))
+
+    def set_mini_image(self):
+        filename = self.name + ".png"
+        self.mini_image = (self.load_image(filename,
+                           self.mini_piece_width, self.mini_piece_height))
 
     def is_alive(self):
         return self.state
