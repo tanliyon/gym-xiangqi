@@ -22,9 +22,3 @@ class Sound:
         filename = "bgm.mp3"
         pygame.mixer.music.load(PATH_TO_SOUNDS + filename)
         pygame.mixer.music.play(-1)
-
-    # load the sound effect for piece movements
-    def load_piece_move(self):
-        filename = "piece_move.mp3"
-        target_file = PATH_TO_SOUNDS + filename
-        self.piece_move = pygame.mixer.Sound(target_file)
