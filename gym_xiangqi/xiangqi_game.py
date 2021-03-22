@@ -65,7 +65,7 @@ class XiangQiGame:
         self.enemy_piece = enemy_piece
 
         # play bgm
-        self.init_sound()
+        self.init_sound("piece_move.wav", "bgm.wav")
 
         return True
 
@@ -80,11 +80,16 @@ class XiangQiGame:
         )
         return board_image
 
-    def init_sound(self):
-        sound = Sound()
-        sound.play_bgm()  # play bgm on_init
+    def init_sound(self, piece_move, bgm):
+        """
+        initialize game sound
+        """
+        sound = Sound(piece_move, bgm)
 
-        # load move_sound to piece objects
+        # play bgm
+        pygame.mixer.music.play(-1)
+
+        # load move_sound and set it to piece objects
         for i in range(1, len(self.agent_piece)):
             self.agent_piece[i].move_sound = sound.piece_move
             self.enemy_piece[i].move_sound = sound.piece_move

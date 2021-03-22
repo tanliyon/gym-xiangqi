@@ -6,27 +6,24 @@ class Sound:
     """
     A class for sounds
     """
-    def __init__(self):
-
+    def __init__(self, piece_move, bgm):
         # declare variables
-        self.bgm = None
         self.piece_move = None
 
         # init pygame mixer
         pygame.init()
         pygame.mixer.init()
 
-        # load sound effet for piece movements
-        self.load_piece_move()
+        # load sounds on init
+        self.load_bgm(bgm)
+        self.load_piece_move(piece_move)
 
     # load background music
-    def play_bgm(self):
-        filename = "bgm.wav"
-        pygame.mixer.music.load(PATH_TO_SOUNDS + filename)
-        pygame.mixer.music.play(-1)
+    def load_bgm(self, _bgm):
+        target_file = PATH_TO_SOUNDS + _bgm
+        pygame.mixer.music.load(target_file)
 
     # load the sound effect for piece movements
-    def load_piece_move(self):
-        filename = "piece_move.wav"
-        target_file = PATH_TO_SOUNDS + filename
+    def load_piece_move(self, _piece_move):
+        target_file = PATH_TO_SOUNDS + _piece_move
         self.piece_move = pygame.mixer.Sound(target_file)
