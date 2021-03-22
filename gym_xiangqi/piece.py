@@ -43,12 +43,15 @@ class Piece:
         self.basic_image = None
         self.select_image = None
         self.mini_image = None
+        self.move_sound = None
 
     def move(self, new_row, new_col):
         """
         Take one move among given piece's allowed moves
         Update piece's coordinates internally
         """
+        if self.move_sound is not None:
+            self.move_sound.play()
         self.row = new_row
         self.col = new_col
 
