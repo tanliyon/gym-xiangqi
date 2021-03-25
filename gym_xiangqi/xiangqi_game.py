@@ -94,6 +94,24 @@ class XiangQiGame:
             self.agent_piece[i].move_sound = sound.piece_move
             self.enemy_piece[i].move_sound = sound.piece_move
 
+    def update_pos_next_moves(self):
+        
+        if self.cur_selected is None:
+            return
+        pos_move_image = self.cur_selected.basic_image.copy()
+        opacity = 128
+        pos_move_image.set_alpha(opacity)
+
+        next_moves = self.cur_selected.legal_moves
+        print("valid_next_moves for: ", self.cur_selected.name, "\n   ", next_moves)
+        if next_moves is None:
+            return
+        for next_x, next_y in next_moves:
+            pygame_x = next_x*COOR_DELTA + COOR_OFFSET
+            pygame_y = next_y*COOR_DELTA + COOR_OFFSET
+
+            self.screen.blit(pos_move_image, (pygame_x, pygame_y))
+            
     def on_event(self, event):
         """
         This routine is triggered when some kind of user/game event is detected
@@ -116,7 +134,7 @@ class XiangQiGame:
 
                     # if piece is clicked, select it
                     if self.find_target_piece(clicked_coor):
-                        pass
+                        self.update_pos_next_moves()
 
                     else:
                         # convert to real coordinate
