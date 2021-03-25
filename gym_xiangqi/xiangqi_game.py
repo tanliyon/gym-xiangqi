@@ -104,7 +104,7 @@ class XiangQiGame:
             )
 
     def update_pos_next_moves(self):
-    
+
         if self.next_moves is None:
             return
 
