@@ -35,6 +35,8 @@ class XiangQiGame:
         self.counter = COUNT
         self.agent_kills = []
         self.enemy_kills = []
+        self.cur_selected_pid = 0
+        self.end_pos = None
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -104,46 +106,48 @@ class XiangQiGame:
             self.running = False
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            # clicked: 1 not_clicked: 0
+            left_clicked = pygame.mouse.get_pressed()[0]
 
-            if self.agent_turn:
-                # clicked: 1 not_clicked: 0
-                is_left_clicked = pygame.mouse.get_pressed()[0]
+            if left_clicked:
+                # get clicked coordinate
+                clicked_x, clicked_y = pygame.mouse.get_pos()
+                clicked_coor = (clicked_x, clicked_y)
 
-                if is_left_clicked:
-                    # get clicked coordinate
-                    clicked_x, clicked_y = pygame.mouse.get_pos()
-                    clicked_coor = (clicked_x, clicked_y)
+                # if piece is clicked, select it
+                if self.find_target_piece(clicked_coor):
+                    return
 
-                    # if piece is clicked, select it
-                    if self.find_target_piece(clicked_coor):
-                        pass
+                if self.cur_selected is None:
+                    return
 
-                    else:
-                        # convert to real coordinate
-                        real_clicked_coor = self.to_real_coor(clicked_coor)
-                        is_valid_move = True  # set True for test
+                # convert to real coordinate
+                real_clicked_coor = self.to_real_coor(clicked_coor)
 
-                        # need to get this validity from env
-                        if is_valid_move and self.cur_selected is not None:
-                            enemies = self.enemy_piece[1:]
-                            enemy_coors = [piece.coor for piece in enemies]
+                s = [self.cur_selected.row, self.cur_selected.col]
+                e = real_clicked_coor[::-1]
+                is_legal = (s, e) in self.cur_selected.legal_moves
 
-                            # if the coor is occupied by an enemy, kill it
-                            if real_clicked_coor in enemy_coors:
-                                self.kill_piece(real_clicked_coor)
+                # need to get this validity from env
+                if not is_legal:
+                    return
 
-                            # fill the coordinate with the selected agent piece
-                            real_click_y = real_clicked_coor[1]
-                            real_click_x = real_clicked_coor[0]
-                            self.cur_selected.move(real_click_y, real_click_x)
+                enemies = self.enemy_piece[1:]
+                enemy_coors = [piece.coor for piece in enemies]
 
-                            # reset counter after agent turn is over
-                            self.counter = COUNT
+                # fill the coordinate with the selected agent piece
+                real_click_y = real_clicked_coor[1]
+                real_click_x = real_clicked_coor[0]
+                self.cur_selected.move(real_click_y, real_click_x)
+                self.end_pos = tuple(real_clicked_coor[::-1])
 
-                        # reset piece selection and end my turn
-                        self.cur_selected = None
-                        # self.agent_turn = False # commented for test
+                # reset counter after agent turn is over
+                self.counter = COUNT
 
+                # reset piece selection and end my turn
+                self.cur_selected = None
+                self.running = False
+        """
         # timer decrement every second
         elif event.type == pygame.USEREVENT + 1:
             self.counter -= 1
@@ -151,6 +155,7 @@ class XiangQiGame:
             # timeout event
             if self.counter == 0:
                 self.running = False
+        """
 
     def on_update(self):
         pass
@@ -200,19 +205,20 @@ class XiangQiGame:
         """
         Run the game until terminating condition is achieved
         """
-        if self.on_init(self.agent_piece, self.enemy_piece):
-            clock = pygame.time.Clock()
-            self.running = True
+        clock = pygame.time.Clock()
+        self.running = True
 
         while self.running:
             clock.tick(FPS)
             for event in pygame.event.get():
                 self.on_event(event)
-
             self.render()
 
-        self.game_over()
-        self.cleanup()
+        piece_id = self.cur_selected_pid
+        new_pos = self.end_pos
+        self.cur_selected_pid = 0
+        self.end_pos = None
+        return piece_id, new_pos
 
     def load_piece_images(self, pieces: list):
         """
@@ -242,7 +248,7 @@ class XiangQiGame:
         clicked_x, clicked_y = clicked_coor
 
         # find the piece where the clicked coord is within its range
-        for piece in self.agent_piece[1:]:
+        for piece_id, piece in enumerate(self.agent_piece[1:], 1):
             piece_x, piece_y = piece.get_pygame_coor()
 
             x_min = piece_x - piece.piece_width/2 + 25
@@ -258,6 +264,7 @@ class XiangQiGame:
             # if the clicked coord is within the piece range, select it
             if valid_x and valid_y:
                 self.cur_selected = piece
+                self.cur_selected_pid = piece_id
                 return True
 
         return False
@@ -354,10 +361,11 @@ class XiangQiGame:
         """
         kill the enemy piece object in the given coordinate
         """
-        for enemy in self.enemy_piece[1:]:
+        for piece_id, enemy in enumerate(self.enemy_piece[1:], 1):
             if real_clicked_coor == enemy.coor and enemy.is_alive():
                 enemy.state = DEAD
                 break
+        return piece_id
 
     def game_over(self):
         """

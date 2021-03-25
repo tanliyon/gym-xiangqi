@@ -12,7 +12,7 @@ from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
-    ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
+    ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, WIN, LOSE,
     AGENT, ENEMY, EMPTY, GENERAL,
 )
 
@@ -267,20 +267,38 @@ class XiangQiEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-
     def step_game_mode(self, agent_action):
         # In game mode, AGENT is the player/user
         if self.turn == AGENT:
-            for piece_id in range(1, PIECE_CNT):
+            for piece_id in range(1, PIECE_CNT+1):
                 self.get_possible_actions_by_piece(piece_id)
-            # self.game.get_user_input_with_PyGame_GUI <- of course feel free to rename this method
-            self.step(agent_action)
-        else:
-            self.step(agent_action)
-            for piece_id in range(1, PIECE_CNT):
-                self.get_possible_actions_by_piece(piece_id)
-            # self.game.get_user_input_with_PyGame_GUI <- of course feel free to rename this method
 
+            piece_id, end = self.game.run()
+            start = (self.agent_piece[piece_id].row,
+                     self.enemy_piece[piece_id].col)
+            player_action = move_to_action_space(piece_id, start, end)
+            obs, reward, done, _ = self.step(player_action)
+
+            if done:
+                return obs, LOSE, done, {}
+
+            obs, reward, done, _ = self.step(agent_action)
+        else:
+            obs, reward, done, _ = self.step(agent_action)
+
+            if done:
+                return obs, WIN, done, {}
+
+            for piece_id in range(1, PIECE_CNT+1):
+                self.get_possible_actions_by_piece(piece_id)
+            
+            piece_id, end = self.game.run()
+            start = (self.agent_piece[piece_id].row,
+                     self.enemy_piece[piece_id].col)
+            player_action = move_to_action_space(piece_id, start, end)
+            obs, _, done, _ = self.step(player_action)
+
+        return obs, reward, done, {}
 
     def init_pieces(self):
         """
