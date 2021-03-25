@@ -68,7 +68,7 @@ class XiangQiGame:
         self.enemy_piece = enemy_piece
 
         # play bgm
-        #self.init_sound("piece_move.wav", "bgm.wav")
+        self.init_sound("piece_move.wav", "bgm.wav")
 
         return True
 
@@ -96,10 +96,12 @@ class XiangQiGame:
         for i in range(1, len(self.agent_piece)):
             self.agent_piece[i].move_sound = sound.piece_move
             self.enemy_piece[i].move_sound = sound.piece_move
-    
+
     def get_pos_next_moves(self):
         print(self.next_moves)
-        self.next_moves = [legal_move[1] for legal_move in self.cur_selected.legal_moves]
+        self.next_moves = (
+            [legal_move[1] for legal_move in self.cur_selected.legal_moves]
+            )
 
     def update_pos_next_moves(self):
     
@@ -111,10 +113,10 @@ class XiangQiGame:
         pos_move_image.set_alpha(opacity)
 
         for next_x, next_y in self.next_moves:
-            #print(next_x, next_y)
+            # print(next_x, next_y)
             pygame_x = next_x*COOR_DELTA + COOR_OFFSET
             pygame_y = next_y*COOR_DELTA + COOR_OFFSET
-            #print(pygame_x, pygame_y)
+            # print(pygame_x, pygame_y)
             self.screen.blit(pos_move_image, (pygame_y, pygame_x))
 
     def on_event(self, event):
