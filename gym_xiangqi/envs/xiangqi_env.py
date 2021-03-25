@@ -4,7 +4,11 @@ from gym.utils import seeding
 import numpy as np
 
 from gym_xiangqi.xiangqi_game import XiangQiGame
-from gym_xiangqi.utils import action_space_to_move, is_agent
+from gym_xiangqi.utils import (
+    action_space_to_move,
+    move_to_action_space,
+    is_agent
+)
 from gym_xiangqi.piece import (
     General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
 )

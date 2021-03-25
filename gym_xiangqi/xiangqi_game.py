@@ -125,7 +125,7 @@ class XiangQiGame:
                 real_clicked_coor = self.to_real_coor(clicked_coor)
 
                 s = [self.cur_selected.row, self.cur_selected.col]
-                e = real_clicked_coor[::-1]
+                e = list(real_clicked_coor[::-1])
                 is_legal = (s, e) in self.cur_selected.legal_moves
 
                 # need to get this validity from env
