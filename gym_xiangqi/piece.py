@@ -36,6 +36,7 @@ class Piece:
         self.row = row
         self.col = col
         self.state = ALIVE
+        self.legal_moves = None
         self.piece_width = PIECE_WIDTH
         self.piece_height = PIECE_HEIGHT
         self.mini_piece_width = MINI_PIECE_WIDTH

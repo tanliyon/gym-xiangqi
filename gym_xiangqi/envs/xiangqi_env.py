@@ -267,6 +267,21 @@ class XiangQiEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
+
+    def step_game_mode(self, agent_action):
+        # In game mode, AGENT is the player/user
+        if self.turn == AGENT:
+            for piece_id in range(1, PIECE_CNT):
+                self.get_possible_actions_by_piece(piece_id)
+            # self.game.get_user_input_with_PyGame_GUI <- of course feel free to rename this method
+            self.step(agent_action)
+        else:
+            self.step(agent_action)
+            for piece_id in range(1, PIECE_CNT):
+                self.get_possible_actions_by_piece(piece_id)
+            # self.game.get_user_input_with_PyGame_GUI <- of course feel free to rename this method
+
+
     def init_pieces(self):
         """
         Method initializes and stores all ally and enemy pieces
@@ -318,10 +333,10 @@ class XiangQiEnv(gym.Env):
             actions that are can be taken by the piece.
         """
         if is_agent(piece_id):
-            self.get_possible_actions(AGENT)
+            pieces = self.agent_piece
             possible_actions = self.agent_actions
         else:
-            self.get_possible_actions(ENEMY)
+            pieces = self.enemy_piece
             possible_actions = self.enemy_actions
 
         piece_id = abs(piece_id)
@@ -332,13 +347,16 @@ class XiangQiEnv(gym.Env):
         piece_action_id_end = piece_action_id_start + pow(TOTAL_POS, 2)
 
         # First filter to obtain only legal actions.
-        all_possible_actions = np.where(possible_actions == 1)[0]
+        legal_actions = np.where(possible_actions == 1)[0]
         # Second filter to limit the actions to only a piece done via
         # limiting the index.
-        all_possible_actions = all_possible_actions[
-            all_possible_actions >= piece_action_id_start]
-        return all_possible_actions[
-            all_possible_actions < piece_action_id_end]
+        legal_actions = legal_actions[legal_actions >= piece_action_id_start]
+        legal_actions = legal_actions[legal_actions < piece_action_id_end]
+
+        # save the start and end coordinates in each piece object's legal_moves
+        pieces[piece_id].legal_moves = [
+            action_space_to_move(action)[1:] for action in legal_actions
+        ]
 
     def check_flying_general(self, action):
         """
