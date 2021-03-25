@@ -295,7 +295,7 @@ class XiangQiEnv(gym.Env):
 
             for piece_id in range(1, PIECE_CNT+1):
                 self.get_possible_actions_by_piece(piece_id)
-            
+
             piece_id, end = self.game.run()
             start = (self.agent_piece[piece_id].row,
                      self.enemy_piece[piece_id].col)

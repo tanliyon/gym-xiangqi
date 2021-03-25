@@ -37,6 +37,7 @@ class XiangQiGame:
         self.enemy_kills = []
         self.cur_selected_pid = 0
         self.end_pos = None
+        self.next_moves = None
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -96,6 +97,28 @@ class XiangQiGame:
             self.agent_piece[i].move_sound = sound.piece_move
             self.enemy_piece[i].move_sound = sound.piece_move
 
+    def get_pos_next_moves(self):
+        print(self.next_moves)
+        self.next_moves = (
+            [legal_move[1] for legal_move in self.cur_selected.legal_moves]
+            )
+
+    def update_pos_next_moves(self):
+
+        if self.next_moves is None:
+            return
+
+        pos_move_image = self.cur_selected.basic_image.copy()
+        opacity = 128
+        pos_move_image.set_alpha(opacity)
+
+        for next_x, next_y in self.next_moves:
+            # print(next_x, next_y)
+            pygame_x = next_x*COOR_DELTA + COOR_OFFSET
+            pygame_y = next_y*COOR_DELTA + COOR_OFFSET
+            # print(pygame_x, pygame_y)
+            self.screen.blit(pos_move_image, (pygame_y, pygame_x))
+
     def on_event(self, event):
         """
         This routine is triggered when some kind of user/game event is detected
@@ -116,7 +139,7 @@ class XiangQiGame:
 
                 # if piece is clicked, select it
                 if self.find_target_piece(clicked_coor):
-                    return
+                    self.get_pos_next_moves()
 
                 if self.cur_selected is None:
                     return
@@ -184,6 +207,7 @@ class XiangQiGame:
             self.screen.blit(self.cur_selected.select_image,
                              self.cur_selected.get_pygame_coor())
 
+        self.update_pos_next_moves()
         self.render_kills()
 
         # draw all on screen
