@@ -38,6 +38,7 @@ class XiangQiGame:
         self.cur_selected_pid = 0
         self.end_pos = None
         self.next_moves = None
+        self.cur_sel_basic_img = None
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -98,26 +99,24 @@ class XiangQiGame:
             self.enemy_piece[i].move_sound = sound.piece_move
 
     def get_pos_next_moves(self):
-        print(self.next_moves)
         self.next_moves = (
             [legal_move[1] for legal_move in self.cur_selected.legal_moves]
-            )
+        )
+        self.cur_sel_basic_img = self.cur_selected.basic_image.copy()
 
     def update_pos_next_moves(self):
-
         if self.next_moves is None:
             return
 
-        pos_move_image = self.cur_selected.basic_image.copy()
         opacity = 128
-        pos_move_image.set_alpha(opacity)
+        self.cur_sel_basic_img.set_alpha(opacity)
 
         for next_x, next_y in self.next_moves:
             # print(next_x, next_y)
             pygame_x = next_x*COOR_DELTA + COOR_OFFSET
             pygame_y = next_y*COOR_DELTA + COOR_OFFSET
             # print(pygame_x, pygame_y)
-            self.screen.blit(pos_move_image, (pygame_y, pygame_x))
+            self.screen.blit(self.cur_sel_basic_img, (pygame_y, pygame_x))
 
     def on_event(self, event):
         """
@@ -155,13 +154,10 @@ class XiangQiGame:
                 if not is_legal:
                     return
 
-                enemies = self.enemy_piece[1:]
-                enemy_coors = [piece.coor for piece in enemies]
-
                 # fill the coordinate with the selected agent piece
                 real_click_y = real_clicked_coor[1]
                 real_click_x = real_clicked_coor[0]
-                self.cur_selected.move(real_click_y, real_click_x)
+                # self.cur_selected.move(real_click_y, real_click_x)
                 self.end_pos = tuple(real_clicked_coor[::-1])
 
                 # reset counter after agent turn is over
@@ -169,6 +165,7 @@ class XiangQiGame:
 
                 # reset piece selection and end my turn
                 self.cur_selected = None
+                self.next_moves = None
                 self.running = False
         """
         # timer decrement every second
@@ -237,12 +234,6 @@ class XiangQiGame:
             for event in pygame.event.get():
                 self.on_event(event)
             self.render()
-
-        piece_id = self.cur_selected_pid
-        new_pos = self.end_pos
-        self.cur_selected_pid = 0
-        self.end_pos = None
-        return piece_id, new_pos
 
     def load_piece_images(self, pieces: list):
         """

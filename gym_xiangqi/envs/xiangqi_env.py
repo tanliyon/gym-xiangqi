@@ -100,8 +100,10 @@ class XiangQiEnv(gym.Env):
         self.agent_color = agent_color
         if agent_color == RED:
             self.enemy_color = BLACK
+            self.turn = AGENT
         else:
             self.enemy_color = RED
+            self.turn = ENEMY
 
         # epoch termination flag
         self._done = False
@@ -271,38 +273,20 @@ class XiangQiEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def step_game_mode(self, agent_action):
-        # In game mode, AGENT is the player/user
-        if self.turn == AGENT:
-            for piece_id in range(1, PIECE_CNT+1):
-                self.get_possible_actions_by_piece(piece_id)
+    def step_user(self):
+        error_msg = "gym_xiangqi error: calling step_user with " \
+                    "incorrect game turn (must be agent's turn)"
+        assert self.turn == AGENT, error_msg
 
-            piece_id, end = self.game.run()
-            start = (self.agent_piece[piece_id].row,
-                     self.enemy_piece[piece_id].col)
-            player_action = move_to_action_space(piece_id, start, end)
-            obs, reward, done, _ = self.step(player_action)
+        for piece_id in range(1, PIECE_CNT+1):
+            self.get_possible_actions_by_piece(piece_id)
 
-            if done:
-                return obs, LOSE, done, {}
-
-            obs, reward, done, _ = self.step(agent_action)
-        else:
-            obs, reward, done, _ = self.step(agent_action)
-
-            if done:
-                return obs, WIN, done, {}
-
-            for piece_id in range(1, PIECE_CNT+1):
-                self.get_possible_actions_by_piece(piece_id)
-
-            piece_id, end = self.game.run()
-            start = (self.agent_piece[piece_id].row,
-                     self.enemy_piece[piece_id].col)
-            player_action = move_to_action_space(piece_id, start, end)
-            obs, _, done, _ = self.step(player_action)
-
-        return obs, reward, done, {}
+        self.game.run()
+        piece_id, end = self.game.cur_selected_pid, self.game.end_pos
+        start = (self.agent_piece[piece_id].row,
+                 self.agent_piece[piece_id].col)
+        player_action = move_to_action_space(piece_id, start, end)
+        return self.step(player_action)
 
     def init_pieces(self):
         """

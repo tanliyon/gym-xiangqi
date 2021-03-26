@@ -19,14 +19,23 @@ def main():
         # Add a slight delay to properly visualize the game.
         time.sleep(1)
 
+        _, reward, done, _ = env.step_user()
+        piece = env.game.cur_selected_pid
+        piece = PIECE_ID_TO_NAME[piece]
+        end = env.game.end_pos
+
+        print(f"Round: {round}")
+        print(f"Player made the move {piece} from {end} to {end}.")
+        print(f"Reward: {reward}")
+        print("================")
+
         action = agent.move(env)
-        _, reward, done, _ = env.step_game_mode(action)
-        turn = "Agent" if env.turn == AGENT else "Enemy"
+        _, reward, done, _ = env.step(action)
         move = action_space_to_move(action)
         piece = PIECE_ID_TO_NAME[move[0]]
 
         print(f"Round: {round}")
-        print(f"{turn} made the move {piece} from {move[1]} to {move[2]}.")
+        print(f"Random agent made the move {piece} from {move[1]} to {move[2]}.")
         print(f"Reward: {reward}")
         print("================")
 
