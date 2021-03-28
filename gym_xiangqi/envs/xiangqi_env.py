@@ -191,6 +191,9 @@ class XiangQiEnv(gym.Env):
         if self.check_flying_general(action):
             return np.array(self.state), ILLEGAL_MOVE, False, {}
 
+        # check if opponent is in Jiang condition before processing given move
+        pre_jiang_actions = self.check_jiang()
+
         # if legal move is given, move the piece
         piece, start, end = action_space_to_move(action)
         pieces[piece].move(*end)
@@ -213,16 +216,18 @@ class XiangQiEnv(gym.Env):
             self._done = True
 
         # check for perpetual check (check in Xiangqi is called jiang)
-        is_jiang, jiang_action = self.check_jiang()
+        post_jiang_actions = self.check_jiang()
 
-        # check if the player is making consecutive jiang's
-        if is_jiang:
-            if jiang_action not in jiang_history:
-                jiang_history[jiang_action] = 0
-            jiang_history[jiang_action] += 1
-            if jiang_history[jiang_action] == 4:
-                self._done = True
-                return np.array(self.state), LOSE, self._done, {}
+        if post_jiang_actions:
+            for jiang_action in post_jiang_actions:
+                if jiang_action in pre_jiang_actions:
+                    continue
+                if jiang_action not in jiang_history:
+                    jiang_history[jiang_action] = 0
+                jiang_history[jiang_action] += 1
+                if jiang_history[jiang_action] == 4:
+                    self._done = True
+                    return np.array(self.state), LOSE, self._done, {}
             reward += JIANG_POINT
         else:   # reset history if jiang spree has stopped
             if self.turn == AGENT:
@@ -417,8 +422,9 @@ class XiangQiEnv(gym.Env):
 
         # iterate through possible moves of current player's pieces
         actions = np.where(actions == 1)[0]
+        jiang_actions = []
         for action in actions:
             _, _, (target_r, target_c) = action_space_to_move(action)
             if target_r == general.row and target_c == general.col:
-                return True, action
-        return False, -1
+                jiang_actions.append(action)
+        return jiang_actions
