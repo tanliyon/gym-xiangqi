@@ -141,6 +141,9 @@ class XiangQiEnv(gym.Env):
         # initialize PyGame module
         self.game = None
 
+        # user movement information during user vs agent game mode
+        self.user_move_info = None
+
         # reset all environment components to initial state
         self.reset()
 
@@ -282,9 +285,13 @@ class XiangQiEnv(gym.Env):
             self.get_possible_actions_by_piece(piece_id)
 
         self.game.run()
-        piece_id, end = self.game.cur_selected_pid, self.game.end_pos
+        piece_id = self.game.cur_selected_pid
         start = (self.agent_piece[piece_id].row,
                  self.agent_piece[piece_id].col)
+        end = self.game.end_pos
+
+        self.user_move_info = (piece_id, start, end)
+
         player_action = move_to_action_space(piece_id, start, end)
         return self.step(player_action)
 

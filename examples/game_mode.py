@@ -20,12 +20,12 @@ def main():
         time.sleep(1)
 
         _, reward, done, _ = env.step_user()
-        piece = env.game.cur_selected_pid
+        piece, start, end = env.user_move_info
         piece = PIECE_ID_TO_NAME[piece]
         end = env.game.end_pos
 
         print(f"Round: {round}")
-        print(f"Player made the move {piece} from {end} to {end}.")
+        print(f"Player made the move {piece} from {start} to {end}.")
         print(f"Reward: {reward}")
         print("================")
 
