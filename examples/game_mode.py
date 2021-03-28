@@ -17,9 +17,6 @@ def main():
     done = False
     round = 0
     while not done:
-        # Add a slight delay to properly visualize the game.
-        time.sleep(1)
-
         _, reward, done, _ = env.step_user()
         piece, start, end = env.user_move_info
         piece = PIECE_ID_TO_NAME[piece]
@@ -29,6 +26,11 @@ def main():
         print(f"Player made the move {piece} from {start} to {end}.")
         print(f"Reward: {reward}")
         print("================")
+
+        env.render()
+
+        # Add a slight delay to properly visualize the game.
+        time.sleep(1)
 
         action = agent.move(env)
         _, reward, done, _ = env.step(action)
