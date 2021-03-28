@@ -4,9 +4,6 @@ from gym_xiangqi.piece import (
     Piece, General, Advisor, Elephant,
     Horse, Chariot, Cannon, Soldier
 )
-from gym_xiangqi.utils import (
-    action_space_to_move
-)
 from gym_xiangqi.constants import (
     AGENT, ENEMY,
     RED, BLACK, GENERAL, ADVISOR_1,

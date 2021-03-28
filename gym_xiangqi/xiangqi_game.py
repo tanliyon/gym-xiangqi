@@ -154,9 +154,6 @@ class XiangQiGame:
                 if not is_legal:
                     return
 
-                # fill the coordinate with the selected agent piece
-                real_click_y = real_clicked_coor[1]
-                real_click_x = real_clicked_coor[0]
                 # self.cur_selected.move(real_click_y, real_click_x)
                 self.end_pos = tuple(real_clicked_coor[::-1])
 

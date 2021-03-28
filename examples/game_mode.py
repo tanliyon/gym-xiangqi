@@ -1,15 +1,16 @@
-from agents.random_agent import RandomAgent
-from gym_xiangqi.constants import AGENT, PIECE_ID_TO_NAME, BLACK
-from gym_xiangqi.utils import action_space_to_move
-
-import gym
 import time
 
+from agents.random_agent import RandomAgent
+from gym_xiangqi.constants import (     # NOQA
+    RED, BLACK, PIECE_ID_TO_NAME
+)
+from gym_xiangqi.utils import action_space_to_move
 from gym_xiangqi.envs import XiangQiEnv
 
 
 def main():
-    env = XiangQiEnv()
+    # Pass in the color you want to play as (RED or BLACK)
+    env = XiangQiEnv(RED)
     env.render()
     agent = RandomAgent()
 
@@ -35,7 +36,7 @@ def main():
         piece = PIECE_ID_TO_NAME[move[0]]
 
         print(f"Round: {round}")
-        print(f"Random agent made the move {piece} from {move[1]} to {move[2]}.")
+        print(f"RL agent made the move {piece} from {move[1]} to {move[2]}.")
         print(f"Reward: {reward}")
         print("================")
 
