@@ -1,4 +1,4 @@
-from agents.random_agent import RandomAgent
+from gym_xiangqi.agents.random_agent import RandomAgent
 from gym_xiangqi.constants import AGENT, PIECE_ID_TO_NAME
 from gym_xiangqi.utils import action_space_to_move
 
