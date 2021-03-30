@@ -1,5 +1,5 @@
 from gym_xiangqi.envs.xiangqi_env import XiangQiEnv  # NOQA
-from gym_xiangqi.agents.random_agent import RandomAgent  # NOQA
+from gym_xiangqi.agents import RandomAgent  # NOQA
 import timeit
 
 """ Timing """

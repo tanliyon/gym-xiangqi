@@ -1,7 +1,7 @@
 import gym
 import pytest
 
-from gym_xiangqi.agents.random_agent import RandomAgent
+from gym_xiangqi.agents import RandomAgent
 from gym_xiangqi.constants import (
     EMPTY, ADVISOR_1
 )

@@ -1,4 +1,4 @@
-from gym_xiangqi.agents.random_agent import RandomAgent
+from gym_xiangqi.agents import RandomAgent
 
 import gym
 
