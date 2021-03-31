@@ -37,8 +37,7 @@ class XiangQiGame:
         self.enemy_kills = []
         self.cur_selected_pid = 0
         self.end_pos = None
-        self.next_moves = None
-        self.cur_sel_basic_img = None
+        self.quit = False
 
     def on_init(self, agent_piece, enemy_piece):
         """
@@ -98,34 +97,32 @@ class XiangQiGame:
             self.agent_piece[i].move_sound = sound.piece_move
             self.enemy_piece[i].move_sound = sound.piece_move
 
-    def get_pos_next_moves(self):
-        self.next_moves = (
-            [legal_move[1] for legal_move in self.cur_selected.legal_moves]
-        )
-        self.cur_sel_basic_img = self.cur_selected.basic_image.copy()
-
     def update_pos_next_moves(self):
-        if self.next_moves is None:
+        if self.cur_selected is None:
             return
 
         opacity = 128
-        self.cur_sel_basic_img.set_alpha(opacity)
+        cur_sel_basic_img = self.cur_selected.basic_image.copy()
+        cur_sel_basic_img.set_alpha(opacity)
 
-        for next_x, next_y in self.next_moves:
-            # print(next_x, next_y)
-            pygame_x = next_x*COOR_DELTA + COOR_OFFSET
-            pygame_y = next_y*COOR_DELTA + COOR_OFFSET
-            # print(pygame_x, pygame_y)
-            self.screen.blit(self.cur_sel_basic_img, (pygame_y, pygame_x))
+        for _, (row, col) in self.cur_selected.legal_moves:
+            pygame_y = row*COOR_DELTA + COOR_OFFSET
+            pygame_x = col*COOR_DELTA + COOR_OFFSET
+            self.screen.blit(cur_sel_basic_img, (pygame_x, pygame_y))
 
     def on_event(self, event):
         """
         This routine is triggered when some kind of user/game event is detected
         ex. when user closes the PyGame window
             (mostly any keyboard/mouse input)
+
+        Parameter:
+            event: PyGame event object that represents keyboard inputs, mouse
+                   inputs and etc.
         """
         if event.type == pygame.QUIT:
             self.running = False
+            self.quit = True
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # clicked: 1 not_clicked: 0
@@ -136,34 +133,31 @@ class XiangQiGame:
                 clicked_x, clicked_y = pygame.mouse.get_pos()
                 clicked_coor = (clicked_x, clicked_y)
 
-                # if piece is clicked, select it
-                if self.find_target_piece(clicked_coor):
-                    self.get_pos_next_moves()
+                # select any ally pieces that is in the clicked range
+                self.find_target_piece(clicked_coor)
 
-                if self.cur_selected is None:
-                    return
+                # if another click is made while an ally piece is selected,
+                # this must be a piece movement
+                if self.cur_selected is not None:
+                    # convert to real coordinate
+                    real_clicked_coor = self.to_real_coor(clicked_coor)
 
-                # convert to real coordinate
-                real_clicked_coor = self.to_real_coor(clicked_coor)
+                    # define the piece movement as start to end position
+                    s = [self.cur_selected.row, self.cur_selected.col]
+                    e = list(real_clicked_coor[::-1])
 
-                s = [self.cur_selected.row, self.cur_selected.col]
-                e = list(real_clicked_coor[::-1])
-                is_legal = (s, e) in self.cur_selected.legal_moves
+                    # validate the piece movement
+                    is_legal = (s, e) in self.cur_selected.legal_moves
 
-                # need to get this validity from env
-                if not is_legal:
-                    return
+                    if is_legal:
+                        self.end_pos = tuple(real_clicked_coor[::-1])
 
-                # self.cur_selected.move(real_click_y, real_click_x)
-                self.end_pos = tuple(real_clicked_coor[::-1])
+                        # reset counter after agent turn is over
+                        self.counter = COUNT
 
-                # reset counter after agent turn is over
-                self.counter = COUNT
-
-                # reset piece selection and end my turn
-                self.cur_selected = None
-                self.next_moves = None
-                self.running = False
+                        # reset piece selection and end my turn
+                        self.cur_selected = None
+                        self.running = False
         """
         # timer decrement every second
         elif event.type == pygame.USEREVENT + 1:
@@ -261,25 +255,26 @@ class XiangQiGame:
 
         # find the piece where the clicked coord is within its range
         for piece_id, piece in enumerate(self.agent_piece[1:], 1):
+            if piece.state == DEAD:
+                continue
+
             piece_x, piece_y = piece.get_pygame_coor()
 
             x_min = piece_x - piece.piece_width/2 + 25
             x_max = piece_x + piece.piece_width/2 + 25
 
-            valid_x = x_min < clicked_x and clicked_x < x_max
+            valid_x = x_min < clicked_x < x_max
 
             y_min = piece_y - piece.piece_height/2 + 25
             y_max = piece_y + piece.piece_height/2 + 25
 
-            valid_y = y_min < clicked_y and clicked_y < y_max
+            valid_y = y_min < clicked_y < y_max
 
             # if the clicked coord is within the piece range, select it
             if valid_x and valid_y:
                 self.cur_selected = piece
                 self.cur_selected_pid = piece_id
-                return True
-
-        return False
+                break
 
     def init_timer(self):
         """
@@ -390,11 +385,3 @@ class XiangQiGame:
         self.screen.blit(game_over_text, t_rect)
         pygame.display.update()
         time.sleep(3)
-
-
-if __name__ == "__main__":
-    # initializing and running the game for manual testing
-    from gym_xiangqi.envs import XiangQiEnv
-    env = XiangQiEnv()
-    env.render()
-    env.game.run()

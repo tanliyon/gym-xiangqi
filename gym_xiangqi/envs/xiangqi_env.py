@@ -188,8 +188,6 @@ class XiangQiEnv(gym.Env):
         # check for illegal move, flying general, etc. and penalize the agent
         if possible_actions[action] == 0:
             return np.array(self.state), ILLEGAL_MOVE, False, {}
-        if self.check_flying_general(action):
-            return np.array(self.state), ILLEGAL_MOVE, False, {}
 
         # check if opponent is in Jiang condition before processing given move
         pre_jiang_actions = self.check_jiang()
@@ -290,13 +288,25 @@ class XiangQiEnv(gym.Env):
             self.get_possible_actions_by_piece(piece_id)
 
         self.game.run()
+
+        # game terminated by window close button
+        if self.game.quit:
+            return self.state, 0, True, {"exit": True}
+
+        # retrieve user piece movement info
         piece_id = self.game.cur_selected_pid
         start = (self.agent_piece[piece_id].row,
                  self.agent_piece[piece_id].col)
         end = self.game.end_pos
 
+        # reset the variables
+        self.game.cur_selected_pid = None
+        self.game.end_pos = None
+
+        # save as instance variables for debugging
         self.user_move_info = (piece_id, start, end)
 
+        # process the piece movement in env
         player_action = move_to_action_space(piece_id, start, end)
         return self.step(player_action)
 
@@ -375,34 +385,6 @@ class XiangQiEnv(gym.Env):
         pieces[piece_id].legal_moves = [
             action_space_to_move(action)[1:] for action in legal_actions
         ]
-
-    def check_flying_general(self, action):
-        """
-        Check if given input action results in flying general
-
-        Parameters:
-            action (int): action value in the range of env's action space
-        """
-        piece_id, (r1, c1), (r2, c2) = action_space_to_move(action)
-
-        # simulate input action without altering current game state
-        new_state = np.array(self.state)
-        new_state[r1][c1] = EMPTY
-        new_state[r2][c2] = piece_id * self.turn
-
-        enemy_gen = self.enemy_piece[GENERAL]
-        agent_gen = self.agent_piece[GENERAL]
-
-        # check if they are in the same column
-        if enemy_gen.col != agent_gen.col:
-            return False
-
-        # check if anything is in between the two generals
-        c = enemy_gen.col
-        for r in range(enemy_gen.row+1, agent_gen.row):
-            if new_state[r][c] != EMPTY:
-                return False
-        return True
 
     def check_jiang(self):
         """

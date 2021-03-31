@@ -18,7 +18,10 @@ def main():
     round = 0
     while not done:
         if env.turn == AGENT:
-            _, reward, done, _ = env.step_user()
+            _, reward, done, info = env.step_user()
+
+            if "exit" in info and info["exit"]:
+                break
 
             player = "You"
             piece, start, end = env.user_move_info
@@ -42,6 +45,7 @@ def main():
         print(f"Reward: {reward}")
         print("================")
 
+    print("Closing Xiangqi environment")
     env.close()
 
 
