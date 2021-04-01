@@ -10,6 +10,7 @@ from gym_xiangqi.constants import (
     HORSE_1, ELEPHANT_1, SOLDIER_1,
     CHARIOT_1, CANNON_1
 )
+from gym_xiangqi.utils import is_agent
 from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
 
 
@@ -31,7 +32,7 @@ class TestPieceClasses(unittest.TestCase):
                     (piece_id, [src_x, src_y], [dest_x, dest_y]),
                     (...)]
         """
-        if piece_id > 0:
+        if is_agent(piece_id):
             pieces = env.agent_piece
             env.get_possible_actions(AGENT)
         else:

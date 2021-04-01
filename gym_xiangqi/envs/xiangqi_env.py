@@ -280,6 +280,23 @@ class XiangQiEnv(gym.Env):
         return [seed]
 
     def step_user(self):
+        """
+        This method functions like the environment's step() method, but
+        it is specifically for users when they are player of a Xiangqi
+        game. The method first renders game GUI and listens to user inputs.
+        Then, the user input, the piece movement, is converted into action
+        space and passed to environment's step() method. The environment then
+        is able to handle the input action just like it handles ant actions
+        from RL agents.
+
+        Return:
+            observation (object): current game state of the environment
+            reward (float) : amount of reward returned after given action
+            done (bool): whether the episode has ended, in which case further
+                         step() calls will return undefined results
+            info (dict): contains auxiliary diagnostic information (helpful for
+                         debugging, and sometimes learning)
+        """
         error_msg = "gym_xiangqi error: calling step_user with " \
                     "incorrect game turn (must be agent's turn)"
         assert self.turn == AGENT, error_msg
