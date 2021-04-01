@@ -8,6 +8,8 @@ __pycache__
 
 # Distribution / packaging
 *.egg-info/
+build/
+dist/
 
 # Testing
 .coverage
