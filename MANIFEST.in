@@ -1,0 +1,2 @@
+include gym_xiangqi/images/**/*
+include gym_xiangqi/sounds/*
