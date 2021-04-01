@@ -20,7 +20,8 @@ def main():
     if site.lower() == "pypi":
         os.system("twine upload dist/*")
     elif site.lower() == "test-pypi":
-        os.system("twine upload --repository-url https://test.pypi.org/legacy/ dist/*")
+        os.system("twine upload "
+                  "--repository-url https://test.pypi.org/legacy/ dist/*")
     else:
         print("Invalid option! Please choose either pypi or test-pypi!")
 
