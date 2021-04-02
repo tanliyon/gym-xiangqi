@@ -286,7 +286,7 @@ class XiangQiEnv(gym.Env):
         game. The method first renders game GUI and listens to user inputs.
         Then, the user input, the piece movement, is converted into action
         space and passed to environment's step() method. The environment then
-        is able to handle the input action just like it handles ant actions
+        is able to handle the input action just like it handles any actions
         from RL agents.
 
         Return:
