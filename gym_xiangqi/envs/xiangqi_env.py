@@ -7,7 +7,7 @@ from gym_xiangqi.xiangqi_game import XiangQiGame
 from gym_xiangqi.utils import (
     action_space_to_move,
     move_to_action_space,
-    is_agent
+    is_ally
 )
 from gym_xiangqi.piece import (
     General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
@@ -17,7 +17,7 @@ from gym_xiangqi.constants import (
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
     ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
-    AGENT, ENEMY, EMPTY, GENERAL,
+    ALLY, ENEMY, EMPTY, GENERAL,
 )
 
 
@@ -96,11 +96,11 @@ class XiangQiEnv(gym.Env):
         [8, 6, 4, 2, 1, 3, 5, 7, 9]
     ]
 
-    def __init__(self, agent_color=RED):
-        self.agent_color = agent_color
-        if agent_color == RED:
+    def __init__(self, ally_color=RED):
+        self.ally_color = ally_color
+        if ally_color == RED:
             self.enemy_color = BLACK
-            self.turn = AGENT
+            self.turn = ALLY
         else:
             self.enemy_color = RED
             self.turn = ENEMY
@@ -126,16 +126,16 @@ class XiangQiEnv(gym.Env):
         self.state = None
 
         # instantiate piece objects
-        self.agent_piece = [None for _ in range(PIECE_CNT + 1)]
+        self.ally_piece = [None for _ in range(PIECE_CNT + 1)]
         self.enemy_piece = [None for _ in range(PIECE_CNT + 1)]
 
         # possible moves: binary list with same shape of action space
         #                 valid action will be represented as 1 else 0
-        self.agent_actions = np.zeros((n, ))
+        self.ally_actions = np.zeros((n, ))
         self.enemy_actions = np.zeros((n, ))
 
         # history of consecutive jiangs (will be used to ban perpetual check)
-        self.agent_jiang_history = None
+        self.ally_jiang_history = None
         self.enemy_jiang_history = None
 
         # initialize PyGame module
@@ -149,7 +149,7 @@ class XiangQiEnv(gym.Env):
 
     def step(self, action):
         """
-        Run one time step of Xiangqi game: agent and enemy each plays a move
+        Run one turn of Xiangqi game: ally or enemy side plays a move
 
         Parameter:
             action (int): a valid action in Xiangqi action space
@@ -176,10 +176,10 @@ class XiangQiEnv(gym.Env):
 
         reward = 0.0
 
-        if self.turn == AGENT:
-            pieces = self.agent_piece
-            possible_actions = self.agent_actions
-            jiang_history = self.agent_jiang_history
+        if self.turn == ALLY:
+            pieces = self.ally_piece
+            possible_actions = self.ally_actions
+            jiang_history = self.ally_jiang_history
         else:
             pieces = self.enemy_piece
             possible_actions = self.enemy_actions
@@ -204,7 +204,7 @@ class XiangQiEnv(gym.Env):
         if rm_piece_id < 0:
             self.enemy_piece[-rm_piece_id].state = DEAD
         elif rm_piece_id > 0:
-            self.agent_piece[rm_piece_id].state = DEAD
+            self.ally_piece[rm_piece_id].state = DEAD
 
         # reward based on removed piece
         reward += PIECE_POINTS[abs(rm_piece_id)]
@@ -228,13 +228,13 @@ class XiangQiEnv(gym.Env):
                     return np.array(self.state), LOSE, self._done, {}
             reward += JIANG_POINT
         else:   # reset history if jiang spree has stopped
-            if self.turn == AGENT:
-                self.agent_jiang_history = {}
+            if self.turn == ALLY:
+                self.ally_jiang_history = {}
             else:
                 self.enemy_jiang_history = {}
 
-        # self-play: agent switches turn between agent and enemy side
-        self.turn *= -1     # AGENT (1) -> ENEMY (-1) and vice versa
+        # self-play: agent switches turn between ally and enemy side
+        self.turn *= -1     # ALLY (1) to ENEMY (-1) and vice versa
         self.get_possible_actions(self.turn)
 
         return np.array(self.state), reward, self._done, {}
@@ -246,11 +246,11 @@ class XiangQiEnv(gym.Env):
         self.state = np.array(self.initial_board)
         self.init_pieces()
 
-        self.agent_jiang_history = {}
+        self.ally_jiang_history = {}
         self.enemy_jiang_history = {}
 
-        if self.agent_color == RED:
-            self.turn = AGENT
+        if self.ally_color == RED:
+            self.turn = ALLY
         else:
             self.turn = ENEMY
 
@@ -262,7 +262,7 @@ class XiangQiEnv(gym.Env):
         """
         if self.game is None:
             self.game = XiangQiGame()
-            self.game.on_init(self.agent_piece, self.enemy_piece)
+            self.game.on_init(self.ally_piece, self.enemy_piece)
         self.game.render()
 
     def close(self):
@@ -298,8 +298,8 @@ class XiangQiEnv(gym.Env):
                          debugging, and sometimes learning)
         """
         error_msg = "gym_xiangqi error: calling step_user with " \
-                    "incorrect game turn (must be agent's turn)"
-        assert self.turn == AGENT, error_msg
+                    "incorrect game turn (must be ally's turn)"
+        assert self.turn == ALLY, error_msg
 
         for piece_id in range(1, PIECE_CNT+1):
             self.get_possible_actions_by_piece(piece_id)
@@ -312,8 +312,8 @@ class XiangQiEnv(gym.Env):
 
         # retrieve user piece movement info
         piece_id = self.game.cur_selected_pid
-        start = (self.agent_piece[piece_id].row,
-                 self.agent_piece[piece_id].col)
+        start = (self.ally_piece[piece_id].row,
+                 self.ally_piece[piece_id].col)
         end = self.game.end_pos
 
         # reset the variables
@@ -338,19 +338,19 @@ class XiangQiEnv(gym.Env):
                 if piece_id < 0:
                     self.enemy_piece[-piece_id] = init(self.enemy_color, r, c)
                 elif piece_id > 0:
-                    self.agent_piece[piece_id] = init(self.agent_color, r, c)
+                    self.ally_piece[piece_id] = init(self.ally_color, r, c)
 
     def get_possible_actions(self, player):
         """
         Searches all valid actions each piece can perform
 
         Parameter:
-            player (int): -1 for enemy 1 for agent
+            player (int): -1 for enemy 1 for ALLY
         """
         # current piece set changes depending on whose turn it is
-        if player == AGENT:
-            piece_set = self.agent_piece
-            possible_actions = self.agent_actions
+        if player == ALLY:
+            piece_set = self.ally_piece
+            possible_actions = self.ally_actions
         else:
             piece_set = self.enemy_piece
             possible_actions = self.enemy_actions
@@ -377,9 +377,9 @@ class XiangQiEnv(gym.Env):
         return:
             actions that are can be taken by the piece.
         """
-        if is_agent(piece_id):
-            pieces = self.agent_piece
-            possible_actions = self.agent_actions
+        if is_ally(piece_id):
+            pieces = self.ally_piece
+            possible_actions = self.ally_actions
         else:
             pieces = self.enemy_piece
             possible_actions = self.enemy_actions
@@ -409,11 +409,11 @@ class XiangQiEnv(gym.Env):
         by any of current player's pieces
         """
         # This is OPPONENT General
-        if self.turn == AGENT:
+        if self.turn == ALLY:
             general = self.enemy_piece[GENERAL]
-            actions = self.agent_actions
+            actions = self.ally_actions
         else:
-            general = self.agent_piece[GENERAL]
+            general = self.ally_piece[GENERAL]
             actions = self.enemy_actions
 
         # update current player's moves

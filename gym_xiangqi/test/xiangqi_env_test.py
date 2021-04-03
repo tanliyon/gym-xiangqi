@@ -8,7 +8,7 @@ from gym_xiangqi.constants import (
     RED, BLACK, DEAD,
     ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
     EMPTY, GENERAL, CANNON_1, HORSE_2,
-    AGENT, ENEMY,
+    ALLY, ENEMY,
 )
 
 
@@ -23,18 +23,18 @@ class TestXiangQiEnv(unittest.TestCase):
         self.env = XiangQiEnv()
 
     def test_env_initialization(self):
-        self.assertEqual(self.env.agent_color, RED)
+        self.assertEqual(self.env.ally_color, RED)
         self.assertEqual(self.env.enemy_color, BLACK)
 
-        self.env = XiangQiEnv(agent_color=BLACK)
-        self.assertEqual(self.env.agent_color, BLACK)
+        self.env = XiangQiEnv(ally_color=BLACK)
+        self.assertEqual(self.env.ally_color, BLACK)
         self.assertEqual(self.env.enemy_color, RED)
 
         self.assertIsNone(self.env.game)
         self.assertIsNotNone(self.env.state)
         self.assertIsNotNone(self.env.observation_space)
         self.assertIsNotNone(self.env.action_space)
-        self.assertIsNotNone(self.env.agent_actions)
+        self.assertIsNotNone(self.env.ally_actions)
         self.assertIsNotNone(self.env.enemy_actions)
 
     def test_env_step_invalid_action(self):
@@ -88,12 +88,12 @@ class TestXiangQiEnv(unittest.TestCase):
 
     def test_env_step_one_round(self):
         """
-        verify one round of agent and enemy turns
-        78727: Agent CANNON_1 (7, 1) -> (7, 4)
+        verify one round of ally and enemy turns
+        78727: Ally CANNON_1 (7, 1) -> (7, 4)
         75172: Enemy CANNON_1 (2, 7) -> (2, 4)
         """
         actions = [(78727, CANNON_1, (7, 1), (7, 4), 0, ENEMY),
-                   (75172, CANNON_1, (2, 7), (2, 4), 0, AGENT)]
+                   (75172, CANNON_1, (2, 7), (2, 4), 0, ALLY)]
 
         for action, pid, (r1, c1), (r2, c2), points, next_turn in actions:
             obs, reward, done, info = self.env.step(action)
@@ -105,8 +105,8 @@ class TestXiangQiEnv(unittest.TestCase):
 
     def test_env_step_reward(self):
         """
-        Simulates Agent (red) cannon taking a black horse
-        78661: Agent CANNON_1 (7, 1) -> (0, 1)
+        Simulates Ally (red) cannon taking a black horse
+        78661: Ally CANNON_1 (7, 1) -> (0, 1)
         """
         action = 78661
         obs, reward, done, info = self.env.step(action)
@@ -119,11 +119,11 @@ class TestXiangQiEnv(unittest.TestCase):
     def test_env_step_done(self):
         """
         verify environment termination due to death of black general
-        78727: Agent CANNON_1 (7, 1) -> (7, 4)
+        78727: Ally CANNON_1 (7, 1) -> (7, 4)
         75172: Enemy CANNON_1 (2, 7) -> (2, 4)
-        78961: Agent CANNON_1 (7, 4) -> (3, 4)
+        78961: Ally CANNON_1 (7, 4) -> (3, 4)
         123966: Enemy SOLDIER_5 (3, 0) -> (4, 0)
-        75694: Agent CANNON_1 (3, 4) -> (0, 4) -- takes black general
+        75694: Ally CANNON_1 (3, 4) -> (0, 4) -- takes black general
         """
         actions = [78727, 75172, 78961, 123966, 75694]
         for action in actions:

@@ -1,8 +1,8 @@
 import time
 
-from agents.random_agent import RandomAgent
+from gym_xiangqi.agents import RandomAgent
 from gym_xiangqi.constants import (     # NOQA
-    RED, BLACK, PIECE_ID_TO_NAME, AGENT
+    RED, BLACK, PIECE_ID_TO_NAME, ALLY
 )
 from gym_xiangqi.utils import action_space_to_move
 from gym_xiangqi.envs import XiangQiEnv
@@ -17,7 +17,7 @@ def main():
     done = False
     round = 0
     while not done:
-        if env.turn == AGENT:
+        if env.turn == ALLY:
             _, reward, done, info = env.step_user()
 
             if "exit" in info and info["exit"]:

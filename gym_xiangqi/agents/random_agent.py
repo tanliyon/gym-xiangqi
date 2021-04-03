@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-from gym_xiangqi.constants import AGENT
+from gym_xiangqi.constants import ALLY
 
 
 class RandomAgent:
@@ -18,7 +18,7 @@ class RandomAgent:
         """
         Make a random move based on the environment.
         """
-        actions = (env.agent_actions if env.turn == AGENT
+        actions = (env.ally_actions if env.turn == ALLY
                    else env.enemy_actions)
         legal_moves = np.where(actions == 1)[0]
         ind = random.randint(0, len(legal_moves)-1)

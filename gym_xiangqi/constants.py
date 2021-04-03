@@ -33,7 +33,7 @@ WIN = PIECE_POINTS[1]
 LOSE = -PIECE_POINTS[1]
 
 """ PIECE """
-AGENT = 1
+ALLY = 1
 ENEMY = -1
 
 PIECE_CNT = 16              # Total number of pieces in each side
@@ -99,7 +99,7 @@ BOARD_COLS = 9
 
 # Palace coordinates
 PALACE_ENEMY_ROW = (0, 2)
-PALACE_AGENT_ROW = (7, 9)
+PALACE_ALLY_ROW = (7, 9)
 PALACE_COL = (3, 5)
 
 # River line
