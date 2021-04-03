@@ -1,9 +1,9 @@
 # This workflow builds, packages and deploys Gym Xiangqi to PyPI and TestPyPI
-name: Publish Gym Xiangqi distribution 📦 to PyPI and TestPyPI
+name: Deploy Gym Xiangqi distribution 📦 to PyPI and TestPyPI
 on: push
 
 jobs:
-  build-n-publish:
+  build-and-publish:
     name: Build and publish Gym Xiangqi distribution 📦 to PyPI and TestPyPI
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
@@ -35,3 +35,26 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+  test-pip-install:
+    name: Verify successful deployment with 'pip install gym-xiangqi'
+    needs: build-and-publish
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        python-version: [3.6, 3.7, 3.8]
+    
+    steps:
+    - name: Set up Python ${{ matrix.python-version }} 🐍
+      uses: actions/setup-python2v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install gym-xiangqi module using pip
+      run: |
+        python -m pip install --upgrade pip
+        pip install gym-xiangqi
+    
+    - name: Verify successful installation 🙌
+      run: agent-v-agent
