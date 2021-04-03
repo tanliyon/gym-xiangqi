@@ -1,6 +1,7 @@
 import os
 
 import pkg_resources
+import numpy as np
 import pygame
 
 from gym_xiangqi.utils import move_to_action_space, is_agent
@@ -14,7 +15,8 @@ from gym_xiangqi.constants import (
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
     PIECE_WIDTH, PIECE_HEIGHT,                          # piece sizes
     MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT,                # mini piece sizes
-    PATH_TO_BLACK, PATH_TO_RED                          # file paths to pieces
+    PATH_TO_BLACK, PATH_TO_RED,                         # file paths to pieces
+    EMPTY, GENERAL           # piece IDs
 )
 
 
@@ -39,6 +41,7 @@ class Piece:
         self.row = row
         self.col = col
         self.state = ALIVE
+        self.legal_moves = None
         self.piece_width = PIECE_WIDTH
         self.piece_height = PIECE_HEIGHT
         self.mini_piece_width = MINI_PIECE_WIDTH
@@ -137,8 +140,12 @@ def check_action(piece_id, orig_pos, cur_pos,
         if not rb or not cb:
             return i
 
+        # if ally piece is located, can't go further
         if state[r][c] * sign > 0:
             break
+
+        if check_flying_general(state, sign, piece_id, orig_pos, (r, c)):
+            return 0
 
         action_idx = move_to_action_space(piece_id, orig_pos, (r, c))
         actions[action_idx] = 1
@@ -150,6 +157,53 @@ def check_action(piece_id, orig_pos, cur_pos,
         c += offset[1]
 
     return i + 1
+
+
+def check_flying_general(state, side, piece_id, start, end):
+    """
+    Check if given input action results in flying general
+
+    Parameters:
+        state (np.array): 2D array representing current state
+        side (int): -1 or 1 representing enemy or agent side
+        piece_id (int): piece ID
+        start (tuple(int)): current coordinate of given piece
+        end (tuple(int)): destination coordinate of given piece
+    Return (bool):
+        indicates whether the action results in flying general or not
+    """
+
+    # simulate input action without altering current game state
+    new_state = np.array(state)
+    new_state[start[0]][start[1]] = EMPTY
+    new_state[end[0]][end[1]] = piece_id * side
+
+    enemy_gen_row = -1
+    enemy_gen_col = -1
+    agent_gen_row = -1
+    agent_gen_col = -1
+
+    for r in range(PALACE_ENEMY_ROW[0], PALACE_ENEMY_ROW[1]+1):
+        for c in range(PALACE_COL[0], PALACE_COL[1]+1):
+            if new_state[r][c] == GENERAL * ENEMY:
+                enemy_gen_row = r
+                enemy_gen_col = c
+
+    for r in range(PALACE_AGENT_ROW[0], PALACE_AGENT_ROW[1] + 1):
+        for c in range(PALACE_COL[0], PALACE_COL[1] + 1):
+            if new_state[r][c] == GENERAL * AGENT:
+                agent_gen_row = r
+                agent_gen_col = c
+
+    # check if they are in the same column
+    if enemy_gen_col != agent_gen_col:
+        return False
+
+    # check if anything is in between the two generals
+    for r in range(enemy_gen_row+1, agent_gen_row):
+        if new_state[r][agent_gen_col] != EMPTY:
+            return False
+    return True
 
 
 class General(Piece):
@@ -379,6 +433,11 @@ class Cannon(Piece):
                 if state[next_r][next_c] * sign > 0:
                     break
                 elif state[next_r][next_c] * sign < 0:
+                    if check_flying_general(state, sign, piece_id,
+                                            (self.row, self.col),
+                                            (next_r, next_c)):
+                        break
+
                     action_idx = move_to_action_space(
                         piece_id * sign, (self.row, self.col), (next_r, next_c)
                     )

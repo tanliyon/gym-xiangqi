@@ -4,14 +4,13 @@ from gym_xiangqi.piece import (
     Piece, General, Advisor, Elephant,
     Horse, Chariot, Cannon, Soldier
 )
-from gym_xiangqi.utils import (
-    action_space_to_move
-)
 from gym_xiangqi.constants import (
+    AGENT, ENEMY,
     RED, BLACK, GENERAL, ADVISOR_1,
     HORSE_1, ELEPHANT_1, SOLDIER_1,
     CHARIOT_1, CANNON_1
 )
+from gym_xiangqi.utils import is_agent
 from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
 
 
@@ -33,9 +32,15 @@ class TestPieceClasses(unittest.TestCase):
                     (piece_id, [src_x, src_y], [dest_x, dest_y]),
                     (...)]
         """
-        result = []
-        for action in env.get_possible_actions_by_piece(piece_id):
-            result.append(action_space_to_move(action))
+        if is_agent(piece_id):
+            pieces = env.agent_piece
+            env.get_possible_actions(AGENT)
+        else:
+            pieces = env.enemy_piece
+            env.get_possible_actions(ENEMY)
+
+        env.get_possible_actions_by_piece(piece_id)
+        result = pieces[abs(piece_id)].legal_moves
         result.sort()
         expected.sort()
         self.assertEqual(result, expected)
@@ -69,7 +74,7 @@ class TestPieceClasses(unittest.TestCase):
         self.diff_move_list(
             env=env,
             piece_id=GENERAL,
-            expected=[(GENERAL, [9, 4], [8, 4])]
+            expected=[([9, 4], [8, 4])]
         )
 
         # Move general to the center of the palace.
@@ -82,10 +87,10 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=GENERAL,
             expected=[
-                (GENERAL, [8, 4], [7, 4]),
-                (GENERAL, [8, 4], [9, 4]),
-                (GENERAL, [8, 4], [8, 5]),
-                (GENERAL, [8, 4], [8, 3]),
+                ([8, 4], [7, 4]),
+                ([8, 4], [9, 4]),
+                ([8, 4], [8, 5]),
+                ([8, 4], [8, 3]),
             ]
         )
 
@@ -101,8 +106,8 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=GENERAL,
             expected=[
-                (GENERAL, [7, 5], [7, 4]),
-                (GENERAL, [7, 5], [8, 5]),
+                ([7, 5], [7, 4]),
+                ([7, 5], [8, 5]),
             ]
         )
 
@@ -117,9 +122,9 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=ADVISOR_1,
             expected=[
-                (ADVISOR_1, [8, 4], [9, 3]),
-                (ADVISOR_1, [8, 4], [7, 3]),
-                (ADVISOR_1, [8, 4], [7, 5]),
+                ([8, 4], [9, 3]),
+                ([8, 4], [7, 3]),
+                ([8, 4], [7, 5]),
             ]
         )
 
@@ -134,7 +139,7 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=ADVISOR_1,
             expected=[
-                (ADVISOR_1, [7, 3], [8, 4]),
+                ([7, 3], [8, 4]),
             ]
         )
 
@@ -149,10 +154,10 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=HORSE_1,
             expected=[
-                (HORSE_1, [5, 4], [3, 5]),
-                (HORSE_1, [5, 4], [3, 3]),
-                (HORSE_1, [5, 4], [4, 6]),
-                (HORSE_1, [5, 4], [4, 2]),
+                ([5, 4], [3, 5]),
+                ([5, 4], [3, 3]),
+                ([5, 4], [4, 6]),
+                ([5, 4], [4, 2]),
             ]
         )
 
@@ -169,8 +174,8 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=HORSE_1,
             expected=[
-                (HORSE_1, [6, 1], [4, 0]),
-                (HORSE_1, [6, 1], [4, 2]),
+                ([6, 1], [4, 0]),
+                ([6, 1], [4, 2]),
             ]
         )
 
@@ -181,8 +186,8 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=ELEPHANT_1,
             expected=[
-                (ELEPHANT_1, [9, 2], [7, 4]),
-                (ELEPHANT_1, [9, 2], [7, 0]),
+                ([9, 2], [7, 4]),
+                ([9, 2], [7, 0]),
             ]
         )
 
@@ -198,8 +203,8 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=ELEPHANT_1,
             expected=[
-                (ELEPHANT_1, [5, 2], [7, 4]),
-                (ELEPHANT_1, [5, 2], [7, 0]),
+                ([5, 2], [7, 4]),
+                ([5, 2], [7, 0]),
             ]
         )
 
@@ -210,7 +215,7 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=SOLDIER_1,
             expected=[
-                (SOLDIER_1, [6, 0], [5, 0]),
+                ([6, 0], [5, 0]),
             ]
         )
 
@@ -226,8 +231,8 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=SOLDIER_1,
             expected=[
-                (SOLDIER_1, [4, 0], [3, 0]),
-                (SOLDIER_1, [4, 0], [4, 1]),
+                ([4, 0], [3, 0]),
+                ([4, 0], [4, 1]),
             ]
         )
 
@@ -243,10 +248,10 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=CHARIOT_1,
             expected=[
-                (CHARIOT_1, [6, 1], [5, 1]),
-                (CHARIOT_1, [6, 1], [4, 1]),
-                (CHARIOT_1, [6, 1], [3, 1]),
-                (CHARIOT_1, [6, 1], [2, 1]),
+                ([6, 1], [5, 1]),
+                ([6, 1], [4, 1]),
+                ([6, 1], [3, 1]),
+                ([6, 1], [2, 1]),
             ]
         )
 
@@ -266,10 +271,10 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=CANNON_1,
             expected=[
-                (CANNON_1, [6, 1], [5, 1]),
-                (CANNON_1, [6, 1], [4, 1]),
-                (CANNON_1, [6, 1], [3, 1]),
-                (CANNON_1, [6, 1], [0, 1]),
+                ([6, 1], [5, 1]),
+                ([6, 1], [4, 1]),
+                ([6, 1], [3, 1]),
+                ([6, 1], [0, 1]),
             ]
         )
 
@@ -288,10 +293,10 @@ class TestPieceClasses(unittest.TestCase):
             env=env,
             piece_id=CANNON_1,
             expected=[
-                (CANNON_1, [6, 1], [2, 1]),
-                (CANNON_1, [6, 1], [7, 1]),
-                (CANNON_1, [6, 1], [8, 1]),
-                (CANNON_1, [6, 1], [9, 1]),
+                ([6, 1], [2, 1]),
+                ([6, 1], [7, 1]),
+                ([6, 1], [8, 1]),
+                ([6, 1], [9, 1]),
             ]
         )
 
