@@ -15,8 +15,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # This workflow contains a single job called "run-test-suite"
+  run-test-suite:
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
     strategy:
@@ -31,7 +31,7 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
-            python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
 
       # Runs a set of commands using the runners shell
       - name: Install OpenAI gym Xiangqi module
