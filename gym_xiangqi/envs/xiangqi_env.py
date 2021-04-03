@@ -4,7 +4,11 @@ from gym.utils import seeding
 import numpy as np
 
 from gym_xiangqi.xiangqi_game import XiangQiGame
-from gym_xiangqi.utils import action_space_to_move, is_agent
+from gym_xiangqi.utils import (
+    action_space_to_move,
+    move_to_action_space,
+    is_agent
+)
 from gym_xiangqi.piece import (
     General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
 )
@@ -96,8 +100,10 @@ class XiangQiEnv(gym.Env):
         self.agent_color = agent_color
         if agent_color == RED:
             self.enemy_color = BLACK
+            self.turn = AGENT
         else:
             self.enemy_color = RED
+            self.turn = ENEMY
 
         # epoch termination flag
         self._done = False
@@ -134,6 +140,9 @@ class XiangQiEnv(gym.Env):
 
         # initialize PyGame module
         self.game = None
+
+        # user movement information during user vs agent game mode
+        self.user_move_info = None
 
         # reset all environment components to initial state
         self.reset()
@@ -179,8 +188,9 @@ class XiangQiEnv(gym.Env):
         # check for illegal move, flying general, etc. and penalize the agent
         if possible_actions[action] == 0:
             return np.array(self.state), ILLEGAL_MOVE, False, {}
-        if self.check_flying_general(action):
-            return np.array(self.state), ILLEGAL_MOVE, False, {}
+
+        # check if opponent is in Jiang condition before processing given move
+        pre_jiang_actions = self.check_jiang()
 
         # if legal move is given, move the piece
         piece, start, end = action_space_to_move(action)
@@ -204,16 +214,18 @@ class XiangQiEnv(gym.Env):
             self._done = True
 
         # check for perpetual check (check in Xiangqi is called jiang)
-        is_jiang, jiang_action = self.check_jiang()
+        post_jiang_actions = self.check_jiang()
 
-        # check if the player is making consecutive jiang's
-        if is_jiang:
-            if jiang_action not in jiang_history:
-                jiang_history[jiang_action] = 0
-            jiang_history[jiang_action] += 1
-            if jiang_history[jiang_action] == 4:
-                self._done = True
-                return np.array(self.state), LOSE, self._done, {}
+        if post_jiang_actions:
+            for jiang_action in post_jiang_actions:
+                if jiang_action in pre_jiang_actions:
+                    continue
+                if jiang_action not in jiang_history:
+                    jiang_history[jiang_action] = 0
+                jiang_history[jiang_action] += 1
+                if jiang_history[jiang_action] == 4:
+                    self._done = True
+                    return np.array(self.state), LOSE, self._done, {}
             reward += JIANG_POINT
         else:   # reset history if jiang spree has stopped
             if self.turn == AGENT:
@@ -267,6 +279,54 @@ class XiangQiEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
+    def step_user(self):
+        """
+        This method functions like the environment's step() method, but
+        it is specifically for users when they are player of a Xiangqi
+        game. The method first renders game GUI and listens to user inputs.
+        Then, the user input, the piece movement, is converted into action
+        space and passed to environment's step() method. The environment then
+        is able to handle the input action just like it handles any actions
+        from RL agents.
+
+        Return:
+            observation (object): current game state of the environment
+            reward (float) : amount of reward returned after given action
+            done (bool): whether the episode has ended, in which case further
+                         step() calls will return undefined results
+            info (dict): contains auxiliary diagnostic information (helpful for
+                         debugging, and sometimes learning)
+        """
+        error_msg = "gym_xiangqi error: calling step_user with " \
+                    "incorrect game turn (must be agent's turn)"
+        assert self.turn == AGENT, error_msg
+
+        for piece_id in range(1, PIECE_CNT+1):
+            self.get_possible_actions_by_piece(piece_id)
+
+        self.game.run()
+
+        # game terminated by window close button
+        if self.game.quit:
+            return self.state, 0, True, {"exit": True}
+
+        # retrieve user piece movement info
+        piece_id = self.game.cur_selected_pid
+        start = (self.agent_piece[piece_id].row,
+                 self.agent_piece[piece_id].col)
+        end = self.game.end_pos
+
+        # reset the variables
+        self.game.cur_selected_pid = None
+        self.game.end_pos = None
+
+        # save as instance variables for debugging
+        self.user_move_info = (piece_id, start, end)
+
+        # process the piece movement in env
+        player_action = move_to_action_space(piece_id, start, end)
+        return self.step(player_action)
+
     def init_pieces(self):
         """
         Method initializes and stores all ally and enemy pieces
@@ -318,10 +378,10 @@ class XiangQiEnv(gym.Env):
             actions that are can be taken by the piece.
         """
         if is_agent(piece_id):
-            self.get_possible_actions(AGENT)
+            pieces = self.agent_piece
             possible_actions = self.agent_actions
         else:
-            self.get_possible_actions(ENEMY)
+            pieces = self.enemy_piece
             possible_actions = self.enemy_actions
 
         piece_id = abs(piece_id)
@@ -332,41 +392,16 @@ class XiangQiEnv(gym.Env):
         piece_action_id_end = piece_action_id_start + pow(TOTAL_POS, 2)
 
         # First filter to obtain only legal actions.
-        all_possible_actions = np.where(possible_actions == 1)[0]
+        legal_actions = np.where(possible_actions == 1)[0]
         # Second filter to limit the actions to only a piece done via
         # limiting the index.
-        all_possible_actions = all_possible_actions[
-            all_possible_actions >= piece_action_id_start]
-        return all_possible_actions[
-            all_possible_actions < piece_action_id_end]
+        legal_actions = legal_actions[legal_actions >= piece_action_id_start]
+        legal_actions = legal_actions[legal_actions < piece_action_id_end]
 
-    def check_flying_general(self, action):
-        """
-        Check if given input action results in flying general
-
-        Parameters:
-            action (int): action value in the range of env's action space
-        """
-        piece_id, (r1, c1), (r2, c2) = action_space_to_move(action)
-
-        # simulate input action without altering current game state
-        new_state = np.array(self.state)
-        new_state[r1][c1] = EMPTY
-        new_state[r2][c2] = piece_id * self.turn
-
-        enemy_gen = self.enemy_piece[GENERAL]
-        agent_gen = self.agent_piece[GENERAL]
-
-        # check if they are in the same column
-        if enemy_gen.col != agent_gen.col:
-            return False
-
-        # check if anything is in between the two generals
-        c = enemy_gen.col
-        for r in range(enemy_gen.row+1, agent_gen.row):
-            if new_state[r][c] != EMPTY:
-                return False
-        return True
+        # save the start and end coordinates in each piece object's legal_moves
+        pieces[piece_id].legal_moves = [
+            action_space_to_move(action)[1:] for action in legal_actions
+        ]
 
     def check_jiang(self):
         """
@@ -386,8 +421,9 @@ class XiangQiEnv(gym.Env):
 
         # iterate through possible moves of current player's pieces
         actions = np.where(actions == 1)[0]
+        jiang_actions = []
         for action in actions:
             _, _, (target_r, target_c) = action_space_to_move(action)
             if target_r == general.row and target_c == general.col:
-                return True, action
-        return False, -1
+                jiang_actions.append(action)
+        return jiang_actions
