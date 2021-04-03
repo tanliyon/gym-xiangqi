@@ -1,5 +1,9 @@
-from gym_xiangqi.constants import BOARD_WIDTH, BOARD_HEIGHT, PATH_TO_BOARD
+import os
+
+import pkg_resources
 import pygame
+
+from gym_xiangqi.constants import BOARD_WIDTH, BOARD_HEIGHT, PATH_TO_BOARD
 
 
 class Board:
@@ -13,6 +17,6 @@ class Board:
         self.load_board_image()
 
     def load_board_image(self):
-        filename = "BOARD.png"
-        target_file = PATH_TO_BOARD + filename
+        target_file = os.path.join(PATH_TO_BOARD, "BOARD.png")
+        target_file = pkg_resources.resource_filename(__name__, target_file)
         self.board_background = pygame.image.load(target_file).convert_alpha()
