@@ -33,7 +33,7 @@ WIN = PIECE_POINTS[1]
 LOSE = -PIECE_POINTS[1]
 
 """ PIECE """
-AGENT = 1
+ALLY = 1
 ENEMY = -1
 
 PIECE_CNT = 16              # Total number of pieces in each side
@@ -99,16 +99,30 @@ BOARD_COLS = 9
 
 # Palace coordinates
 PALACE_ENEMY_ROW = (0, 2)
-PALACE_AGENT_ROW = (7, 9)
+PALACE_ALLY_ROW = (7, 9)
 PALACE_COL = (3, 5)
 
 # River line
 RIVER_LOW = 4
 RIVER_HIGH = 5
 
+INITIAL_BOARD = [
+    [-9, -7, -5, -3, -1, -2, -4, -6, -8],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, -11, 0, 0, 0, 0, 0, -10, 0],
+    [-16, 0, -15, 0, -14, 0, -13, 0, -12],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [12, 0, 13, 0, 14, 0, 15, 0, 16],
+    [0, 10, 0, 0, 0, 0, 0, 11, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [8, 6, 4, 2, 1, 3, 5, 7, 9]
+]
+
 """ OTHER """
-MAX_REP = 9
+MAX_REP = 9         # number that is large enough to cover board width/height
 TOTAL_POS = BOARD_ROWS * BOARD_COLS
+MAX_PERPETUAL_JIANG = 4
 
 """ Piece Coordinate Conversion """
 COOR_DELTA = 57

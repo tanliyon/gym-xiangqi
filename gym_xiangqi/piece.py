@@ -1,14 +1,14 @@
 import numpy as np
 import pygame
 
-from gym_xiangqi.utils import move_to_action_space, is_agent
+from gym_xiangqi.utils import move_to_action_space, is_ally
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
     BOARD_ROWS, BOARD_COLS,                             # board specs
-    PALACE_AGENT_ROW, PALACE_ENEMY_ROW, PALACE_COL,     # palace bound
+    PALACE_ALLY_ROW, PALACE_ENEMY_ROW, PALACE_COL,     # palace bound
     RIVER_LOW, RIVER_HIGH,                              # river bound
     MAX_REP,                                            # repetition bound
-    BLACK, ALIVE, AGENT, ENEMY,                         # piece states
+    BLACK, ALIVE, ALLY, ENEMY,                         # piece states
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
     PIECE_WIDTH, PIECE_HEIGHT,                          # piece sizes
     MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT,                # mini piece sizes
@@ -123,11 +123,11 @@ def check_action(piece_id, orig_pos, cur_pos,
     r = cur_pos[0]
     c = cur_pos[1]
 
-    if not is_agent(piece_id):
+    if not is_ally(piece_id):
         sign = ENEMY
         piece_id *= ENEMY
     else:
-        sign = AGENT
+        sign = ALLY
 
     for i in range(repeat):
         rb = 0 <= r < BOARD_ROWS
@@ -161,7 +161,7 @@ def check_flying_general(state, side, piece_id, start, end):
 
     Parameters:
         state (np.array): 2D array representing current state
-        side (int): -1 or 1 representing enemy or agent side
+        side (int): -1 or 1 representing enemy or ally side
         piece_id (int): piece ID
         start (tuple(int)): current coordinate of given piece
         end (tuple(int)): destination coordinate of given piece
@@ -176,8 +176,8 @@ def check_flying_general(state, side, piece_id, start, end):
 
     enemy_gen_row = -1
     enemy_gen_col = -1
-    agent_gen_row = -1
-    agent_gen_col = -1
+    ally_gen_row = -1
+    ally_gen_col = -1
 
     for r in range(PALACE_ENEMY_ROW[0], PALACE_ENEMY_ROW[1]+1):
         for c in range(PALACE_COL[0], PALACE_COL[1]+1):
@@ -185,19 +185,19 @@ def check_flying_general(state, side, piece_id, start, end):
                 enemy_gen_row = r
                 enemy_gen_col = c
 
-    for r in range(PALACE_AGENT_ROW[0], PALACE_AGENT_ROW[1] + 1):
+    for r in range(PALACE_ALLY_ROW[0], PALACE_ALLY_ROW[1] + 1):
         for c in range(PALACE_COL[0], PALACE_COL[1] + 1):
-            if new_state[r][c] == GENERAL * AGENT:
-                agent_gen_row = r
-                agent_gen_col = c
+            if new_state[r][c] == GENERAL * ALLY:
+                ally_gen_row = r
+                ally_gen_col = c
 
     # check if they are in the same column
-    if enemy_gen_col != agent_gen_col:
+    if enemy_gen_col != ally_gen_col:
         return False
 
     # check if anything is in between the two generals
-    for r in range(enemy_gen_row+1, agent_gen_row):
-        if new_state[r][agent_gen_col] != EMPTY:
+    for r in range(enemy_gen_row+1, ally_gen_row):
+        if new_state[r][ally_gen_col] != EMPTY:
             return False
     return True
 
@@ -218,12 +218,12 @@ class General(Piece):
         """
         Finds legal moves for the General
         """
-        if not is_agent(piece_id):
+        if not is_ally(piece_id):
             low = PALACE_ENEMY_ROW[0]
             high = PALACE_ENEMY_ROW[1]
         else:
-            low = PALACE_AGENT_ROW[0]
-            high = PALACE_AGENT_ROW[1]
+            low = PALACE_ALLY_ROW[0]
+            high = PALACE_ALLY_ROW[1]
 
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
@@ -251,12 +251,12 @@ class Advisor(Piece):
         """
         Finds legal moves for the Advisors
         """
-        if not is_agent(piece_id):
+        if not is_ally(piece_id):
             low = PALACE_ENEMY_ROW[0]
             high = PALACE_ENEMY_ROW[1]
         else:
-            low = PALACE_AGENT_ROW[0]
-            high = PALACE_AGENT_ROW[1]
+            low = PALACE_ALLY_ROW[0]
+            high = PALACE_ALLY_ROW[1]
 
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
@@ -286,7 +286,7 @@ class Elephant(Piece):
         """
         Finds legal moves for the Elephants
         """
-        if not is_agent(piece_id):
+        if not is_ally(piece_id):
             low = 0
             high = RIVER_LOW
         else:
@@ -394,10 +394,10 @@ class Cannon(Piece):
         """
         Find legal moves for the Cannons
         """
-        if not is_agent(piece_id):
+        if not is_ally(piece_id):
             sign = ENEMY
         else:
-            sign = AGENT
+            sign = ALLY
 
         for offset in ORTHOGONAL:
             # moving positions
@@ -462,14 +462,14 @@ class Soldier(Piece):
         Find legal moves for the soldiers
         """
         # ORTHOGONAL contains 4 moves in clock-wise [UP, RIGHT, DOWN, LEFT]
-        if not is_agent(piece_id):  # enemy side is always at the top half
+        if not is_ally(piece_id):   # enemy side is always at the top half
             low = RIVER_HIGH
             high = BOARD_ROWS - 1
             moves = [2]             # therefore enemy soldiers move downwards
-        else:                       # agent side is always at the bottom half
+        else:                       # ally side is always at the bottom half
             low = 0
             high = RIVER_LOW
-            moves = [0]             # therefore agent soldiers move upwards
+            moves = [0]             # therefore ally soldiers move upwards
 
         # low and high are set to be after-river row ranges
         if low <= self.row <= high:     # After crossing the river,
