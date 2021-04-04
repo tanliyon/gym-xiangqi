@@ -106,8 +106,21 @@ PALACE_COL = (3, 5)
 RIVER_LOW = 4
 RIVER_HIGH = 5
 
+INITIAL_BOARD = [
+    [-9, -7, -5, -3, -1, -2, -4, -6, -8],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, -11, 0, 0, 0, 0, 0, -10, 0],
+    [-16, 0, -15, 0, -14, 0, -13, 0, -12],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [12, 0, 13, 0, 14, 0, 15, 0, 16],
+    [0, 10, 0, 0, 0, 0, 0, 11, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [8, 6, 4, 2, 1, 3, 5, 7, 9]
+]
+
 """ OTHER """
-MAX_REP = 9
+MAX_REP = 9         # number that is large enough to cover board width/height
 TOTAL_POS = BOARD_ROWS * BOARD_COLS
 
 """ Piece Coordinate Conversion """

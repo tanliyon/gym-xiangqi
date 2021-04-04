@@ -13,6 +13,7 @@ from gym_xiangqi.piece import (
     General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
 )
 from gym_xiangqi.constants import (
+    INITIAL_BOARD,
     BOARD_ROWS, BOARD_COLS,
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
@@ -81,19 +82,6 @@ class XiangQiEnv(gym.Env):
         Chariot, Chariot,
         Cannon, Cannon,
         Soldier, Soldier, Soldier, Soldier, Soldier
-    ]
-
-    initial_board = [
-        [-9, -7, -5, -3, -1, -2, -4, -6, -8],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, -11, 0, 0, 0, 0, 0, -10, 0],
-        [-16, 0, -15, 0, -14, 0, -13, 0, -12],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [12, 0, 13, 0, 14, 0, 15, 0, 16],
-        [0, 10, 0, 0, 0, 0, 0, 11, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [8, 6, 4, 2, 1, 3, 5, 7, 9]
     ]
 
     def __init__(self, ally_color=RED):
@@ -243,7 +231,7 @@ class XiangQiEnv(gym.Env):
         """
         Reset all environment components to initial state
         """
-        self.state = np.array(self.initial_board)
+        self.state = np.array(INITIAL_BOARD)
         self.init_pieces()
 
         self.ally_jiang_history = {}
@@ -333,7 +321,7 @@ class XiangQiEnv(gym.Env):
         """
         for r in range(BOARD_ROWS):
             for c in range(BOARD_COLS):
-                piece_id = self.initial_board[r][c]
+                piece_id = INITIAL_BOARD[r][c]
                 init = self.id_to_class[abs(piece_id)]
                 if piece_id < 0:
                     self.enemy_piece[-piece_id] = init(self.enemy_color, r, c)
