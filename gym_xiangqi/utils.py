@@ -40,5 +40,13 @@ def action_space_to_move(action):
     return piece_id + 1, start, end
 
 
-def is_agent(piece_id):
+def is_ally(piece_id):
+    """
+    Determines if given input piece_id is ally or enemy piece
+    This function CANNOT guarantee if the piece is an enemy piece
+
+    Return:
+        True: given piece ID is an ally piece
+        False: given piece ID is either an empty space or an enemy piece
+    """
     return piece_id > 0

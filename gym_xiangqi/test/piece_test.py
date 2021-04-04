@@ -5,12 +5,12 @@ from gym_xiangqi.piece import (
     Horse, Chariot, Cannon, Soldier
 )
 from gym_xiangqi.constants import (
-    AGENT, ENEMY,
+    ALLY, ENEMY,
     RED, BLACK, GENERAL, ADVISOR_1,
     HORSE_1, ELEPHANT_1, SOLDIER_1,
     CHARIOT_1, CANNON_1
 )
-from gym_xiangqi.utils import is_agent
+from gym_xiangqi.utils import is_ally
 from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
 
 
@@ -32,9 +32,9 @@ class TestPieceClasses(unittest.TestCase):
                     (piece_id, [src_x, src_y], [dest_x, dest_y]),
                     (...)]
         """
-        if is_agent(piece_id):
-            pieces = env.agent_piece
-            env.get_possible_actions(AGENT)
+        if is_ally(piece_id):
+            pieces = env.ally_piece
+            env.get_possible_actions(ALLY)
         else:
             pieces = env.enemy_piece
             env.get_possible_actions(ENEMY)
@@ -49,10 +49,10 @@ class TestPieceClasses(unittest.TestCase):
         """
         Simple helper function to move a piece to a destination.
         """
-        source = (env.agent_piece[piece_id].row,
-                  env.agent_piece[piece_id].col)
-        env.agent_piece[piece_id].row = destination[0]
-        env.agent_piece[piece_id].col = destination[1]
+        source = (env.ally_piece[piece_id].row,
+                  env.ally_piece[piece_id].col)
+        env.ally_piece[piece_id].row = destination[0]
+        env.ally_piece[piece_id].col = destination[1]
         env.state[destination[0]][destination[1]] = (
             env.state[source[0]][source[1]])
         env.state[source[0]][source[1]] = 0

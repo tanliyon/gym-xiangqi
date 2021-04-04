@@ -65,7 +65,7 @@ def env_latency():
         "env.get_possible_actions(player)": f"{ENV_SETUP}; player=1;",
         "env.step(action)":
             f"{ENV_SETUP}; import numpy as np; import random;"
-            "actions = np.where(env.agent_actions == 1)[0];"
+            "actions = np.where(env.ally_actions == 1)[0];"
             "action = random.randint(0, len(actions)-1);"
     }
     measure_and_print_latency(methods_to_setup)

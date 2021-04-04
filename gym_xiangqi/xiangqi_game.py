@@ -9,7 +9,8 @@ from gym_xiangqi.constants import (
     DEAD,                         # dead state for piece object
     WINDOW_WIDTH, WINDOW_HEIGHT,  # window size for pygame display
     FPS,                          # fps for pygame while loop
-    COUNT                         # initial time for timer
+    COUNT,                        # initial time for timer
+    PIECE_CNT,                    # total number of pieces in each side
 )
 
 
@@ -28,18 +29,19 @@ class XiangQiGame:
         self.running = True
         self.dim = (WINDOW_WIDTH, WINDOW_HEIGHT)
         self.display_surf = None
-        self.agent_piece = None
+        self.sound = None
+        self.ally_piece = None
         self.enemy_piece = None
         self.cur_selected = None
-        self.agent_turn = True  # temp
+        self.ally_turn = True
         self.counter = COUNT
-        self.agent_kills = []
+        self.ally_kills = []
         self.enemy_kills = []
         self.cur_selected_pid = 0
         self.end_pos = None
         self.quit = False
 
-    def on_init(self, agent_piece, enemy_piece):
+    def on_init(self):
         """
         Initialize/start the game with PyGame
         ex. pygame.init()
@@ -61,16 +63,20 @@ class XiangQiGame:
         # init board
         self.board_background = self.init_board()
 
-        # load piece images
-        self.load_piece_images(agent_piece)
-        self.load_piece_images(enemy_piece)
-        self.agent_piece = agent_piece
-        self.enemy_piece = enemy_piece
-
-        # play bgm
+        # load game sound components
         self.init_sound("piece_move.wav", "bgm.wav")
 
-        return True
+    def on_init_pieces(self, ally_piece, enemy_piece):
+        # load piece images
+        self.load_piece_images(ally_piece)
+        self.load_piece_images(enemy_piece)
+        self.ally_piece = ally_piece
+        self.enemy_piece = enemy_piece
+
+        # load move_sound and set it to piece objects
+        for i in range(1, PIECE_CNT+1):
+            self.ally_piece[i].move_sound = self.sound.piece_move
+            self.enemy_piece[i].move_sound = self.sound.piece_move
 
     def init_board(self):
         '''
@@ -87,15 +93,10 @@ class XiangQiGame:
         """
         initialize game sound
         """
-        sound = Sound(piece_move, bgm)
+        self.sound = Sound(piece_move, bgm)
 
         # play bgm
         pygame.mixer.music.play(-1)
-
-        # load move_sound and set it to piece objects
-        for i in range(1, len(self.agent_piece)):
-            self.agent_piece[i].move_sound = sound.piece_move
-            self.enemy_piece[i].move_sound = sound.piece_move
 
     def update_pos_next_moves(self):
         if self.cur_selected is None:
@@ -152,7 +153,7 @@ class XiangQiGame:
                     if is_legal:
                         self.end_pos = tuple(real_clicked_coor[::-1])
 
-                        # reset counter after agent turn is over
+                        # reset counter after ally turn is over
                         self.counter = COUNT
 
                         # reset piece selection and end my turn
@@ -182,10 +183,10 @@ class XiangQiGame:
         self.screen.blit(self.board_background, (0, 0))
 
         # update all cur positions of pieces
-        for i in range(1, len(self.agent_piece)):
-            if self.agent_piece[i].is_alive():
-                self.screen.blit(self.agent_piece[i].basic_image,
-                                 self.agent_piece[i].get_pygame_coor())
+        for i in range(1, len(self.ally_piece)):
+            if self.ally_piece[i].is_alive():
+                self.screen.blit(self.ally_piece[i].basic_image,
+                                 self.ally_piece[i].get_pygame_coor())
             if self.enemy_piece[i].is_alive():
                 self.screen.blit(self.enemy_piece[i].basic_image,
                                  self.enemy_piece[i].get_pygame_coor())
@@ -254,7 +255,7 @@ class XiangQiGame:
         clicked_x, clicked_y = clicked_coor
 
         # find the piece where the clicked coord is within its range
-        for piece_id, piece in enumerate(self.agent_piece[1:], 1):
+        for piece_id, piece in enumerate(self.ally_piece[1:], 1):
             if piece.state == DEAD:
                 continue
 
@@ -295,11 +296,11 @@ class XiangQiGame:
 
     def init_kills(self):
         """
-        write 'agent kills: ' and 'enemy kills: ' on screen
+        write 'ally kills: ' and 'enemy kills: ' on screen
         """
         self.kill_font = pygame.font.SysFont(None, 40)
 
-        kill_text = "agent kills: "
+        kill_text = "ally kills: "
         final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
         text_rect = final_text.get_rect(centerx=610, bottom=350)
         self.screen.blit(final_text, text_rect)
@@ -315,17 +316,17 @@ class XiangQiGame:
         """
         self.init_kills()
 
-        self.agent_kills = ([enemy.mini_image for enemy in self.enemy_piece[1:]
+        self.ally_kills = ([enemy.mini_image for enemy in self.enemy_piece[1:]
                             if enemy.state == DEAD])
-        self.enemy_kills = ([agent.mini_image for agent in self.agent_piece[1:]
-                            if agent.state == DEAD])
+        self.enemy_kills = ([ally.mini_image for ally in self.ally_piece[1:]
+                            if ally.state == DEAD])
 
     def render_kills(self):
         """
         This method renders capture logs for both sides.
 
         The coordinates (x,y) with in GUI are determined based on the number
-        of current kills that the agent or the enemy has during the game.
+        of current kills that the ally or the enemy side has during the game.
 
         These are implemented in two different loops because
         the number of dead pieces on both sides may differ during the game.
@@ -343,7 +344,7 @@ class XiangQiGame:
 
         y:
         - The y offsets 360 and 160 indicate the starting y coordinate
-            for 'agent kills' and 'enemy kills' respectively on screen.
+            for 'ally kills' and 'enemy kills' respectively on screen.
 
         - (i // 7) * 35 indicates that every piece in the position of
             multiple of 8 (ex] 8, 16), has to start a new line.
@@ -352,11 +353,11 @@ class XiangQiGame:
         The modulo for y needed not to be set since we have enough spaces
         on the screen to handle the pieces even if they were all dead.
         """
-        for i in range(len(self.agent_kills)):
+        for i in range(len(self.ally_kills)):
             # keep minimis within the box
             x = 530 + (i * 35) % 245
             y = 360 + (i // 7) * 35
-            self.screen.blit(self.agent_kills[i], (x, y))
+            self.screen.blit(self.ally_kills[i], (x, y))
 
         for i in range(len(self.enemy_kills)):
             # keep minimis within the box
