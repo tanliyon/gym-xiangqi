@@ -122,6 +122,7 @@ INITIAL_BOARD = [
 """ OTHER """
 MAX_REP = 9         # number that is large enough to cover board width/height
 TOTAL_POS = BOARD_ROWS * BOARD_COLS
+MAX_PERPETUAL_JIANG = 4
 
 """ Piece Coordinate Conversion """
 COOR_DELTA = 57

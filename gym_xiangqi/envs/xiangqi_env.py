@@ -148,9 +148,11 @@ class XiangQiEnv(gym.Env):
             info (dict): contains auxiliary diagnostic information (helpful for
                          debugging, and sometimes learning)
         """
+        # Validate action input
         error_msg = "%r (%s) invalid action" % (action, type(action))
         assert self.action_space.contains(action), error_msg
 
+        # Warn the user for calling step() when current game has finished
         if self._done:
             if not self._done_warn:
                 self._done_warn = True
@@ -161,6 +163,7 @@ class XiangQiEnv(gym.Env):
                 ))
             return np.array(self._state), 0, self._done, {}
 
+        # Prepare game state variables
         reward = 0.0
 
         if self._turn == ALLY:
@@ -172,18 +175,18 @@ class XiangQiEnv(gym.Env):
             possible_actions = self.enemy_actions
             jiang_history = self._enemy_jiang_history
 
-        # check for illegal move, flying general, etc. and penalize the agent
+        # Check for illegal move, flying general, etc. and penalize the agent
         if possible_actions[action] == 0:
             return np.array(self._state), ILLEGAL_MOVE, False, {}
 
-        # check if opponent is in Jiang condition before processing given move
+        # Check if opponent is in Jiang condition before processing given move
         pre_jiang_actions = self.check_jiang()
 
-        # if legal move is given, move the piece
+        # Move the piece if legal move is given
         piece, start, end = action_space_to_move(action)
         pieces[piece].move(*end)
 
-        # update observation space
+        # Update observation space
         self._state[start[0]][start[1]] = EMPTY
         rm_piece_id = self._state[end[0]][end[1]]
         self._state[end[0]][end[1]] = piece * self._turn
@@ -193,27 +196,30 @@ class XiangQiEnv(gym.Env):
         elif rm_piece_id > 0:
             self._ally_piece[rm_piece_id].state = DEAD
 
-        # reward based on removed piece
+        # Reward based on removed piece
         reward += PIECE_POINTS[abs(rm_piece_id)]
 
-        # if the General on either side has been attacked, end game
+        # End game if the General on either side has been attacked
         if abs(rm_piece_id) == GENERAL:
             self._done = True
 
-        # check for perpetual check (check in Xiangqi is called jiang)
+        # Check for perpetual check/jiang
         post_jiang_actions = self.check_jiang()
 
         if post_jiang_actions:
             for jiang_action in post_jiang_actions:
                 if jiang_action in pre_jiang_actions:
                     continue
+
                 if jiang_action not in jiang_history:
                     jiang_history[jiang_action] = 0
                 jiang_history[jiang_action] += 1
-                if jiang_history[jiang_action] == 4:
+
+                if jiang_history[jiang_action] == MAX_PERPETUAL_JIANG:
                     self._done = True
                     return np.array(self._state), LOSE, self._done, {}
-            reward += JIANG_POINT
+                    
+            reward += JIANG_POINT   # TODO: decide whether to reward upon jiang
         else:   # reset history if jiang spree has stopped
             if self._turn == ALLY:
                 self._ally_jiang_history = {}
@@ -293,30 +299,30 @@ class XiangQiEnv(gym.Env):
 
         self._game.run()
 
-        # game terminated by window close button
+        # Game terminated by window close button
         if self._game.quit:
             return self._state, 0, True, {"exit": True}
 
-        # retrieve user piece movement info
+        # Retrieve user piece movement info
         piece_id = self._game.cur_selected_pid
         start = (self._ally_piece[piece_id].row,
                  self._ally_piece[piece_id].col)
         end = self._game.end_pos
 
-        # reset the variables
+        # Reset the variables
         self._game.cur_selected_pid = None
         self._game.end_pos = None
 
-        # save as instance variables for debugging
+        # Save as instance variables for debugging
         self.user_move_info = (piece_id, start, end)
 
-        # process the piece movement in env
+        # Process the piece movement in env
         player_action = move_to_action_space(piece_id, start, end)
         return self.step(player_action)
 
     def init_pieces(self):
         """
-        Method initializes and stores all ally and enemy pieces
+        Initialize and store all ally and enemy pieces
         """
         for r in range(BOARD_ROWS):
             for c in range(BOARD_COLS):
@@ -334,7 +340,7 @@ class XiangQiEnv(gym.Env):
         Parameter:
             player (int): -1 for enemy 1 for ALLY
         """
-        # current piece set changes depending on whose turn it is
+        # Current piece set changes depending on whose turn it is
         if player == ALLY:
             piece_set = self._ally_piece
             possible_actions = self._ally_actions
@@ -342,12 +348,11 @@ class XiangQiEnv(gym.Env):
             piece_set = self._enemy_piece
             possible_actions = self._enemy_actions
 
-        # Clear all possible actions to remove possible actions from
-        # previous turn.
+        # Clear previous turn's possible actions
         # TODO: Don't clear the entire list, but only the relevant actions.
         possible_actions.fill(0)
 
-        # get possible moves for every piece in the piece set
+        # Get possible moves for every piece in the piece set
         for pid, piece_obj in enumerate(piece_set[1:], 1):
             if piece_obj.state == ALIVE:
                 piece_obj.get_actions(pid * self._turn,
@@ -373,29 +378,28 @@ class XiangQiEnv(gym.Env):
 
         piece_id = abs(piece_id)
 
-        # Calculate the starting and ending index of a piece
-        # based on its piece id.
+        # Calculate the starting and ending action index of the piece
         piece_action_id_start = (piece_id - 1) * pow(TOTAL_POS, 2)
         piece_action_id_end = piece_action_id_start + pow(TOTAL_POS, 2)
 
-        # First filter to obtain only legal actions.
+        # First, filter to obtain only legal actions
         legal_actions = np.where(possible_actions == 1)[0]
-        # Second filter to limit the actions to only a piece done via
-        # limiting the index.
+
+        # Second, filter the legal actions using the start and end action index
         legal_actions = legal_actions[legal_actions >= piece_action_id_start]
         legal_actions = legal_actions[legal_actions < piece_action_id_end]
 
-        # save the start and end coordinates in each piece object's legal_moves
+        # Save the start and end coordinates in each piece object's legal_moves
         pieces[piece_id].legal_moves = [
             action_space_to_move(action)[1:] for action in legal_actions
         ]
 
     def check_jiang(self):
         """
-        Check if the general is in threat (i.e it is check or "jiang")
+        Check if the general is in threat (i.e. it is check or "jiang")
         by any of current player's pieces
         """
-        # This is OPPONENT General
+        # Get OPPONENT General
         if self._turn == ALLY:
             general = self._enemy_piece[GENERAL]
             actions = self._ally_actions
@@ -403,10 +407,10 @@ class XiangQiEnv(gym.Env):
             general = self._ally_piece[GENERAL]
             actions = self._enemy_actions
 
-        # update current player's moves
+        # Update current player's moves
         self.get_possible_actions(self._turn)
 
-        # iterate through possible moves of current player's pieces
+        # Iterate through possible moves of current player's pieces
         actions = np.where(actions == 1)[0]
         jiang_actions = []
         for action in actions:
