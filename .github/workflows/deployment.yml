@@ -1,12 +1,12 @@
-# This workflow builds, packages and deploys Gym Xiangqi to PyPI and TestPyPI
-name: Deploy Gym Xiangqi distribution 📦 to PyPI and TestPyPI
+# This workflow builds, packages and deploys Gym Xiangqi to PyPI
+name: Deploy Gym Xiangqi distribution 📦 to PyPI
 on: 
   push:
     branches: [ main ]
 
 jobs:
   build-and-publish:
-    name: Build and publish Gym Xiangqi distribution 📦 to PyPI and TestPyPI
+    name: Build and publish Gym Xiangqi distribution 📦 to PyPI
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
     steps:
@@ -24,13 +24,6 @@ jobs:
       - name: Build a binary wheel and a source tarball 🔨
         run: |
           python -m build --sdist --wheel --outdir dist/
-
-      - name: Publish distribution 📦 to Test PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
 
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
