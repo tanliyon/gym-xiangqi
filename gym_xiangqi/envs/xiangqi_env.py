@@ -19,6 +19,7 @@ from gym_xiangqi.constants import (
     RED, BLACK, ALIVE, DEAD,
     ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
     ALLY, ENEMY, EMPTY, GENERAL,
+    MAX_PERPETUAL_JIANG,
 )
 
 
@@ -126,7 +127,8 @@ class XiangQiEnv(gym.Env):
         self._enemy_jiang_history = None
 
         # initialize PyGame module
-        self._game = None
+        self._game = XiangQiGame()
+        self._game.on_init()
 
         # user movement information during user vs agent game mode
         self.user_move_info = None
@@ -218,7 +220,7 @@ class XiangQiEnv(gym.Env):
                 if jiang_history[jiang_action] == MAX_PERPETUAL_JIANG:
                     self._done = True
                     return np.array(self._state), LOSE, self._done, {}
-                    
+
             reward += JIANG_POINT   # TODO: decide whether to reward upon jiang
         else:   # reset history if jiang spree has stopped
             if self._turn == ALLY:
@@ -248,14 +250,12 @@ class XiangQiEnv(gym.Env):
             self._turn = ENEMY
 
         self.get_possible_actions(self._turn)
+        self._game.on_init_pieces(self._ally_piece, self._enemy_piece)
 
     def render(self, mode='human'):
         """
         Render current game state with PyGame
         """
-        if self._game is None:
-            self._game = XiangQiGame()
-            self._game.on_init(self._ally_piece, self._enemy_piece)
         self._game.render()
 
     def close(self):
@@ -329,7 +329,8 @@ class XiangQiEnv(gym.Env):
                 piece_id = INITIAL_BOARD[r][c]
                 init = self.id_to_class[abs(piece_id)]
                 if piece_id < 0:
-                    self._enemy_piece[-piece_id] = init(self._enemy_color, r, c)
+                    self._enemy_piece[-piece_id] = init(self._enemy_color,
+                                                        r, c)
                 elif piece_id > 0:
                     self._ally_piece[piece_id] = init(self._ally_color, r, c)
 

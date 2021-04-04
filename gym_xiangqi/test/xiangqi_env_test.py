@@ -22,6 +22,9 @@ class TestXiangQiEnv(unittest.TestCase):
     def setUp(self):
         self.env = XiangQiEnv()
 
+    def tearDown(self):
+        self.env.close()
+
     def test_env_initialization(self):
         self.assertEqual(self.env.ally_color, RED)
         self.assertEqual(self.env.enemy_color, BLACK)
@@ -30,7 +33,7 @@ class TestXiangQiEnv(unittest.TestCase):
         self.assertEqual(self.env.ally_color, BLACK)
         self.assertEqual(self.env.enemy_color, RED)
 
-        self.assertIsNone(self.env.game)
+        self.assertIsNotNone(self.env.game)
         self.assertIsNotNone(self.env.state)
         self.assertIsNotNone(self.env.observation_space)
         self.assertIsNotNone(self.env.action_space)

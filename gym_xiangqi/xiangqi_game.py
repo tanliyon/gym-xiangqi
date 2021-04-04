@@ -29,6 +29,7 @@ class XiangQiGame:
         self.running = True
         self.dim = (WINDOW_WIDTH, WINDOW_HEIGHT)
         self.display_surf = None
+        self.sound = None
         self.ally_piece = None
         self.enemy_piece = None
         self.cur_selected = None
@@ -40,7 +41,7 @@ class XiangQiGame:
         self.end_pos = None
         self.quit = False
 
-    def on_init(self, ally_piece, enemy_piece):
+    def on_init(self):
         """
         Initialize/start the game with PyGame
         ex. pygame.init()
@@ -62,16 +63,20 @@ class XiangQiGame:
         # init board
         self.board_background = self.init_board()
 
+        # load game sound components
+        self.init_sound("piece_move.wav", "bgm.wav")
+
+    def on_init_pieces(self, ally_piece, enemy_piece):
         # load piece images
         self.load_piece_images(ally_piece)
         self.load_piece_images(enemy_piece)
         self.ally_piece = ally_piece
         self.enemy_piece = enemy_piece
 
-        # play bgm
-        self.init_sound("piece_move.wav", "bgm.wav")
-
-        return True
+        # load move_sound and set it to piece objects
+        for i in range(1, PIECE_CNT+1):
+            self.ally_piece[i].move_sound = self.sound.piece_move
+            self.enemy_piece[i].move_sound = self.sound.piece_move
 
     def init_board(self):
         '''
@@ -88,15 +93,10 @@ class XiangQiGame:
         """
         initialize game sound
         """
-        sound = Sound(piece_move, bgm)
+        self.sound = Sound(piece_move, bgm)
 
         # play bgm
         pygame.mixer.music.play(-1)
-
-        # load move_sound and set it to piece objects
-        for i in range(1, PIECE_CNT+1):
-            self.ally_piece[i].move_sound = sound.piece_move
-            self.enemy_piece[i].move_sound = sound.piece_move
 
     def update_pos_next_moves(self):
         if self.cur_selected is None:
