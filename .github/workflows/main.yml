@@ -19,6 +19,9 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
+    env:
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
@@ -46,9 +49,6 @@ jobs:
       - name: Run unit tests and coverage report
         run: |
           python -m pytest --cov=agents/ --cov=gym_xiangqi/ --cov=examples/ --cov-fail-under=25
-        env:
-          SDL_VIDEODRIVER: dummy
-          SDL_AUDIODRIVER: dummy
 
       # Run latency test to get latency report.
       - name: Run latency test
