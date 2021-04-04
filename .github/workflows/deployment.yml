@@ -1,6 +1,8 @@
 # This workflow builds, packages and deploys Gym Xiangqi to PyPI and TestPyPI
 name: Deploy Gym Xiangqi distribution 📦 to PyPI and TestPyPI
-on: push
+on: 
+  push:
+    branches: [ main ]
 
 jobs:
   build-and-publish:
