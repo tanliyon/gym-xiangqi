@@ -85,17 +85,17 @@ class XiangQiEnv(gym.Env):
     ]
 
     def __init__(self, ally_color=RED):
-        self.ally_color = ally_color
+        self._ally_color = ally_color
         if ally_color == RED:
-            self.enemy_color = BLACK
-            self.turn = ALLY
+            self._enemy_color = BLACK
+            self._turn = ALLY
         else:
-            self.enemy_color = RED
-            self.turn = ENEMY
+            self._enemy_color = RED
+            self._turn = ENEMY
 
         # epoch termination flag
         self._done = False
-        self.done_warn = False
+        self._done_warn = False
 
         # observation space: 10 x 9 space with pieces encoded as integers
         self.observation_space = spaces.Box(
@@ -107,27 +107,26 @@ class XiangQiEnv(gym.Env):
 
         # action space: encodes start and target position and specific piece
         n = pow(TOTAL_POS, 2) * PIECE_CNT
-        # TODO: Figure out if action_space is still needed.
         self.action_space = spaces.Discrete(n)
 
         # initial board state
-        self.state = None
+        self._state = None
 
         # instantiate piece objects
-        self.ally_piece = [None for _ in range(PIECE_CNT + 1)]
-        self.enemy_piece = [None for _ in range(PIECE_CNT + 1)]
+        self._ally_piece = [None for _ in range(PIECE_CNT + 1)]
+        self._enemy_piece = [None for _ in range(PIECE_CNT + 1)]
 
         # possible moves: binary list with same shape of action space
         #                 valid action will be represented as 1 else 0
-        self.ally_actions = np.zeros((n, ))
-        self.enemy_actions = np.zeros((n, ))
+        self._ally_actions = np.zeros((n, ))
+        self._enemy_actions = np.zeros((n, ))
 
         # history of consecutive jiangs (will be used to ban perpetual check)
-        self.ally_jiang_history = None
-        self.enemy_jiang_history = None
+        self._ally_jiang_history = None
+        self._enemy_jiang_history = None
 
         # initialize PyGame module
-        self.game = None
+        self._game = None
 
         # user movement information during user vs agent game mode
         self.user_move_info = None
@@ -153,29 +152,29 @@ class XiangQiEnv(gym.Env):
         assert self.action_space.contains(action), error_msg
 
         if self._done:
-            if not self.done_warn:
-                self.done_warn = True
+            if not self._done_warn:
+                self._done_warn = True
                 print(gym.utils.colorize(
                     "WARN: Environment should be reset with call to reset() "
                     "when the episode has terminated (i.e 'done == True')",
                     "yellow"
                 ))
-            return np.array(self.state), 0, self._done, {}
+            return np.array(self._state), 0, self._done, {}
 
         reward = 0.0
 
-        if self.turn == ALLY:
-            pieces = self.ally_piece
-            possible_actions = self.ally_actions
-            jiang_history = self.ally_jiang_history
+        if self._turn == ALLY:
+            pieces = self._ally_piece
+            possible_actions = self._ally_actions
+            jiang_history = self._ally_jiang_history
         else:
-            pieces = self.enemy_piece
+            pieces = self._enemy_piece
             possible_actions = self.enemy_actions
-            jiang_history = self.enemy_jiang_history
+            jiang_history = self._enemy_jiang_history
 
         # check for illegal move, flying general, etc. and penalize the agent
         if possible_actions[action] == 0:
-            return np.array(self.state), ILLEGAL_MOVE, False, {}
+            return np.array(self._state), ILLEGAL_MOVE, False, {}
 
         # check if opponent is in Jiang condition before processing given move
         pre_jiang_actions = self.check_jiang()
@@ -185,14 +184,14 @@ class XiangQiEnv(gym.Env):
         pieces[piece].move(*end)
 
         # update observation space
-        self.state[start[0]][start[1]] = EMPTY
-        rm_piece_id = self.state[end[0]][end[1]]
-        self.state[end[0]][end[1]] = piece * self.turn
+        self._state[start[0]][start[1]] = EMPTY
+        rm_piece_id = self._state[end[0]][end[1]]
+        self._state[end[0]][end[1]] = piece * self._turn
 
         if rm_piece_id < 0:
-            self.enemy_piece[-rm_piece_id].state = DEAD
+            self._enemy_piece[-rm_piece_id].state = DEAD
         elif rm_piece_id > 0:
-            self.ally_piece[rm_piece_id].state = DEAD
+            self._ally_piece[rm_piece_id].state = DEAD
 
         # reward based on removed piece
         reward += PIECE_POINTS[abs(rm_piece_id)]
@@ -213,52 +212,52 @@ class XiangQiEnv(gym.Env):
                 jiang_history[jiang_action] += 1
                 if jiang_history[jiang_action] == 4:
                     self._done = True
-                    return np.array(self.state), LOSE, self._done, {}
+                    return np.array(self._state), LOSE, self._done, {}
             reward += JIANG_POINT
         else:   # reset history if jiang spree has stopped
-            if self.turn == ALLY:
-                self.ally_jiang_history = {}
+            if self._turn == ALLY:
+                self._ally_jiang_history = {}
             else:
-                self.enemy_jiang_history = {}
+                self._enemy_jiang_history = {}
 
         # self-play: agent switches turn between ally and enemy side
-        self.turn *= -1     # ALLY (1) to ENEMY (-1) and vice versa
-        self.get_possible_actions(self.turn)
+        self._turn *= -1     # ALLY (1) to ENEMY (-1) and vice versa
+        self.get_possible_actions(self._turn)
 
-        return np.array(self.state), reward, self._done, {}
+        return np.array(self._state), reward, self._done, {}
 
     def reset(self):
         """
         Reset all environment components to initial state
         """
-        self.state = np.array(INITIAL_BOARD)
+        self._state = np.array(INITIAL_BOARD)
         self.init_pieces()
 
-        self.ally_jiang_history = {}
-        self.enemy_jiang_history = {}
+        self._ally_jiang_history = {}
+        self._enemy_jiang_history = {}
 
-        if self.ally_color == RED:
-            self.turn = ALLY
+        if self._ally_color == RED:
+            self._turn = ALLY
         else:
-            self.turn = ENEMY
+            self._turn = ENEMY
 
-        self.get_possible_actions(self.turn)
+        self.get_possible_actions(self._turn)
 
     def render(self, mode='human'):
         """
         Render current game state with PyGame
         """
-        if self.game is None:
-            self.game = XiangQiGame()
-            self.game.on_init(self.ally_piece, self.enemy_piece)
-        self.game.render()
+        if self._game is None:
+            self._game = XiangQiGame()
+            self._game.on_init(self._ally_piece, self._enemy_piece)
+        self._game.render()
 
     def close(self):
         """
         Free up resources and gracefully exit
         """
-        if self.game:
-            self.game.cleanup()
+        if self._game:
+            self._game.cleanup()
 
     def seed(self, seed=None):
         """
@@ -287,26 +286,26 @@ class XiangQiEnv(gym.Env):
         """
         error_msg = "gym_xiangqi error: calling step_user with " \
                     "incorrect game turn (must be ally's turn)"
-        assert self.turn == ALLY, error_msg
+        assert self._turn == ALLY, error_msg
 
         for piece_id in range(1, PIECE_CNT+1):
             self.get_possible_actions_by_piece(piece_id)
 
-        self.game.run()
+        self._game.run()
 
         # game terminated by window close button
-        if self.game.quit:
-            return self.state, 0, True, {"exit": True}
+        if self._game.quit:
+            return self._state, 0, True, {"exit": True}
 
         # retrieve user piece movement info
-        piece_id = self.game.cur_selected_pid
-        start = (self.ally_piece[piece_id].row,
-                 self.ally_piece[piece_id].col)
-        end = self.game.end_pos
+        piece_id = self._game.cur_selected_pid
+        start = (self._ally_piece[piece_id].row,
+                 self._ally_piece[piece_id].col)
+        end = self._game.end_pos
 
         # reset the variables
-        self.game.cur_selected_pid = None
-        self.game.end_pos = None
+        self._game.cur_selected_pid = None
+        self._game.end_pos = None
 
         # save as instance variables for debugging
         self.user_move_info = (piece_id, start, end)
@@ -324,9 +323,9 @@ class XiangQiEnv(gym.Env):
                 piece_id = INITIAL_BOARD[r][c]
                 init = self.id_to_class[abs(piece_id)]
                 if piece_id < 0:
-                    self.enemy_piece[-piece_id] = init(self.enemy_color, r, c)
+                    self._enemy_piece[-piece_id] = init(self._enemy_color, r, c)
                 elif piece_id > 0:
-                    self.ally_piece[piece_id] = init(self.ally_color, r, c)
+                    self._ally_piece[piece_id] = init(self._ally_color, r, c)
 
     def get_possible_actions(self, player):
         """
@@ -337,11 +336,11 @@ class XiangQiEnv(gym.Env):
         """
         # current piece set changes depending on whose turn it is
         if player == ALLY:
-            piece_set = self.ally_piece
-            possible_actions = self.ally_actions
+            piece_set = self._ally_piece
+            possible_actions = self._ally_actions
         else:
-            piece_set = self.enemy_piece
-            possible_actions = self.enemy_actions
+            piece_set = self._enemy_piece
+            possible_actions = self._enemy_actions
 
         # Clear all possible actions to remove possible actions from
         # previous turn.
@@ -351,8 +350,8 @@ class XiangQiEnv(gym.Env):
         # get possible moves for every piece in the piece set
         for pid, piece_obj in enumerate(piece_set[1:], 1):
             if piece_obj.state == ALIVE:
-                piece_obj.get_actions(pid * self.turn,
-                                      self.state,
+                piece_obj.get_actions(pid * self._turn,
+                                      self._state,
                                       possible_actions)
 
     def get_possible_actions_by_piece(self, piece_id):
@@ -366,11 +365,11 @@ class XiangQiEnv(gym.Env):
             actions that are can be taken by the piece.
         """
         if is_ally(piece_id):
-            pieces = self.ally_piece
-            possible_actions = self.ally_actions
+            pieces = self._ally_piece
+            possible_actions = self._ally_actions
         else:
-            pieces = self.enemy_piece
-            possible_actions = self.enemy_actions
+            pieces = self._enemy_piece
+            possible_actions = self._enemy_actions
 
         piece_id = abs(piece_id)
 
@@ -397,15 +396,15 @@ class XiangQiEnv(gym.Env):
         by any of current player's pieces
         """
         # This is OPPONENT General
-        if self.turn == ALLY:
-            general = self.enemy_piece[GENERAL]
-            actions = self.ally_actions
+        if self._turn == ALLY:
+            general = self._enemy_piece[GENERAL]
+            actions = self._ally_actions
         else:
-            general = self.ally_piece[GENERAL]
-            actions = self.enemy_actions
+            general = self._ally_piece[GENERAL]
+            actions = self._enemy_actions
 
         # update current player's moves
-        self.get_possible_actions(self.turn)
+        self.get_possible_actions(self._turn)
 
         # iterate through possible moves of current player's pieces
         actions = np.where(actions == 1)[0]
@@ -415,3 +414,39 @@ class XiangQiEnv(gym.Env):
             if target_r == general.row and target_c == general.col:
                 jiang_actions.append(action)
         return jiang_actions
+
+    @property
+    def ally_color(self):
+        return self._ally_color
+
+    @property
+    def enemy_color(self):
+        return self._enemy_color
+
+    @property
+    def turn(self):
+        return self._turn
+
+    @property
+    def state(self):
+        return self._state
+
+    @property
+    def ally_piece(self):
+        return self._ally_piece
+
+    @property
+    def enemy_piece(self):
+        return self._enemy_piece
+
+    @property
+    def ally_actions(self):
+        return self._ally_actions
+
+    @property
+    def enemy_actions(self):
+        return self._enemy_actions
+
+    @property
+    def game(self):
+        return self._game
