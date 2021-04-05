@@ -276,7 +276,7 @@ class XiangQiGame:
         convert clicked coordinate to real coordinate
         """
         clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
-        
+
         adj_y_offset = (COOR_OFFSET + BOARD_Y_OFFSET)
         clicked_real_y = (clicked_coor[1] - adj_y_offset) // COOR_DELTA
 
