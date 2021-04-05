@@ -39,6 +39,7 @@ class XiangQiGame:
         self.enemy_kills = []
         self.cur_selected_pid = 0
         self.end_pos = None
+        self.bgm_switch = True
         self.quit = False
 
     def on_init(self):
@@ -111,6 +112,34 @@ class XiangQiGame:
             pygame_x = col*COOR_DELTA + COOR_OFFSET
             self.screen.blit(cur_sel_basic_img, (pygame_x, pygame_y))
 
+    def toggle_bgm(self):
+        """
+        This is a toggle switch for bgm.
+        If self.bgm_switch is True, BGM plays, otherwise it stops.
+        """
+        self.bgm_switch = not self.bgm_switch
+        if self.bgm_switch:
+            pygame.mixer.music.play(-1)
+        else:
+            pygame.mixer.music.stop()
+
+    def update_bgm_state(self):
+        """
+        show whether the bgm is on or off
+        """
+        bgm_font = pygame.font.SysFont('bradleyhand', 20)
+        bgm_text = "BGM(B): "
+        if self.bgm_switch:
+            bgm_text += "ON"
+            final_text = bgm_font.render(bgm_text, True, (230, 100, 100))
+            text_rect = final_text.get_rect(centerx=650, bottom=550)
+            self.screen.blit(final_text, text_rect)
+        else:
+            bgm_text += "OFF"
+            final_text = bgm_font.render(bgm_text, True, (100, 100, 200))
+            text_rect = final_text.get_rect(centerx=650, bottom=550)
+            self.screen.blit(final_text, text_rect)
+
     def on_event(self, event):
         """
         This routine is triggered when some kind of user/game event is detected
@@ -124,6 +153,10 @@ class XiangQiGame:
         if event.type == pygame.QUIT:
             self.running = False
             self.quit = True
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_b:
+                self.toggle_bgm()
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # clicked: 1 not_clicked: 0
@@ -180,6 +213,7 @@ class XiangQiGame:
         self.screen.fill((250, 250, 250))
         self.update_timer()
         self.update_kills()
+        self.update_bgm_state()
         self.screen.blit(self.board_background, (0, 0))
 
         # update all cur positions of pieces
@@ -281,7 +315,7 @@ class XiangQiGame:
         """
         initialize the timer
         """
-        self.font = pygame.font.SysFont(None, 40)
+        self.time_font = pygame.font.SysFont('cochin', 30)
         self.timer_event = pygame.USEREVENT + 1
         pygame.time.set_timer(self.timer_event, 1000)
 
@@ -290,23 +324,23 @@ class XiangQiGame:
         update the remaining time and blit
         """
         timer_text = "timer: " + str(self.counter)
-        final_text = self.font.render(timer_text, True, (128, 128, 0))
-        text_rect = final_text.get_rect(centerx=665, bottom=50)
+        final_text = self.time_font.render(timer_text, True, (0, 0, 0))
+        text_rect = final_text.get_rect(centerx=650, bottom=50)
         self.screen.blit(final_text, text_rect)
 
     def init_kills(self):
         """
-        write 'ally kills: ' and 'enemy kills: ' on screen
+        write 'Ally kills: ' and 'Enemy kills: ' on screen
         """
-        self.kill_font = pygame.font.SysFont(None, 40)
+        self.kill_font = pygame.font.SysFont('cochin', 30)
 
-        kill_text = "ally kills: "
-        final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
-        text_rect = final_text.get_rect(centerx=610, bottom=350)
+        kill_text = "Ally Kills: "
+        final_text = self.kill_font.render(kill_text, True, (20, 20, 0))
+        text_rect = final_text.get_rect(centerx=595, bottom=350)
         self.screen.blit(final_text, text_rect)
 
-        kill_text = "enemy kills: "
-        final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
+        kill_text = "Enemy Kills: "
+        final_text = self.kill_font.render(kill_text, True, (20, 20, 0))
         text_rect = final_text.get_rect(centerx=610, bottom=150)
         self.screen.blit(final_text, text_rect)
 
@@ -380,7 +414,7 @@ class XiangQiGame:
         write the "game over" message on screen and wait for 3 seconds
         """
         game_over = "GAME OVER"
-        font = pygame.font.SysFont(None, 100)
+        font = pygame.font.SysFont('impact', 100)
         game_over_text = font.render(game_over, True, (128, 250, 128))
         t_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(game_over_text, t_rect)
