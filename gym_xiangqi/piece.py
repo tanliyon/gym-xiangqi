@@ -1,3 +1,6 @@
+import os
+
+import pkg_resources
 import numpy as np
 import pygame
 
@@ -69,7 +72,8 @@ class Piece:
         else:
             file_path = PATH_TO_RED
 
-        target_file = file_path + filename
+        target_file = os.path.join(file_path, filename)
+        target_file = pkg_resources.resource_filename(__name__, target_file)
         image = pygame.image.load(target_file).convert_alpha()
         image = pygame.transform.scale(
             image, (piece_width, piece_height)
