@@ -8,15 +8,16 @@ from gym_xiangqi.utils import move_to_action_space, is_ally
 from gym_xiangqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
     BOARD_ROWS, BOARD_COLS,                             # board specs
-    PALACE_ALLY_ROW, PALACE_ENEMY_ROW, PALACE_COL,     # palace bound
+    PALACE_ALLY_ROW, PALACE_ENEMY_ROW, PALACE_COL,      # palace bound
     RIVER_LOW, RIVER_HIGH,                              # river bound
     MAX_REP,                                            # repetition bound
-    BLACK, ALIVE, ALLY, ENEMY,                         # piece states
+    BLACK, ALIVE, ALLY, ENEMY,                          # piece states
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
     PIECE_WIDTH, PIECE_HEIGHT,                          # piece sizes
     MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT,                # mini piece sizes
     PATH_TO_BLACK, PATH_TO_RED,                         # file paths to pieces
-    EMPTY, GENERAL           # piece IDs
+    EMPTY, GENERAL,                                     # piece IDs
+    BOARD_Y_OFFSET                                      # board y offset
 )
 
 
@@ -63,7 +64,7 @@ class Piece:
 
     def get_pygame_coor(self):
         x = self.col*COOR_DELTA + COOR_OFFSET
-        y = self.row*COOR_DELTA + COOR_OFFSET
+        y = self.row*COOR_DELTA + COOR_OFFSET + BOARD_Y_OFFSET
         return (x, y)
 
     def load_image(self, filename: str, piece_width, piece_height):

@@ -11,6 +11,7 @@ from gym_xiangqi.constants import (
     FPS,                          # fps for pygame while loop
     COUNT,                        # initial time for timer
     PIECE_CNT,                    # total number of pieces in each side
+    BOARD_Y_OFFSET                # board y offset
 )
 
 
@@ -108,7 +109,7 @@ class XiangQiGame:
         cur_sel_basic_img.set_alpha(opacity)
 
         for _, (row, col) in self.cur_selected.legal_moves:
-            pygame_y = row*COOR_DELTA + COOR_OFFSET
+            pygame_y = row*COOR_DELTA + COOR_OFFSET + BOARD_Y_OFFSET
             pygame_x = col*COOR_DELTA + COOR_OFFSET
             self.screen.blit(cur_sel_basic_img, (pygame_x, pygame_y))
 
@@ -132,12 +133,12 @@ class XiangQiGame:
         if self.bgm_switch:
             bgm_text += "ON"
             final_text = bgm_font.render(bgm_text, True, (230, 100, 100))
-            text_rect = final_text.get_rect(centerx=650, bottom=550)
+            text_rect = final_text.get_rect(centerx=450, bottom=40)
             self.screen.blit(final_text, text_rect)
         else:
             bgm_text += "OFF"
             final_text = bgm_font.render(bgm_text, True, (100, 100, 200))
-            text_rect = final_text.get_rect(centerx=650, bottom=550)
+            text_rect = final_text.get_rect(centerx=450, bottom=40)
             self.screen.blit(final_text, text_rect)
 
     def on_event(self, event):
@@ -214,7 +215,7 @@ class XiangQiGame:
         self.update_timer()
         self.update_kills()
         self.update_bgm_state()
-        self.screen.blit(self.board_background, (0, 0))
+        self.screen.blit(self.board_background, (0, BOARD_Y_OFFSET))
 
         # update all cur positions of pieces
         for i in range(1, len(self.ally_piece)):
@@ -275,7 +276,7 @@ class XiangQiGame:
         convert clicked coordinate to real coordinate
         """
         clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
-        clicked_real_y = (clicked_coor[1] - COOR_OFFSET) // COOR_DELTA
+        clicked_real_y = (clicked_coor[1] - (COOR_OFFSET + BOARD_Y_OFFSET)) // COOR_DELTA
 
         return clicked_real_x, clicked_real_y
 
@@ -315,7 +316,7 @@ class XiangQiGame:
         """
         initialize the timer
         """
-        self.time_font = pygame.font.SysFont('cochin', 30)
+        self.time_font = pygame.font.SysFont('cochin', 20)
         self.timer_event = pygame.USEREVENT + 1
         pygame.time.set_timer(self.timer_event, 1000)
 
@@ -323,25 +324,29 @@ class XiangQiGame:
         """
         update the remaining time and blit
         """
-        timer_text = "timer: " + str(self.counter)
-        final_text = self.time_font.render(timer_text, True, (0, 0, 0))
-        text_rect = final_text.get_rect(centerx=650, bottom=50)
+        timer_text = "Timer: " + str(self.counter)
+        if self.counter <= 10:
+            color = (230, 100, 100) # Red
+        else:
+            color = (0, 0, 0) # Black
+        final_text = self.time_font.render(timer_text, True, color)
+        text_rect = final_text.get_rect(centerx=460, bottom=720)
         self.screen.blit(final_text, text_rect)
 
     def init_kills(self):
         """
         write 'Ally kills: ' and 'Enemy kills: ' on screen
         """
-        self.kill_font = pygame.font.SysFont('cochin', 30)
+        self.kill_font = pygame.font.SysFont('cochin', 20)
 
         kill_text = "Ally Kills: "
         final_text = self.kill_font.render(kill_text, True, (20, 20, 0))
-        text_rect = final_text.get_rect(centerx=595, bottom=350)
+        text_rect = final_text.get_rect(centerx=45, bottom=720)
         self.screen.blit(final_text, text_rect)
 
         kill_text = "Enemy Kills: "
         final_text = self.kill_font.render(kill_text, True, (20, 20, 0))
-        text_rect = final_text.get_rect(centerx=610, bottom=150)
+        text_rect = final_text.get_rect(centerx=60, bottom=40)
         self.screen.blit(final_text, text_rect)
 
     def update_kills(self):
@@ -371,17 +376,15 @@ class XiangQiGame:
         - (i * 35) indicates the step size that considers both PIECE_WIDTH
             and proper spacing between the pieces to be listed.
 
-        - Modulo 245 is from the following calculation.
-            (WINDOW_WIDTH - BOARD_WIDTH - PIECE_WIDTH/2 - 5).
-            This modulo only allows the max number of pieces in each row to 7,
+        - Modulo 280 only allows the max number of pieces in each row to 8,
             therefore keeps the listed pieces within the pygame screen.
 
         y:
-        - The y offsets 360 and 160 indicate the starting y coordinate
+        - The y offsets 40 and 730 indicate the starting y coordinate
             for 'ally kills' and 'enemy kills' respectively on screen.
 
         - (i // 7) * 35 indicates that every piece in the position of
-            multiple of 8 (ex] 8, 16), has to start a new line.
+            multiple of 9 (ex] 9, 18), has to start a new line.
             Otherwise, the pieces will overlap and turn invisible.
 
         The modulo for y needed not to be set since we have enough spaces
@@ -389,14 +392,14 @@ class XiangQiGame:
         """
         for i in range(len(self.ally_kills)):
             # keep minimis within the box
-            x = 530 + (i * 35) % 245
-            y = 360 + (i // 7) * 35
+            x = 20 + (i * 35) % 280
+            y = 730 + (i // 8) * 35
             self.screen.blit(self.ally_kills[i], (x, y))
 
         for i in range(len(self.enemy_kills)):
             # keep minimis within the box
-            x = 530 + (i * 35) % 245
-            y = 160 + (i // 7) * 35
+            x = 20 + (i * 35) % 280
+            y = 40 + (i // 8) * 35
             self.screen.blit(self.enemy_kills[i], (x, y))
 
     def kill_piece(self, real_clicked_coor):
