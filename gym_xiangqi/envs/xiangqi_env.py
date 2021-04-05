@@ -318,7 +318,7 @@ class XiangQiEnv(gym.Env):
 
         # Process the piece movement in env
         player_action = move_to_action_space(piece_id, start, end)
-        return self.step(player_action)
+        return self.step(int(player_action))
 
     def init_pieces(self):
         """
