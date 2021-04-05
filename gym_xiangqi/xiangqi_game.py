@@ -276,7 +276,8 @@ class XiangQiGame:
         convert clicked coordinate to real coordinate
         """
         clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
-        clicked_real_y = (clicked_coor[1] - (COOR_OFFSET + BOARD_Y_OFFSET)) // COOR_DELTA
+        clicked_real_y = ((clicked_coor[1] - (COOR_OFFSET + BOARD_Y_OFFSET))
+                         // COOR_DELTA)
 
         return clicked_real_x, clicked_real_y
 
@@ -326,9 +327,9 @@ class XiangQiGame:
         """
         timer_text = "Timer: " + str(self.counter)
         if self.counter <= 10:
-            color = (230, 100, 100) # Red
+            color = (230, 100, 100)  # Red
         else:
-            color = (0, 0, 0) # Black
+            color = (0, 0, 0)  # Black
         final_text = self.time_font.render(timer_text, True, color)
         text_rect = final_text.get_rect(centerx=460, bottom=720)
         self.screen.blit(final_text, text_rect)
