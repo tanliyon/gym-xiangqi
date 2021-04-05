@@ -371,7 +371,7 @@ class XiangQiGame:
         the number of dead pieces on both sides may differ during the game.
 
         x:
-        - The x offsets 530 indicate the starting x coordinate on screen.
+        - The x offsets 20 indicate the starting x coordinate on screen.
 
         - (i * 35) indicates the step size that considers both PIECE_WIDTH
             and proper spacing between the pieces to be listed.
@@ -383,7 +383,7 @@ class XiangQiGame:
         - The y offsets 40 and 730 indicate the starting y coordinate
             for 'ally kills' and 'enemy kills' respectively on screen.
 
-        - (i // 7) * 35 indicates that every piece in the position of
+        - (i // 8) * 35 indicates that every piece in the position of
             multiple of 9 (ex] 9, 18), has to start a new line.
             Otherwise, the pieces will overlap and turn invisible.
 
@@ -399,7 +399,7 @@ class XiangQiGame:
         for i in range(len(self.enemy_kills)):
             # keep minimis within the box
             x = 20 + (i * 35) % 280
-            y = 40 + (i // 8) * 35
+            y = 50 + (i // 8) * 35
             self.screen.blit(self.enemy_kills[i], (x, y))
 
     def kill_piece(self, real_clicked_coor):
