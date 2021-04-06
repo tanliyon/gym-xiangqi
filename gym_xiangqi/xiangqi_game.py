@@ -141,7 +141,7 @@ class XiangQiGame:
             # Write ON in RED
             bgm_state_text = "ON"
             final_text = bgm_state_font.render(bgm_state_text, True, color)
-            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=85)
+            text_rect = final_text.get_rect(centerx=466, bottom=85)
             self.screen.blit(final_text, text_rect)
         else:
             color = (100, 100, 200)
@@ -149,12 +149,12 @@ class XiangQiGame:
             # Write ON in BLUE
             bgm_state_text = "OFF"
             final_text = bgm_state_font.render(bgm_state_text, True, color)
-            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=85)
+            text_rect = final_text.get_rect(centerx=466, bottom=85)
             self.screen.blit(final_text, text_rect)
 
         # Write BGM(B) in RED or BLUE
         final_text = bgm_font.render(bgm_text, True, color)
-        text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=50)
+        text_rect = final_text.get_rect(centerx=466, bottom=50)
         self.screen.blit(final_text, text_rect)
 
         # Draw border line in RED or BLUE
@@ -239,14 +239,7 @@ class XiangQiGame:
         # background color
         self.screen.fill((255, 255, 255))
 
-        # horizontal lines
-        self.screen.fill(self.compart_color, (0, 0, BOARD_WIDTH, 5))
-        self.screen.fill(self.compart_color, (0, BOARD_Y_OFFSET-5, BOARD_WIDTH, BOARD_HEIGHT+10))
-        self.screen.fill(self.compart_color, (0, WINDOW_HEIGHT-5, BOARD_WIDTH, 5))
-
-        # vertical lines
-        self.screen.fill(self.compart_color, (0, 0, 10, WINDOW_HEIGHT))
-        self.screen.fill(self.compart_color, (WINDOW_WIDTH-10, 0, 10, WINDOW_HEIGHT))
+        self.draw_compartments()
 
         # self.update_timer() # hidden for now
         self.update_kills()
@@ -297,6 +290,24 @@ class XiangQiGame:
             for event in pygame.event.get():
                 self.on_event(event)
             self.render()
+
+    def draw_compartments(self):
+        """
+        This method draws the compartment lines on the game screen.
+        """
+        # horizontal compartment lines
+        line_info = (0, 0, BOARD_WIDTH, 5)
+        self.screen.fill(self.compart_color, line_info)
+        line_info = (0, BOARD_Y_OFFSET-5, BOARD_WIDTH, BOARD_HEIGHT+10)
+        self.screen.fill(self.compart_color, line_info)
+        line_info = (0, WINDOW_HEIGHT-5, BOARD_WIDTH, 5)
+        self.screen.fill(self.compart_color, line_info)
+
+        # vertical compartment lines
+        line_info = (0, 0, 10, WINDOW_HEIGHT)
+        self.screen.fill(self.compart_color, line_info)
+        line_info = (WINDOW_WIDTH-10, 0, 10, WINDOW_HEIGHT)
+        self.screen.fill(self.compart_color, line_info)
 
     def load_piece_images(self, pieces: list):
         """
