@@ -136,6 +136,7 @@ class XiangQiEnv(gym.Env):
 
         # initial board state
         self._state = None
+        self._state_hash = None
 
         # instantiate piece objects
         self._ally_piece = [None for _ in range(PIECE_CNT + 1)]
@@ -201,6 +202,10 @@ class XiangQiEnv(gym.Env):
         # Validate action input
         error_msg = "%r (%s) invalid action" % (action, type(action))
         assert self.action_space.contains(action), error_msg
+
+        # Validate that the environment wasn't changed between steps
+        assert hash(str(self._state)) == self._state_hash, \
+            "Error! Game state changed illegally!"
 
         # Warn the user for calling step() when current game has finished
         if self._done:
@@ -280,6 +285,9 @@ class XiangQiEnv(gym.Env):
         self._turn *= -1     # ALLY (1) to ENEMY (-1) and vice versa
         self.get_possible_actions(self._turn)
 
+        # Update state hash.
+        self._state_hash = hash(str(self._state))
+
         return np.array(self._state), reward, self._done, {}
 
     def reset(self):
@@ -299,6 +307,7 @@ class XiangQiEnv(gym.Env):
 
         self.get_possible_actions(self._turn)
         self._game.on_init_pieces(self._ally_piece, self._enemy_piece)
+        self._state_hash = hash(str(self._state))
 
     def render(self, mode='human'):
         """
