@@ -11,7 +11,8 @@ from gym_xiangqi.constants import (
     FPS,                          # fps for pygame while loop
     COUNT,                        # initial time for timer
     PIECE_CNT,                    # total number of pieces in each side
-    BOARD_Y_OFFSET                # board y offset
+    BOARD_Y_OFFSET,               # board y offset
+    BOARD_WIDTH, BOARD_HEIGHT     # board width, height
 )
 
 
@@ -42,6 +43,7 @@ class XiangQiGame:
         self.end_pos = None
         self.bgm_switch = True
         self.quit = False
+        self.deco_color = (153, 102, 75)
 
     def on_init(self):
         """
@@ -237,8 +239,20 @@ class XiangQiGame:
         """
         Render current game state into graphics
         """
-        # draw white background, board, timer, and pieces consecutively
-        self.screen.fill((250, 250, 250))
+        # draw background, board, timer, and pieces consecutively
+
+        # background color
+        self.screen.fill((255, 255, 255))
+
+        # horizontal lines
+        self.screen.fill(self.deco_color, (0, 0, BOARD_WIDTH, 5))
+        self.screen.fill(self.deco_color, (0, BOARD_Y_OFFSET-5, BOARD_WIDTH, BOARD_HEIGHT+10))
+        self.screen.fill(self.deco_color, (0, WINDOW_HEIGHT-5, BOARD_WIDTH, 5))
+
+        # vertical lines
+        self.screen.fill(self.deco_color, (0, 0, 5, WINDOW_HEIGHT))
+        self.screen.fill(self.deco_color, (WINDOW_WIDTH-5, 0, 5, WINDOW_HEIGHT))
+
         # self.update_timer() # hidden for now
         self.update_kills()
         self.update_bgm_state()
