@@ -136,39 +136,34 @@ class XiangQiGame:
         border_font = pygame.font.SysFont('bradleyhand', 30)
 
         if self.bgm_switch:
-            final_text = bgm_font.render(bgm_text, True, (230, 100, 100))
-            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=50)
-            self.screen.blit(final_text, text_rect)
+            color = (230, 100, 100)
 
+            # Write ON in RED
             bgm_state_text = "ON"
-            final_text = bgm_state_font.render(bgm_state_text, True, (230, 100, 100))
+            final_text = bgm_state_font.render(bgm_state_text, True, color)
             text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=85)
-            self.screen.blit(final_text, text_rect)
-
-            # Draw border line
-            border_text = "|"
-            final_text = border_font.render(border_text, True, (230, 100, 100))
-            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=60)
-            self.screen.blit(final_text, text_rect)
-            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=90)
             self.screen.blit(final_text, text_rect)
         else:
-            final_text = bgm_font.render(bgm_text, True, (100, 100, 200))
-            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=50)
-            self.screen.blit(final_text, text_rect)
+            color = (100, 100, 200)
 
+            # Write ON in BLUE
             bgm_state_text = "OFF"
-            final_text = bgm_state_font.render(bgm_state_text, True, (100, 100, 200))
+            final_text = bgm_state_font.render(bgm_state_text, True, color)
             text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=85)
             self.screen.blit(final_text, text_rect)
 
-            # Draw border line
-            border_text = "|"
-            final_text = border_font.render(border_text, True, (100, 100, 200))
-            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=60)
-            self.screen.blit(final_text, text_rect)
-            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=90)
-            self.screen.blit(final_text, text_rect)
+        # Write BGM(B) in RED or BLUE
+        final_text = bgm_font.render(bgm_text, True, color)
+        text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=50)
+        self.screen.blit(final_text, text_rect)
+
+        # Draw border line in RED or BLUE
+        border_text = "|"
+        final_text = border_font.render(border_text, True, color)
+        text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=60)
+        self.screen.blit(final_text, text_rect)
+        text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=90)
+        self.screen.blit(final_text, text_rect)
 
     def on_event(self, event):
         """
@@ -250,8 +245,8 @@ class XiangQiGame:
         self.screen.fill(self.compart_color, (0, WINDOW_HEIGHT-5, BOARD_WIDTH, 5))
 
         # vertical lines
-        self.screen.fill(self.compart_color, (0, 0, 5, WINDOW_HEIGHT))
-        self.screen.fill(self.compart_color, (WINDOW_WIDTH-5, 0, 5, WINDOW_HEIGHT))
+        self.screen.fill(self.compart_color, (0, 0, 10, WINDOW_HEIGHT))
+        self.screen.fill(self.compart_color, (WINDOW_WIDTH-10, 0, 10, WINDOW_HEIGHT))
 
         # self.update_timer() # hidden for now
         self.update_kills()
