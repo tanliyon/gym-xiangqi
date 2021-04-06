@@ -26,6 +26,7 @@ def main():
             player = "You"
             piece, start, end = env.user_move_info
             piece = PIECE_ID_TO_NAME[piece]
+            end = env.game.end_pos
         else:
             time.sleep(1)
             action = agent.move(env)
