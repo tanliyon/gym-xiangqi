@@ -1,5 +1,5 @@
 from gym_xiangqi.agents import RandomAgent
-from gym_xiangqi.constants import AGENT, PIECE_ID_TO_NAME
+from gym_xiangqi.constants import ALLY, PIECE_ID_TO_NAME
 from gym_xiangqi.utils import action_space_to_move
 
 import gym
@@ -19,7 +19,7 @@ def main():
 
         action = agent.move(env)
         _, reward, done, _ = env.step(action)
-        turn = "Agent" if env.turn == AGENT else "Enemy"
+        turn = "Agent" if env.turn == ALLY else "Enemy"
         move = action_space_to_move(action)
         piece = PIECE_ID_TO_NAME[move[0]]
 
