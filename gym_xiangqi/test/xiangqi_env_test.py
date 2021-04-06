@@ -171,6 +171,12 @@ class TestXiangQiEnv(unittest.TestCase):
         self.assertIsInstance(seed_list, list)
         self.assertIsInstance(seed_list[0], int)
 
+    def test_env_state_hash_check(self):
+        self.env._state[0][7], self.env._state[2][1] = (
+            self.env._state[2][1], self.env._state[0][7])
+        with self.assertRaises(AssertionError):
+            self.env.step(300)
+
 
 if __name__ == "__main__":
     unittest.main()
