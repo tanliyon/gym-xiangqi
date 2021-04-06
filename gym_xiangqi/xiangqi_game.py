@@ -93,7 +93,7 @@ class XiangQiGame:
 
     def init_sound(self, piece_move, bgm):
         """
-        initialize game sound
+        Initialize game sound
         """
         self.sound = Sound(piece_move, bgm)
 
@@ -126,7 +126,7 @@ class XiangQiGame:
 
     def update_bgm_state(self):
         """
-        show whether the bgm is on or off
+        Show whether the bgm is on or off
         """
         bgm_font = pygame.font.SysFont('bradleyhand', 20)
         bgm_text = "BGM(B): "
@@ -245,7 +245,7 @@ class XiangQiGame:
 
     def reset(self):
         """
-        terminate current game and create a new game
+        Terminate current game and create a new game
         """
         pass
 
@@ -264,7 +264,7 @@ class XiangQiGame:
 
     def load_piece_images(self, pieces: list):
         """
-        load the image files to the corresponding piece objects
+        Load the image files to the corresponding piece objects
         """
         for i in range(1, len(pieces)):
             pieces[i].set_basic_image()
@@ -273,7 +273,7 @@ class XiangQiGame:
 
     def to_real_coor(self, clicked_coor):
         """
-        convert clicked coordinate to real coordinate
+        Convert clicked coordinate to real coordinate
         """
         clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
 
@@ -284,9 +284,9 @@ class XiangQiGame:
 
     def find_target_piece(self, clicked_coor):
         """
-        search for the currently selected piece object
-        if the object is found, return True
-        if not, return False
+        Search for the currently selected piece object
+        # if the object is found, return True
+        # else, return False
         """
         # get clicked coordinate
         clicked_x, clicked_y = clicked_coor
@@ -316,7 +316,7 @@ class XiangQiGame:
 
     def init_timer(self):
         """
-        initialize the timer
+        Initialize the timer
         """
         self.time_font = pygame.font.SysFont('cochin', 20)
         self.timer_event = pygame.USEREVENT + 1
@@ -324,7 +324,7 @@ class XiangQiGame:
 
     def update_timer(self):
         """
-        update the remaining time and blit
+        Update the remaining time and blit
         """
         timer_text = "Timer: " + str(self.counter)
         if self.counter <= 10:
@@ -337,7 +337,7 @@ class XiangQiGame:
 
     def init_kills(self):
         """
-        write 'Ally kills: ' and 'Enemy kills: ' on screen
+        Write 'Ally Kills: ' and 'Enemy Kills: ' on screen
         """
         self.kill_font = pygame.font.SysFont('cochin', 20)
 
@@ -406,7 +406,7 @@ class XiangQiGame:
 
     def kill_piece(self, real_clicked_coor):
         """
-        kill the enemy piece object in the given coordinate
+        Kill the enemy piece object in the given coordinate
         """
         for piece_id, enemy in enumerate(self.enemy_piece[1:], 1):
             if real_clicked_coor == enemy.coor and enemy.is_alive():
@@ -416,7 +416,7 @@ class XiangQiGame:
 
     def game_over(self):
         """
-        write the "game over" message on screen and wait for 3 seconds
+        Write the "game over" message on screen and wait for 3 seconds
         """
         game_over = "GAME OVER"
         font = pygame.font.SysFont('impact', 100)
