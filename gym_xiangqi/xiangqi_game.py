@@ -56,7 +56,7 @@ class XiangQiGame:
         )
 
         # init timer
-        self.init_timer()
+        # self.init_timer() # hidden for now
 
         # set caption
         self.screen = pygame.display.set_mode(self.dim)
@@ -128,17 +128,44 @@ class XiangQiGame:
         """
         Show whether the bgm is on or off
         """
+        bgm_text = " BGM(B)"
         bgm_font = pygame.font.SysFont('bradleyhand', 20)
-        bgm_text = "BGM(B): "
+        bgm_state_font = pygame.font.SysFont('bradleyhand', 25)
+        border_font = pygame.font.SysFont('bradleyhand', 30)
+
         if self.bgm_switch:
-            bgm_text += "ON"
             final_text = bgm_font.render(bgm_text, True, (230, 100, 100))
-            text_rect = final_text.get_rect(centerx=450, bottom=40)
+            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=50)
+            self.screen.blit(final_text, text_rect)
+
+            bgm_state_text = "ON"
+            final_text = bgm_state_font.render(bgm_state_text, True, (230, 100, 100))
+            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=85)
+            self.screen.blit(final_text, text_rect)
+
+            # Draw border line
+            border_text = "|"
+            final_text = border_font.render(border_text, True, (230, 100, 100))
+            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=60)
+            self.screen.blit(final_text, text_rect)
+            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=90)
             self.screen.blit(final_text, text_rect)
         else:
-            bgm_text += "OFF"
             final_text = bgm_font.render(bgm_text, True, (100, 100, 200))
-            text_rect = final_text.get_rect(centerx=450, bottom=40)
+            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=50)
+            self.screen.blit(final_text, text_rect)
+
+            bgm_state_text = "OFF"
+            final_text = bgm_state_font.render(bgm_state_text, True, (100, 100, 200))
+            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-55, bottom=85)
+            self.screen.blit(final_text, text_rect)
+
+            # Draw border line
+            border_text = "|"
+            final_text = border_font.render(border_text, True, (100, 100, 200))
+            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=60)
+            self.screen.blit(final_text, text_rect)
+            text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=90)
             self.screen.blit(final_text, text_rect)
 
     def on_event(self, event):
@@ -212,7 +239,7 @@ class XiangQiGame:
         """
         # draw white background, board, timer, and pieces consecutively
         self.screen.fill((250, 250, 250))
-        self.update_timer()
+        # self.update_timer() # hidden for now
         self.update_kills()
         self.update_bgm_state()
         self.screen.blit(self.board_background, (0, BOARD_Y_OFFSET))
@@ -339,16 +366,41 @@ class XiangQiGame:
         """
         Write 'Ally Kills: ' and 'Enemy Kills: ' on screen
         """
-        self.kill_font = pygame.font.SysFont('cochin', 20)
+        kill_font = pygame.font.SysFont('cochin', 20)
 
-        kill_text = "Ally Kills: "
-        final_text = self.kill_font.render(kill_text, True, (20, 20, 0))
-        text_rect = final_text.get_rect(centerx=45, bottom=720)
+        # Write Ally
+        ally_text = "Ally"
+        final_text = kill_font.render(ally_text, True, (20, 20, 0))
+        text_rect = final_text.get_rect(centerx=55, bottom=740)
         self.screen.blit(final_text, text_rect)
 
-        kill_text = "Enemy Kills: "
-        final_text = self.kill_font.render(kill_text, True, (20, 20, 0))
-        text_rect = final_text.get_rect(centerx=60, bottom=40)
+        # Write Enemy
+        enemy_text = "Enemy"
+        final_text = kill_font.render(enemy_text, True, (20, 20, 0))
+        text_rect = final_text.get_rect(centerx=55, bottom=50)
+        self.screen.blit(final_text, text_rect)
+
+        # Write Kills
+        kill_text = " Kills"
+        final_text = kill_font.render(kill_text, True, (20, 20, 0))
+
+        text_rect = final_text.get_rect(centerx=55, bottom=770)
+        self.screen.blit(final_text, text_rect)
+
+        text_rect = final_text.get_rect(centerx=55, bottom=80)
+        self.screen.blit(final_text, text_rect)
+
+        # Draw border line
+        border_font = pygame.font.SysFont('cochin', 30)
+        border_text = "|"
+        final_text = border_font.render(border_text, True, (20, 20, 0))
+        text_rect = final_text.get_rect(centerx=90, bottom=755)
+        self.screen.blit(final_text, text_rect)
+        text_rect = final_text.get_rect(centerx=90, bottom=775)
+        self.screen.blit(final_text, text_rect)
+        text_rect = final_text.get_rect(centerx=90, bottom=65)
+        self.screen.blit(final_text, text_rect)
+        text_rect = final_text.get_rect(centerx=90, bottom=85)
         self.screen.blit(final_text, text_rect)
 
     def update_kills(self):
@@ -394,14 +446,14 @@ class XiangQiGame:
         """
         for i in range(len(self.ally_kills)):
             # keep minimis within the box
-            x = 20 + (i * 35) % 280
-            y = 730 + (i // 8) * 35
+            x = 100 + (i * 35) % 280
+            y = 713 + (i // 8) * 35
             self.screen.blit(self.ally_kills[i], (x, y))
 
         for i in range(len(self.enemy_kills)):
             # keep minimis within the box
-            x = 20 + (i * 35) % 280
-            y = 50 + (i // 8) * 35
+            x = 100 + (i * 35) % 280
+            y = 23 + (i // 8) * 35
             self.screen.blit(self.enemy_kills[i], (x, y))
 
     def kill_piece(self, real_clicked_coor):
