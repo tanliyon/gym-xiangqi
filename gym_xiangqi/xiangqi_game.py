@@ -434,7 +434,7 @@ class XiangQiGame:
         the number of dead pieces on both sides may differ during the game.
 
         x:
-        - The x offsets 20 indicate the starting x coordinate on screen.
+        - The x offsets 100 indicate the starting x coordinate on screen.
 
         - (i * 35) indicates the step size that considers both PIECE_WIDTH
             and proper spacing between the pieces to be listed.
@@ -443,8 +443,8 @@ class XiangQiGame:
             therefore keeps the listed pieces within the pygame screen.
 
         y:
-        - The y offsets 40 and 730 indicate the starting y coordinate
-            for 'ally kills' and 'enemy kills' respectively on screen.
+        - The y offsets 23 and 713 indicate the starting y coordinate
+            for 'Enemy Kills' and 'Ally Kills' respectively on screen.
 
         - (i // 8) * 35 indicates that every piece in the position of
             multiple of 9 (ex] 9, 18), has to start a new line.
