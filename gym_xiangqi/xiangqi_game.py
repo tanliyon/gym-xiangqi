@@ -234,12 +234,8 @@ class XiangQiGame:
         """
         Render current game state into graphics
         """
-        # draw background, board, timer, and pieces consecutively
-
-        # background color
-        self.screen.fill((255, 255, 255))
-
-        self.draw_compartments()
+        # draw background & compartment lines
+        self.draw_background()
 
         # self.update_timer() # hidden for now
         self.update_kills()
@@ -291,10 +287,14 @@ class XiangQiGame:
                 self.on_event(event)
             self.render()
 
-    def draw_compartments(self):
+    def draw_background(self):
         """
-        This method draws the compartment lines on the game screen.
+        This method draws the background
+        and the compartment lines on the game screen.
         """
+        # fill the background with white
+        self.screen.fill((255, 255, 255))
+
         # horizontal compartment lines
         line_info = (0, 0, BOARD_WIDTH, 5)
         self.screen.fill(self.compart_color, line_info)
