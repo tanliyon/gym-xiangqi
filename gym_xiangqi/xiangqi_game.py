@@ -327,7 +327,7 @@ class XiangQiGame:
         adj_y_offset = (COOR_OFFSET + BOARD_Y_OFFSET)
         clicked_real_y = (clicked_coor[1] - adj_y_offset) // COOR_DELTA
 
-        return clicked_real_x, clicked_real_y
+        return int(clicked_real_x), int(clicked_real_y)
 
     def find_target_piece(self, clicked_coor):
         """
