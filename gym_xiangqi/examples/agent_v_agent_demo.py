@@ -19,7 +19,7 @@ def main():
 
         action = agent.move(env)
         _, reward, done, _ = env.step(action)
-        turn = "Agent" if env.turn == ALLY else "Enemy"
+        turn = "Ally" if env.turn == ALLY else "Enemy"
         move = action_space_to_move(action)
         piece = PIECE_ID_TO_NAME[move[0]]
 

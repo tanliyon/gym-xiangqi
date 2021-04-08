@@ -11,6 +11,8 @@ from gym_xiangqi.constants import (
     FPS,                          # fps for pygame while loop
     COUNT,                        # initial time for timer
     PIECE_CNT,                    # total number of pieces in each side
+    BOARD_Y_OFFSET,               # board y offset
+    BOARD_WIDTH, BOARD_HEIGHT     # board width, height
 )
 
 
@@ -39,7 +41,9 @@ class XiangQiGame:
         self.enemy_kills = []
         self.cur_selected_pid = 0
         self.end_pos = None
+        self.bgm_switch = True
         self.quit = False
+        self.compart_color = (153, 102, 75)
 
     def on_init(self):
         """
@@ -54,7 +58,7 @@ class XiangQiGame:
         )
 
         # init timer
-        self.init_timer()
+        # self.init_timer() # hidden for now
 
         # set caption
         self.screen = pygame.display.set_mode(self.dim)
@@ -91,7 +95,7 @@ class XiangQiGame:
 
     def init_sound(self, piece_move, bgm):
         """
-        initialize game sound
+        Initialize game sound
         """
         self.sound = Sound(piece_move, bgm)
 
@@ -107,9 +111,59 @@ class XiangQiGame:
         cur_sel_basic_img.set_alpha(opacity)
 
         for _, (row, col) in self.cur_selected.legal_moves:
-            pygame_y = row*COOR_DELTA + COOR_OFFSET
+            pygame_y = row*COOR_DELTA + COOR_OFFSET + BOARD_Y_OFFSET
             pygame_x = col*COOR_DELTA + COOR_OFFSET
             self.screen.blit(cur_sel_basic_img, (pygame_x, pygame_y))
+
+    def toggle_bgm(self):
+        """
+        This is a toggle switch for bgm.
+        If self.bgm_switch is True, BGM plays, otherwise it stops.
+        """
+        self.bgm_switch = not self.bgm_switch
+        if self.bgm_switch:
+            pygame.mixer.music.play(-1)
+        else:
+            pygame.mixer.music.stop()
+
+    def update_bgm_state(self):
+        """
+        Show whether the bgm is on or off
+        """
+        bgm_text = " BGM(B)"
+        bgm_font = pygame.font.SysFont('bradleyhand', 20)
+        bgm_state_font = pygame.font.SysFont('bradleyhand', 25)
+        border_font = pygame.font.SysFont('bradleyhand', 30)
+
+        if self.bgm_switch:
+            color = (230, 100, 100)
+
+            # Write ON in RED
+            bgm_state_text = "ON"
+            final_text = bgm_state_font.render(bgm_state_text, True, color)
+            text_rect = final_text.get_rect(centerx=466, bottom=85)
+            self.screen.blit(final_text, text_rect)
+        else:
+            color = (100, 100, 200)
+
+            # Write ON in BLUE
+            bgm_state_text = "OFF"
+            final_text = bgm_state_font.render(bgm_state_text, True, color)
+            text_rect = final_text.get_rect(centerx=466, bottom=85)
+            self.screen.blit(final_text, text_rect)
+
+        # Write BGM(B) in RED or BLUE
+        final_text = bgm_font.render(bgm_text, True, color)
+        text_rect = final_text.get_rect(centerx=466, bottom=50)
+        self.screen.blit(final_text, text_rect)
+
+        # Draw border line in RED or BLUE
+        border_text = "|"
+        final_text = border_font.render(border_text, True, color)
+        text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=60)
+        self.screen.blit(final_text, text_rect)
+        text_rect = final_text.get_rect(centerx=WINDOW_WIDTH-100, bottom=90)
+        self.screen.blit(final_text, text_rect)
 
     def on_event(self, event):
         """
@@ -124,6 +178,10 @@ class XiangQiGame:
         if event.type == pygame.QUIT:
             self.running = False
             self.quit = True
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_b:
+                self.toggle_bgm()
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # clicked: 1 not_clicked: 0
@@ -176,11 +234,13 @@ class XiangQiGame:
         """
         Render current game state into graphics
         """
-        # draw white background, board, timer, and pieces consecutively
-        self.screen.fill((250, 250, 250))
-        self.update_timer()
+        # draw background & compartment lines
+        self.draw_background()
+
+        # self.update_timer() # hidden for now
         self.update_kills()
-        self.screen.blit(self.board_background, (0, 0))
+        self.update_bgm_state()
+        self.screen.blit(self.board_background, (0, BOARD_Y_OFFSET))
 
         # update all cur positions of pieces
         for i in range(1, len(self.ally_piece)):
@@ -210,7 +270,7 @@ class XiangQiGame:
 
     def reset(self):
         """
-        terminate current game and create a new game
+        Terminate current game and create a new game
         """
         pass
 
@@ -227,9 +287,31 @@ class XiangQiGame:
                 self.on_event(event)
             self.render()
 
+    def draw_background(self):
+        """
+        This method draws the background
+        and the compartment lines on the game screen.
+        """
+        # fill the background with white
+        self.screen.fill((255, 255, 255))
+
+        # horizontal compartment lines
+        line_info = (0, 0, BOARD_WIDTH, 5)
+        self.screen.fill(self.compart_color, line_info)
+        line_info = (0, BOARD_Y_OFFSET-5, BOARD_WIDTH, BOARD_HEIGHT+10)
+        self.screen.fill(self.compart_color, line_info)
+        line_info = (0, WINDOW_HEIGHT-5, BOARD_WIDTH, 5)
+        self.screen.fill(self.compart_color, line_info)
+
+        # vertical compartment lines
+        line_info = (0, 0, 10, WINDOW_HEIGHT)
+        self.screen.fill(self.compart_color, line_info)
+        line_info = (WINDOW_WIDTH-10, 0, 10, WINDOW_HEIGHT)
+        self.screen.fill(self.compart_color, line_info)
+
     def load_piece_images(self, pieces: list):
         """
-        load the image files to the corresponding piece objects
+        Load the image files to the corresponding piece objects
         """
         for i in range(1, len(pieces)):
             pieces[i].set_basic_image()
@@ -238,18 +320,20 @@ class XiangQiGame:
 
     def to_real_coor(self, clicked_coor):
         """
-        convert clicked coordinate to real coordinate
+        Convert clicked coordinate to real coordinate
         """
         clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
-        clicked_real_y = (clicked_coor[1] - COOR_OFFSET) // COOR_DELTA
 
-        return clicked_real_x, clicked_real_y
+        adj_y_offset = (COOR_OFFSET + BOARD_Y_OFFSET)
+        clicked_real_y = (clicked_coor[1] - adj_y_offset) // COOR_DELTA
+
+        return int(clicked_real_x), int(clicked_real_y)
 
     def find_target_piece(self, clicked_coor):
         """
-        search for the currently selected piece object
-        if the object is found, return True
-        if not, return False
+        Search for the currently selected piece object
+        # if the object is found, return True
+        # else, return False
         """
         # get clicked coordinate
         clicked_x, clicked_y = clicked_coor
@@ -279,35 +363,64 @@ class XiangQiGame:
 
     def init_timer(self):
         """
-        initialize the timer
+        Initialize the timer
         """
-        self.font = pygame.font.SysFont(None, 40)
+        self.time_font = pygame.font.SysFont('cochin', 20)
         self.timer_event = pygame.USEREVENT + 1
         pygame.time.set_timer(self.timer_event, 1000)
 
     def update_timer(self):
         """
-        update the remaining time and blit
+        Update the remaining time and blit
         """
-        timer_text = "timer: " + str(self.counter)
-        final_text = self.font.render(timer_text, True, (128, 128, 0))
-        text_rect = final_text.get_rect(centerx=665, bottom=50)
+        timer_text = "Timer: " + str(self.counter)
+        if self.counter <= 10:
+            color = (230, 100, 100)  # Red
+        else:
+            color = (0, 0, 0)  # Black
+        final_text = self.time_font.render(timer_text, True, color)
+        text_rect = final_text.get_rect(centerx=460, bottom=720)
         self.screen.blit(final_text, text_rect)
 
     def init_kills(self):
         """
-        write 'ally kills: ' and 'enemy kills: ' on screen
+        Write 'Ally Kills: ' and 'Enemy Kills: ' on screen
         """
-        self.kill_font = pygame.font.SysFont(None, 40)
+        kill_font = pygame.font.SysFont('cochin', 20)
 
-        kill_text = "ally kills: "
-        final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
-        text_rect = final_text.get_rect(centerx=610, bottom=350)
+        # Write Ally
+        ally_text = "Ally"
+        final_text = kill_font.render(ally_text, True, (20, 20, 0))
+        text_rect = final_text.get_rect(centerx=55, bottom=740)
         self.screen.blit(final_text, text_rect)
 
-        kill_text = "enemy kills: "
-        final_text = self.kill_font.render(kill_text, True, (128, 128, 0))
-        text_rect = final_text.get_rect(centerx=610, bottom=150)
+        # Write Enemy
+        enemy_text = "Enemy"
+        final_text = kill_font.render(enemy_text, True, (20, 20, 0))
+        text_rect = final_text.get_rect(centerx=55, bottom=50)
+        self.screen.blit(final_text, text_rect)
+
+        # Write Kills
+        kill_text = " Kills"
+        final_text = kill_font.render(kill_text, True, (20, 20, 0))
+
+        text_rect = final_text.get_rect(centerx=55, bottom=770)
+        self.screen.blit(final_text, text_rect)
+
+        text_rect = final_text.get_rect(centerx=55, bottom=80)
+        self.screen.blit(final_text, text_rect)
+
+        # Draw border line
+        border_font = pygame.font.SysFont('cochin', 30)
+        border_text = "|"
+        final_text = border_font.render(border_text, True, (20, 20, 0))
+        text_rect = final_text.get_rect(centerx=90, bottom=755)
+        self.screen.blit(final_text, text_rect)
+        text_rect = final_text.get_rect(centerx=90, bottom=775)
+        self.screen.blit(final_text, text_rect)
+        text_rect = final_text.get_rect(centerx=90, bottom=65)
+        self.screen.blit(final_text, text_rect)
+        text_rect = final_text.get_rect(centerx=90, bottom=85)
         self.screen.blit(final_text, text_rect)
 
     def update_kills(self):
@@ -332,22 +445,20 @@ class XiangQiGame:
         the number of dead pieces on both sides may differ during the game.
 
         x:
-        - The x offsets 530 indicate the starting x coordinate on screen.
+        - The x offsets 100 indicate the starting x coordinate on screen.
 
         - (i * 35) indicates the step size that considers both PIECE_WIDTH
             and proper spacing between the pieces to be listed.
 
-        - Modulo 245 is from the following calculation.
-            (WINDOW_WIDTH - BOARD_WIDTH - PIECE_WIDTH/2 - 5).
-            This modulo only allows the max number of pieces in each row to 7,
+        - Modulo 280 only allows the max number of pieces in each row to 8,
             therefore keeps the listed pieces within the pygame screen.
 
         y:
-        - The y offsets 360 and 160 indicate the starting y coordinate
-            for 'ally kills' and 'enemy kills' respectively on screen.
+        - The y offsets 23 and 713 indicate the starting y coordinate
+            for 'Enemy Kills' and 'Ally Kills' respectively on screen.
 
-        - (i // 7) * 35 indicates that every piece in the position of
-            multiple of 8 (ex] 8, 16), has to start a new line.
+        - (i // 8) * 35 indicates that every piece in the position of
+            multiple of 9 (ex] 9, 18), has to start a new line.
             Otherwise, the pieces will overlap and turn invisible.
 
         The modulo for y needed not to be set since we have enough spaces
@@ -355,19 +466,19 @@ class XiangQiGame:
         """
         for i in range(len(self.ally_kills)):
             # keep minimis within the box
-            x = 530 + (i * 35) % 245
-            y = 360 + (i // 7) * 35
+            x = 100 + (i * 35) % 280
+            y = 713 + (i // 8) * 35
             self.screen.blit(self.ally_kills[i], (x, y))
 
         for i in range(len(self.enemy_kills)):
             # keep minimis within the box
-            x = 530 + (i * 35) % 245
-            y = 160 + (i // 7) * 35
+            x = 100 + (i * 35) % 280
+            y = 23 + (i // 8) * 35
             self.screen.blit(self.enemy_kills[i], (x, y))
 
     def kill_piece(self, real_clicked_coor):
         """
-        kill the enemy piece object in the given coordinate
+        Kill the enemy piece object in the given coordinate
         """
         for piece_id, enemy in enumerate(self.enemy_piece[1:], 1):
             if real_clicked_coor == enemy.coor and enemy.is_alive():
@@ -377,10 +488,10 @@ class XiangQiGame:
 
     def game_over(self):
         """
-        write the "game over" message on screen and wait for 3 seconds
+        Write the "game over" message on screen and wait for 3 seconds
         """
         game_over = "GAME OVER"
-        font = pygame.font.SysFont(None, 100)
+        font = pygame.font.SysFont('impact', 100)
         game_over_text = font.render(game_over, True, (128, 250, 128))
         t_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(game_over_text, t_rect)
