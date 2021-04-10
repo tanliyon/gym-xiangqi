@@ -1,5 +1,5 @@
-# This workflow builds, packages and deploys Gym Xiangqi to PyPI
-name: Deploy Gym Xiangqi distribution 📦 to PyPI
+# This workflow builds, packages and publishes Gym Xiangqi to PyPI
+name: Publish Gym Xiangqi distribution 📦 to PyPI
 on: 
   push:
     branches: [ main ]
@@ -32,7 +32,7 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
 
   test-pip-install:
-    name: Verify successful deployment with 'pip install gym-xiangqi'
+    name: Verify successful publishing with 'pip install gym-xiangqi'
     needs: build-and-publish
     runs-on: ${{ matrix.os }}
     strategy:
