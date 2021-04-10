@@ -3,9 +3,10 @@ Gym Xiangqi is a reinforcement learning environment of Xiangqi, Chinese Chess, g
 The project is built on top of a popular reinforcement learning framework called OpenAI Gym.
 
 ## Getting Started
-Installing and using Gym Xiangqi easy. We also welcome you to checkout our 
+Installing and using Gym Xiangqi easy. If you are unfamiliar with Xiangqi, the Chinese Chess, we encourage 
+you to read our [Wiki page](https://github.com/tanliyon/gym-xiangqi/wiki). We also welcome you to checkout our 
 [documentation page](https://gym-xiangqi.readthedocs.io/en/latest/), but if you have experience 
-working with other OpenAI Gym environments you are already off to a good start.
+working with other OpenAI Gym environments you will be already off to a good start.
 
 ### Prerequisites
 In order to use Gym Xiangqi environment for your reinforcement learning project,
@@ -56,6 +57,7 @@ Read through the [software handbook](https://docs.google.com/document/d/1Y5AM-Xj
 - [PyGame] - Used for rendering the game 
 
 ## Contributing
+We are currently working on creating our contribution guidelines.
 
 ## Versioning
 We use [Semantic Versioning](http://semver.org/) for versioning. For the versions
