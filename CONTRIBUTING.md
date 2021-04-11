@@ -2,7 +2,7 @@
 
 ## Issues
 
-Sharing issues are very valuable to this project.
+Issues are very valuable to this project.
 
   - Ideas are a valuable source of contributions others can make
   - Problems show where this project is lacking
@@ -46,7 +46,7 @@ the action you have taken to solve it.
 The aim of this repository is:
 
   - To provide a Xiangqi, Chinese Chess, reinforcement learning environment 
-    for toy projects, research and experiments
+    for projects, research and experiments
   - To allow users to learn reinforcement learning in general
   - To allow users to grow interest in reinforcement learning
   - To support OpenAI Gym as a reinforcement learning framework
