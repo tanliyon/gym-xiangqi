@@ -31,46 +31,70 @@ class XiangQiEnv(gym.Env):
     unique pieces called General, Advisor, Elephant, Horse, Chariot,
     Cannon and Soldier.
 
-    Observation:
-        Type: Box(10, 9)
-        The observation space is the state of the board and pieces.
-        Each item in the space corresponds to a single coordinate on
-        the board with the value range from -16 to 16. Each piece is
-        encoded as an integer in that range. Negative integers are enemy
-        pieces and positive integers are ally pieces.
-
-    Actions:
-        Type: Discrete(16 * 10 * 9 * 10 * 9)
-        The action space is an aggregation of all possible moves even
-        including illegal moves. Each space encodes 3 information: which
-        piece, from where, and to where. From 16 * 10 * 9 * 10 * 9, 16 is
-        the number of pieces and 10 * 9 is all possible grid positions on
-        the board. The first 10 * 9 represents the start position and the
-        second half represents the end position which is the position the
-        piece wants to move to.
-
-        In addition to this, the environment will calculate legal and
-        illegal moves within the action space to penalize an agent trying
-        to perform illegal moves and to correctly implement Xiangqi rules.
-
-    Reward:
-        We apply points to every type of pieces following the most widely
-        used standard.
-        General: infinity
-        Advisor: 2.0
-        Elephant: 2.0
-        Horse: 4.0
-        Chariot: 9.0
-        Cannon: 4.5
-        Soldier: 1.0 (2.0 if it has crossed the river)
-
     Starting State:
-        The initial board state with pieces laid out in correct position.
-        Reference the README for initial board illustration.
+    The initial board state with pieces laid out in correct position.
+    Reference the README for initial board illustration.
 
     Episode Termination:
-        Either the red or black runs out of moves or also known as the
-        general is captured. Reference the README for more details.
+    Either the red or black runs out of moves or also known as the
+    general is captured. Reference the README for more details.
+
+    Attributes:
+        observation_space (gym.spaces.Box(10, 9)):
+            The observation space is the state of the board and pieces.
+            Each item in the space corresponds to a single coordinate on
+            the board with the value range from -16 to 16. Each piece is
+            encoded as an integer in that range. Negative integers are enemy
+            pieces and positive integers are ally pieces.
+
+        action_space (gym.spaces.Discrete(16 * 10 * 9 * 10 * 9)):
+            The action space is an aggregation of all possible moves even
+            including illegal moves. Each space encodes 3 information: which
+            piece, from where, and to where. From 16 * 10 * 9 * 10 * 9, 16 is
+            the number of pieces and 10 * 9 is all possible grid positions on
+            the board. The first 10 * 9 represents the start position and the
+            second half represents the end position which is the position the
+            piece wants to move to.
+
+            In addition to this, the environment will calculate legal and
+            illegal moves within the action space to penalize an agent trying
+            to perform illegal moves and to correctly implement Xiangqi rules.
+
+        ally_color (int):
+            Current environment's ally color
+            RED = 0 and BLACK = 1
+
+        enemy_color (int):
+            Current environment's enemy color
+            RED = 0 and BLACK = 1
+
+        turn (int):
+            Current player that is playing
+            ALLY = 0 and ENEMY = 1
+
+        done (bool):
+            flag to indicate current game termination
+
+        state (np.array):
+            2 dimensional numpy array representing current board state
+
+        ally_actions (np.array):
+            1 dimensional numpy array indicating legal and illegal actions
+            among all ally's action space
+            Possible values of the array are 0 and 1 indicating legal and
+            illegal actions respectively
+
+        enemy_actions (np.array):
+            1 dimensional numpy array indicating legal and illegal actions
+            among all enemy's action space
+            Possible values of the array are 0 and 1 indicating legal and
+            illegal actions respectively
+
+        ally_piece (list):
+            List of all ally piece objects
+
+        enemy_piece (list):
+            List of all enemy piece objects
     """
     metadata = {'render.modes': ['human']}
 
@@ -139,17 +163,41 @@ class XiangQiEnv(gym.Env):
 
     def step(self, action):
         """
-        Run one turn of Xiangqi game: ally or enemy side plays a move
+        Run one turn of Xiangqi game (ally or enemy side plays a move)
+        by processing given action based on current game turn owner
 
-        Parameter:
+        Parameters:
             action (int): a valid action in Xiangqi action space
+
         Return:
+            tuple: observation, reward, done, info
+
             observation (object): current game state of the environment
-            reward (float) : amount of reward returned after given action
+
+            reward (float): amount of reward returned after given action
+
+            We apply points to every type of pieces following the most widely
+            used standard.
+
+            General: infinity
+
+            Advisor: 2.0
+
+            Elephant: 2.0
+
+            Horse: 4.0
+
+            Chariot: 9.0
+
+            Cannon: 4.5
+
+            Soldier: 1.0 (2.0 if it has crossed the river)
+
             done (bool): whether the episode has ended, in which case further
-                         step() calls will return undefined results
+            step() calls will return undefined results
+
             info (dict): contains auxiliary diagnostic information (helpful for
-                         debugging, and sometimes learning)
+            debugging, and sometimes learning)
         """
         # Validate action input
         error_msg = "%r (%s) invalid action" % (action, type(action))
@@ -264,12 +312,18 @@ class XiangQiEnv(gym.Env):
     def render(self, mode='human'):
         """
         Render current game state with PyGame
+
+        For more information refer to gym.Env.render() in OpenAI Gym
+        repository.
+
+        Parameters:
+            mode (str): string to indicate render mode
         """
         self._game.render()
 
     def close(self):
         """
-        Free up resources and gracefully exit
+        Free up resources and gracefully exit the Xiangqi environment
         """
         if self._game:
             self._game.cleanup()
@@ -277,6 +331,11 @@ class XiangQiEnv(gym.Env):
     def seed(self, seed=None):
         """
         Generate random seed value used to reproduce the current game
+
+        Parameters:
+            seed:
+                User defined input seed. If this is `None`, then it is
+                generated by this method
         """
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
@@ -292,12 +351,8 @@ class XiangQiEnv(gym.Env):
         from RL agents.
 
         Return:
-            observation (object): current game state of the environment
-            reward (float) : amount of reward returned after given action
-            done (bool): whether the episode has ended, in which case further
-                         step() calls will return undefined results
-            info (dict): contains auxiliary diagnostic information (helpful for
-                         debugging, and sometimes learning)
+            tuple:
+            The return values are the same with step() method.
         """
         error_msg = "gym_xiangqi error: calling step_user with " \
                     "incorrect game turn (must be ally's turn)"
@@ -347,8 +402,8 @@ class XiangQiEnv(gym.Env):
         """
         Searches all valid actions each piece can perform
 
-        Parameter:
-            player (int): -1 for enemy 1 for ALLY
+        Parameters:
+            player (int): -1 for ENEMY 1 for ALLY
         """
         # Current piece set changes depending on whose turn it is
         if player == ALLY:
@@ -376,7 +431,7 @@ class XiangQiEnv(gym.Env):
 
         Parameters:
             piece_id (int): Piece ID to filter possible actions.
-        return:
+        Return:
             actions that are can be taken by the piece.
         """
         if is_ally(piece_id):
