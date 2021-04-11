@@ -3,6 +3,8 @@ name: Publish Gym Xiangqi distribution 📦 to PyPI
 on: 
   push:
     branches: [ main ]
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build-and-publish:
@@ -35,6 +37,9 @@ jobs:
     name: Verify successful publishing with 'pip install gym-xiangqi'
     needs: build-and-publish
     runs-on: ${{ matrix.os }}
+    env:
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
