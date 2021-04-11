@@ -57,7 +57,8 @@ Read through the [software handbook](https://docs.google.com/document/d/1Y5AM-Xj
 - [PyGame] - Used for rendering the game 
 
 ## Contributing
-We are currently working on creating our contribution guidelines.
+Please checkout our contribution guidelines in [CONTRIBUTING.md](CONTRIBUTING.md) and our 
+[software handbook](https://docs.google.com/document/d/1Y5AM-Xj4XUkurKW1m9cBOs0bRJWS62qw8wu74Alcj9k/edit?usp=sharing).
 
 ## Versioning
 We use [Semantic Versioning](http://semver.org/) for versioning. For the versions
