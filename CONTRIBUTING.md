@@ -4,7 +4,7 @@
 
 Issues are very valuable to this project.
 
-  - Ideas are a valuable source of contributions others can make
+  - Ideas are a valuable source of contributions you can make
   - Problems show where this project is lacking
   - With a question you show where contributors can improve the user
     experience
@@ -13,10 +13,9 @@ Thank you for creating them.
 
 ## Pull Requests
 
-Pull requests are, a great way to get your ideas into this repository.
+Submitting pull requests is a great way to get your ideas into this repository.
 
-When deciding if I merge in a pull request I look at the following
-things:
+When merging in a pull request we look at the following things:
 
 ### Does it state intent
 
