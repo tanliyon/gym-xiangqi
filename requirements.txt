@@ -1,5 +1,5 @@
 # Test Framework Dependencies
-pytest==6.2.2
+pytest==6.2.3
 pytest-mock==3.5.1
 pytest-cov==2.11.1
 radon==4.5.0
