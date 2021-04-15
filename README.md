@@ -1,6 +1,15 @@
 # Gym Xiangqi
+
+![CI Test Suite](https://github.com/tanliyon/gym-xiangqi/actions/workflows/main.yml/badge.svg)
+![flake8 lint](https://github.com/tanliyon/gym-xiangqi/actions/workflows/lint.yml/badge.svg)
+![radon analysis](https://github.com/tanliyon/gym-xiangqi/actions/workflows/radon.yml/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/gym-xiangqi/badge/?version=latest)](https://gym-xiangqi.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/gym-xiangqi.svg)](https://badge.fury.io/py/gym-xiangqi)
+
 Gym Xiangqi is a reinforcement learning environment of Xiangqi, Chinese Chess, game.
 The project is built on top of a popular reinforcement learning framework called OpenAI Gym.
+
+![Welcome Demo](resources/welcome_demo.gif)
 
 ## Getting Started
 Installing and using Gym Xiangqi is easy. If you are unfamiliar with Xiangqi, the Chinese Chess, we encourage 
