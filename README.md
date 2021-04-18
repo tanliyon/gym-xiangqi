@@ -75,8 +75,8 @@ available, see the [tags on this repository](https://github.com/tanliyon/gym-xia
 
 ## Authors
 - Li Yon Tan - [tanliyon](https://github.com/tanliyon)
-- Myeonghun Kim - [dooki114](https://github.com/dooki114)
+- Myeonghun Kim (Danny) - [dooki114](https://github.com/dooki114)
 - Hojoung Jang (Brian) - [hojoung97](https://github.com/hojoung97)
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/tanliyon/gym-xiangqi/blob/main/LICENSE) file for details.
+This project is licensed under the GNU Lesser General Public License v3.0 - see the [LICENSE.md](https://github.com/tanliyon/gym-xiangqi/blob/main/LICENSE) file for details.
