@@ -57,4 +57,4 @@ jobs:
         pip install gym-xiangqi
     
     - name: Verify successful installation 🙌
-      run: agent-v-agent
+      run: python -c "import gym_xiangqi"
