@@ -12,7 +12,8 @@ from gym_xiangqi.constants import (
     COUNT,                        # initial time for timer
     PIECE_CNT,                    # total number of pieces in each side
     BOARD_Y_OFFSET,               # board y offset
-    BOARD_WIDTH, BOARD_HEIGHT     # board width, height
+    BOARD_WIDTH, BOARD_HEIGHT,    # board width, height
+    GENERAL,                      # Piece IDs
 )
 
 
@@ -280,6 +281,11 @@ class XiangQiGame:
         """
         Run the game until terminating condition is achieved
         """
+        if self.display_surf is None:
+            self.on_init()
+        if self.ally_piece[GENERAL].basic_image is None:
+            self.on_init_pieces()
+
         clock = pygame.time.Clock()
         self.running = True
 
