@@ -6,7 +6,7 @@ from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
 from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     RED, BLACK, DEAD,
-    ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
+    ILLEGAL_MOVE, PIECE_POINTS, LOSE,
     EMPTY, GENERAL, CANNON_1, HORSE_2,
     ALLY, ENEMY,
 )
@@ -153,7 +153,6 @@ class TestXiangQiEnv(unittest.TestCase):
         for action in [64062, 57437, 63255, 373, 63462]:
             obs, reward, done, _ = self.env.step(action)
             self.assertFalse(done)
-        self.assertEqual(reward, JIANG_POINT)
 
         for _ in range(3):
             for action in [1192, 57801, 1993, 58602]:

@@ -17,7 +17,7 @@ from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
-    ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
+    ILLEGAL_MOVE, PIECE_POINTS, LOSE,
     ALLY, ENEMY, EMPTY, GENERAL,
     MAX_PERPETUAL_JIANG,
 )
@@ -273,9 +273,7 @@ class XiangQiEnv(gym.Env):
                 if jiang_history[jiang_action] == MAX_PERPETUAL_JIANG:
                     self._done = True
                     return np.array(self._state), LOSE, self._done, {}
-
-            reward += JIANG_POINT   # TODO: decide whether to reward upon jiang
-        else:   # reset history if jiang spree has stopped
+        else:       # reset history if jiang spree has stopped
             if self._turn == ALLY:
                 self._ally_jiang_history = {}
             else:
