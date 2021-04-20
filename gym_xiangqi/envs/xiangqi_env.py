@@ -153,7 +153,6 @@ class XiangQiEnv(gym.Env):
 
         # initialize PyGame module
         self._game = XiangQiGame()
-        self._game.on_init()
 
         # user movement information during user vs agent game mode
         self.user_move_info = None
@@ -306,7 +305,7 @@ class XiangQiEnv(gym.Env):
             self._turn = ENEMY
 
         self.get_possible_actions(self._turn)
-        self._game.on_init_pieces(self._ally_piece, self._enemy_piece)
+        self._game.set_pieces(self._ally_piece, self._enemy_piece)
         self._state_hash = hash(str(self._state))
 
     def render(self, mode='human'):
@@ -319,6 +318,10 @@ class XiangQiEnv(gym.Env):
         Parameters:
             mode (str): string to indicate render mode
         """
+        if self._game.display_surf is None:
+            self._game.on_init()
+        if self._ally_piece[GENERAL].basic_image is None:
+            self._game.on_init_pieces()
         self._game.render()
 
     def close(self):
