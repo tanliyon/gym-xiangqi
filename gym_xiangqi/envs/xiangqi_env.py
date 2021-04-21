@@ -294,6 +294,7 @@ class XiangQiEnv(gym.Env):
         """
         Reset all environment components to initial state
         """
+        self._done = False
         self._state = np.array(INITIAL_BOARD)
         self.init_pieces()
 
