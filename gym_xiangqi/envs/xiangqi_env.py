@@ -293,6 +293,9 @@ class XiangQiEnv(gym.Env):
     def reset(self):
         """
         Reset all environment components to initial state
+
+        Return:
+            observation (object): the initial observation.
         """
         self._done = False
         self._state = np.array(INITIAL_BOARD)
@@ -309,6 +312,8 @@ class XiangQiEnv(gym.Env):
         self.get_possible_actions(self._turn)
         self._game.on_init_pieces(self._ally_piece, self._enemy_piece)
         self._state_hash = hash(str(self._state))
+
+        return np.array(self._state)
 
     def render(self, mode='human'):
         """
