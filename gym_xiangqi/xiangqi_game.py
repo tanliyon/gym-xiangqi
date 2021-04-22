@@ -12,7 +12,8 @@ from gym_xiangqi.constants import (
     COUNT,                        # initial time for timer
     PIECE_CNT,                    # total number of pieces in each side
     BOARD_Y_OFFSET,               # board y offset
-    BOARD_WIDTH, BOARD_HEIGHT     # board width, height
+    BOARD_WIDTH, BOARD_HEIGHT,    # board width, height
+    GENERAL,                      # Piece IDs
 )
 
 
@@ -70,12 +71,14 @@ class XiangQiGame:
         # load game sound components
         self.init_sound("piece_move.wav", "bgm.wav")
 
-    def on_init_pieces(self, ally_piece, enemy_piece):
-        # load piece images
-        self.load_piece_images(ally_piece)
-        self.load_piece_images(enemy_piece)
+    def set_pieces(self, ally_piece, enemy_piece):
         self.ally_piece = ally_piece
         self.enemy_piece = enemy_piece
+
+    def on_init_pieces(self):
+        # load piece images
+        self.load_piece_images(self.ally_piece)
+        self.load_piece_images(self.enemy_piece)
 
         # load move_sound and set it to piece objects
         for i in range(1, PIECE_CNT+1):
@@ -278,6 +281,11 @@ class XiangQiGame:
         """
         Run the game until terminating condition is achieved
         """
+        if self.display_surf is None:
+            self.on_init()
+        if self.ally_piece[GENERAL].basic_image is None:
+            self.on_init_pieces()
+
         clock = pygame.time.Clock()
         self.running = True
 

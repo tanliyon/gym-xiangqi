@@ -1,8 +1,10 @@
 import unittest
+from unittest.mock import patch
 import random
 import string
 
 from gym_xiangqi.envs.xiangqi_env import XiangQiEnv
+from gym_xiangqi.xiangqi_game import XiangQiGame
 from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     RED, BLACK, DEAD,
@@ -200,6 +202,20 @@ class TestXiangQiEnv(unittest.TestCase):
             self.env._state[2][1], self.env._state[0][7])
         with self.assertRaises(AssertionError):
             self.env.step(300)
+
+    def test_env_step_user(self):
+        def mock_run(this):
+            this.cur_selected_pid = CANNON_1
+            this.end_pos = (0, 1)
+
+        with patch.object(XiangQiGame, 'run', new=mock_run):
+            obs, reward, done, _ = self.env.step_user()
+
+        self.assertEqual(self.env.user_move_info, (CANNON_1, (7, 1), (0, 1)))
+        self.assertEqual(obs[7][1], EMPTY)
+        self.assertEqual(obs[0][1], CANNON_1)
+        self.assertEqual(reward, PIECE_POINTS[HORSE_2])
+        self.assertFalse(done)
 
 
 if __name__ == "__main__":
