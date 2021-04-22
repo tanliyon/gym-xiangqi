@@ -8,9 +8,10 @@ from gym_xiangqi.xiangqi_game import XiangQiGame
 from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     RED, BLACK, DEAD,
-    ILLEGAL_MOVE, PIECE_POINTS, JIANG_POINT, LOSE,
+    ILLEGAL_MOVE, PIECE_POINTS, LOSE,
     EMPTY, GENERAL, CANNON_1, HORSE_2,
     ALLY, ENEMY,
+    INITIAL_BOARD,
 )
 
 
@@ -137,6 +138,30 @@ class TestXiangQiEnv(unittest.TestCase):
         self.assertEqual(reward, PIECE_POINTS[GENERAL])
         self.assertEqual(self.env.enemy_piece[GENERAL].state, DEAD)
 
+    def test_env_reset(self):
+        """
+        verify environment properly resets after an episode has terminated
+
+        Performs these series of actions:
+        78727: Ally CANNON_1 (7, 1) -> (7, 4)
+        75172: Enemy CANNON_1 (2, 7) -> (2, 4)
+        78961: Ally CANNON_1 (7, 4) -> (3, 4)
+        123966: Enemy SOLDIER_5 (3, 0) -> (4, 0)
+        75694: Ally CANNON_1 (3, 4) -> (0, 4) -- takes black general
+
+        and resets the environment.
+        """
+        actions = [78727, 75172, 78961, 123966, 75694]
+        for action in actions:
+            obs, reward, done, info = self.env.step(action)
+        self.assertEqual(done, True)
+        self.assertEqual(reward, PIECE_POINTS[GENERAL])
+        self.assertEqual(self.env.enemy_piece[GENERAL].state, DEAD)
+
+        obs = self.env.reset()
+        self.assertFalse(self.env._done)
+        self.assertStateEqual(INITIAL_BOARD, obs)
+
     def test_perpetual_check(self):
         """
         simulate a perpetual checking situation
@@ -155,7 +180,6 @@ class TestXiangQiEnv(unittest.TestCase):
         for action in [64062, 57437, 63255, 373, 63462]:
             obs, reward, done, _ = self.env.step(action)
             self.assertFalse(done)
-        self.assertEqual(reward, JIANG_POINT)
 
         for _ in range(3):
             for action in [1192, 57801, 1993, 58602]:
