@@ -296,6 +296,7 @@ class XiangQiEnv(gym.Env):
         """
         self._state = np.array(INITIAL_BOARD)
         self.init_pieces()
+        self._done = False
 
         self._ally_jiang_history = {}
         self._enemy_jiang_history = {}

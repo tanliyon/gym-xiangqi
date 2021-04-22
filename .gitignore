@@ -11,6 +11,9 @@ __pycache__
 build/
 dist/
 
+# Models
+*.hdf5
+
 # Testing
 .coverage
 htmlcov
