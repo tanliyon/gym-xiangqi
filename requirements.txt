@@ -3,5 +3,5 @@ pytest==6.2.3
 pytest-mock==3.5.1
 pytest-cov==2.11.1
 radon==4.5.0
-flake8==3.9.0
+flake8==3.9.1
 flake8-polyfill==1.0.2
