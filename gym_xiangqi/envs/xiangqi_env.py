@@ -45,16 +45,16 @@ class XiangQiEnv(gym.Env):
             The observation space is the state of the board and pieces.
             Each item in the space corresponds to a single coordinate on
             the board with the value range from -16 to 16 which represents
-            the pieces. Negative integers are enemy pieces and positive 
+            the pieces. Negative integers are enemy pieces and positive
             integers are ally pieces.
 
         action_space (gym.spaces.Discrete(16 * 10 * 9 * 10 * 9)):
             The action space is an aggregation of all possible moves even
             including illegal moves. Each space encodes 3 information: which
-            piece, from where, and to where. From the size 16 * 10 * 9 * 10 
-            * 9, 16 is the number of pieces and 10 * 9 is all possible grid 
-            positions on the board where the first 10 * 9 represents the 
-            start position and the second part represents the end position, 
+            piece, from where, and to where. From the size 16 * 10 * 9 * 10
+            * 9, 16 is the number of pieces and 10 * 9 is all possible grid
+            positions on the board where the first 10 * 9 represents the
+            start position and the second part represents the end position,
             the position the piece wants to move to.
 
             In addition to this, the environment will calculate legal and
@@ -328,7 +328,7 @@ class XiangQiEnv(gym.Env):
         """
         Render current game state with PyGame
 
-        For more information on 'mode' parameter refer to gym.Env.render() 
+        For more information on 'mode' parameter refer to gym.Env.render()
         in OpenAI Gym repository. Currently, we only support 'human' mode.
 
         Parameters:
@@ -362,11 +362,11 @@ class XiangQiEnv(gym.Env):
     def step_user(self):
         """
         This method functions like the environment's step() method, but
-        it is specifically designed to serve users when they are player of 
-        a Xiangqi game (user VS agent mode). The method first renders game 
+        it is specifically designed to serve users when they are player of
+        a Xiangqi game (user VS agent mode). The method first renders game
         GUI and listens to user inputs. Then, when the user's piece movement
-        is entered, it is converted into the action space and passed to 
-        environment's step() method. The environment then handles the input 
+        is entered, it is converted into the action space and passed to
+        environment's step() method. The environment then handles the input
         action just like it handles any actions from RL agents.
 
         Return:
@@ -446,7 +446,7 @@ class XiangQiEnv(gym.Env):
 
     def get_possible_actions_by_piece(self, piece_id):
         """
-        Given a piece ID, saves the possible actions of the piece 
+        Given a piece ID, saves the possible actions of the piece
         inside the piece object.
 
         Parameters:
@@ -483,7 +483,7 @@ class XiangQiEnv(gym.Env):
         by any of current player's pieces
 
         Return:
-            list: 
+            list:
             list of actions that lead to Jiang based on current board state
         """
         # Get OPPONENT General
