@@ -9,7 +9,7 @@ from gym_xiangqi.constants import (
     BOARD_ROWS, BOARD_COLS,
     RED, BLACK, DEAD,
     ILLEGAL_MOVE, PIECE_POINTS, LOSE,
-    EMPTY, GENERAL, CANNON_1, HORSE_2,
+    EMPTY, GENERAL, CANNON_1, HORSE_2, SOLDIER_1, SOLDIER_5,
     ALLY, ENEMY,
     INITIAL_BOARD,
 )
@@ -121,6 +121,23 @@ class TestXiangQiEnv(unittest.TestCase):
         self.assertEqual(reward, PIECE_POINTS[HORSE_2])
         self.assertEqual(done, False)
         self.assertEqual(self.env.enemy_piece[HORSE_2].state, DEAD)
+
+    def test_env_reward_soldier_river(self):
+        """
+        Verify that soldiers are 2.0 points after crossing the river
+
+        94005: Ally SOLDIER_1 (6,0) -> (5,0)
+        92294: Enemy SOLDIER_1 (3,8) -> (4,8)
+        93186: Ally SOLDIER_1 (5,0) -> (4,0)
+        123966: Enemy SOLDIER_5 (3, 0) -> (4, 0)
+        64026: Ally CHARIOT_1 (9,0) -> (4,0)
+        """
+        actions = [94005, 92294, 93186, 123966]
+        for action in actions:
+            obs, reward, _, _ = self.env.step(action)
+        self.assertEqual(reward, PIECE_POINTS[SOLDIER_1]+1.)
+        obs, reward, _, _ = self.env.step(64026)
+        self.assertEqual(reward, PIECE_POINTS[SOLDIER_5])
 
     def test_env_step_done(self):
         """

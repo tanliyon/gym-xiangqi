@@ -18,8 +18,9 @@ from gym_xiangqi.constants import (
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
     ILLEGAL_MOVE, PIECE_POINTS, LOSE,
-    ALLY, ENEMY, EMPTY, GENERAL,
+    ALLY, ENEMY, EMPTY, GENERAL, SOLDIER_1, SOLDIER_5,
     MAX_PERPETUAL_JIANG,
+    RIVER_LOW, RIVER_HIGH,
 )
 
 
@@ -254,6 +255,15 @@ class XiangQiEnv(gym.Env):
 
         # Reward based on removed piece
         reward += PIECE_POINTS[abs(rm_piece_id)]
+
+        # Check if the removed piece is a soldier that has crossed the river
+        if SOLDIER_1 <= abs(rm_piece_id) <= SOLDIER_5:
+            if is_ally(rm_piece_id):
+                if self._ally_piece[rm_piece_id].row <= RIVER_LOW:
+                    reward += 1
+            else:
+                if self._enemy_piece[rm_piece_id].row >= RIVER_HIGH:
+                    reward += 1
 
         # End game if the General on either side has been attacked
         if abs(rm_piece_id) == GENERAL:
