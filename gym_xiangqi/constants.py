@@ -18,7 +18,7 @@ COUNT = 10
 """ POINTS """
 PIECE_POINTS = [
     0.,                     # EMPTY: No point for empty grid
-    float('inf'),           # GENERAL: Priceless for the general
+    100.,                   # GENERAL: Priceless for the general
     2., 2.,                 # ADVISOR: 2.0 points
     2., 2.,                 # ELEPHANT: 2.0 points
     4., 4.,                 # HORSE: 4.0 points
