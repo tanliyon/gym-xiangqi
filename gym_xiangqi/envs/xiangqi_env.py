@@ -52,7 +52,7 @@ class XiangQiEnv(gym.Env):
             The action space is an aggregation of all possible moves even
             including illegal moves. Each space encodes 3 information: which
             piece, from where, and to where.
-            
+
             From the size 16 * 10 * 9 * 10 * 9, 16 is the number of pieces
             and 10 * 9 is all possible grid positions on the board where the
             first 10 * 9 represents the start position and the second part
