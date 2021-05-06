@@ -55,8 +55,7 @@ SOLDIER_2 = 13
 SOLDIER_3 = 14
 SOLDIER_4 = 15
 SOLDIER_5 = 16
-# TODO: Consolidate this list with the ID to
-# prevent problems with synchronization.
+
 PIECE_ID_TO_NAME = [
     "EMPTY", "GENERAL", "ADVISOR_1", "ADVISOR_2",
     "ELEPHANT_1", "ELEPHANT_2", "HORSE_1", "HORSE_2",
