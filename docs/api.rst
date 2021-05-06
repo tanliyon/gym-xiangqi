@@ -26,6 +26,7 @@ resulting output is an action ID which is a single integer.
 
 .. autofunction:: gym_xiangqi.utils.move_to_action_space
 
+
 From XiangQiEnv Action Space to Piece Move
 ------------------------------------------
 If we can encode piece move information into the action space, we should
