@@ -25,3 +25,10 @@ function encodes this information into XiangQiEnv's action space and the
 resulting output is an action ID which is a single integer.
 
 .. autofunction:: gym_xiangqi.utils.move_to_action_space
+
+From XiangQiEnv Action Space to Piece Move
+------------------------------------------
+If we can encode piece move information into the action space, we should
+also be able to decode the encoded action ID back into original information.
+
+.. autofunction:: gym_xiangqi.utils.action_space_to_move
