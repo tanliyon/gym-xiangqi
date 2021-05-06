@@ -12,7 +12,6 @@ environments provide.
   :inherited-members:
   :members:
 
-
 From Piece Move to XiangQiEnv Action Space
 ------------------------------------------
 Intuitively we can interpret a piece's move having the three information:
@@ -26,7 +25,6 @@ function encodes this information into XiangQiEnv's action space and the
 resulting output is an action ID which is a single integer.
 
 .. autofunction:: gym_xiangqi.utils.move_to_action_space
-
 
 From XiangQiEnv Action Space to Piece Move
 ------------------------------------------
