@@ -34,11 +34,10 @@ class XiangQiEnv(gym.Env):
 
     Starting State:
     The initial board state with pieces laid out in correct position.
-    Reference the README for initial board illustration.
+    Reference our GitHub Wiki page for initial board illustration.
 
     Episode Termination:
-    Either the red or black runs out of moves or either side's
-    general is captured.
+    Either the red or black general is captured by the opponent.
 
     Attributes:
         observation_space (gym.spaces.Box(10, 9)):
@@ -46,31 +45,37 @@ class XiangQiEnv(gym.Env):
             Each item in the space corresponds to a single coordinate on
             the board with the value range from -16 to 16 which represents
             the pieces. Negative integers are enemy pieces and positive
-            integers are ally pieces.
+            integers are ally pieces. For specific piece ID mapping,
+            please reference `gym_xiangqi/constants.py`.
 
         action_space (gym.spaces.Discrete(16 * 10 * 9 * 10 * 9)):
             The action space is an aggregation of all possible moves even
             including illegal moves. Each space encodes 3 information: which
-            piece, from where, and to where. From the size 16 * 10 * 9 * 10
-            * 9, 16 is the number of pieces and 10 * 9 is all possible grid
-            positions on the board where the first 10 * 9 represents the
-            start position and the second part represents the end position,
-            the position the piece wants to move to.
+            piece, from where, and to where.
+            
+            From the size 16 * 10 * 9 * 10 * 9, 16 is the number of pieces
+            and 10 * 9 is all possible grid positions on the board where the
+            first 10 * 9 represents the start position and the second part
+            represents the position the piece wants to move to.
 
             In addition to this, the environment will calculate legal and
-            illegal moves within the action space to penalize an agent trying
-            to perform illegal moves and to correctly implement Xiangqi rules.
+            illegal moves within the action space to forbid illegal moves and
+            penalize an agent trying to perform illegal moves and to correctly
+            implement Xiangqi rules.
 
         ally_color (int):
             Current environment's ally color
+
             RED = 0 and BLACK = 1
 
         enemy_color (int):
             Current environment's enemy color
+
             RED = 0 and BLACK = 1
 
         turn (int):
             Current player that is playing
+
             ALLY = 0 and ENEMY = 1
 
         done (bool):
@@ -83,6 +88,11 @@ class XiangQiEnv(gym.Env):
             1 dimensional numpy array indicating legal and illegal actions
             among all ally's action space.
 
+            Piece ID, start position, and target position are encoded in
+            action ID which is the index to the ally_actions array.
+            Action ID can be encoded and decoded using move_to_action_space
+            and action_space_to_move functions in utils.py.
+
             Values of the array are 0 and 1 indicating legal and
             illegal actions respectively.
 
@@ -90,8 +100,13 @@ class XiangQiEnv(gym.Env):
             1 dimensional numpy array indicating legal and illegal actions
             among all enemy's action space.
 
-            Values of the array are 0 and 1 indicating legal and
-            illegal actions respectively.
+            Piece ID, start position, and target position are encoded in
+            action ID which is the index to the ally_actions array.
+            Action ID can be encoded and decoded using `move_to_action_space`
+            and `action_space_to_move` functions in `utils.py`.
+
+            Values of the array are 0 and 1 indicating legal and illegal
+            actions respectively.
 
         ally_piece (list):
             List of all ally piece objects
@@ -121,11 +136,11 @@ class XiangQiEnv(gym.Env):
             self._enemy_color = RED
             self._turn = ENEMY
 
-        # epoch termination flag
+        # Epoch termination flag
         self._done = False
         self._done_warn = False
 
-        # observation space: 10 x 9 space with pieces encoded as integers
+        # Observation space: 10 x 9 space with pieces encoded as integers
         self.observation_space = spaces.Box(
             low=-PIECE_CNT,
             high=PIECE_CNT,
@@ -133,34 +148,34 @@ class XiangQiEnv(gym.Env):
             dtype=int
         )
 
-        # action space: encodes start and target position and specific piece
+        # Action space: encodes start and target position and specific piece
         n = pow(TOTAL_POS, 2) * PIECE_CNT
         self.action_space = spaces.Discrete(n)
 
-        # initial board state
+        # Initial board state
         self._state = None
         self._state_hash = None
 
-        # instantiate piece objects
+        # Instantiate piece objects
         self._ally_piece = [None for _ in range(PIECE_CNT + 1)]
         self._enemy_piece = [None for _ in range(PIECE_CNT + 1)]
 
-        # possible moves: binary list with same shape of action space
+        # Possible moves: binary list with same shape of action space
         #                 valid action will be represented as 1 else 0
         self._ally_actions = np.zeros((n, ))
         self._enemy_actions = np.zeros((n, ))
 
-        # history of consecutive jiangs (will be used to ban perpetual check)
+        # History of consecutive jiangs (will be used to ban perpetual check)
         self._ally_jiang_history = None
         self._enemy_jiang_history = None
 
-        # initialize PyGame module
+        # Initialize PyGame module
         self._game = XiangQiGame()
 
-        # user movement information during user vs agent game mode
+        # User movement information during user vs agent game mode
         self.user_move_info = None
 
-        # reset all environment components to initial state
+        # Reset all environment components to initial state
         self.reset()
 
     def step(self, action):
@@ -181,7 +196,7 @@ class XiangQiEnv(gym.Env):
             We apply points to every type of pieces following the most widely
             used standard.
 
-            General: infinity
+            General: 100.0 (AKA win)
 
             Advisor: 2.0
 
@@ -284,13 +299,13 @@ class XiangQiEnv(gym.Env):
                 if jiang_history[jiang_action] == MAX_PERPETUAL_JIANG:
                     self._done = True
                     return np.array(self._state), LOSE, self._done, {}
-        else:       # reset history if jiang spree has stopped
+        else:       # Reset history if jiang spree has stopped
             if self._turn == ALLY:
                 self._ally_jiang_history = {}
             else:
                 self._enemy_jiang_history = {}
 
-        # self-play: agent switches turn between ally and enemy side
+        # Self-play: agent switches turn between ally and enemy side
         self._turn *= -1     # ALLY (1) to ENEMY (-1) and vice versa
         self.get_possible_actions(self._turn)
 
@@ -329,7 +344,7 @@ class XiangQiEnv(gym.Env):
         Render current game state with PyGame
 
         For more information on 'mode' parameter refer to gym.Env.render()
-        in OpenAI Gym repository. Currently, we only support 'human' mode.
+        in OpenAI Gym repository. Currently, we support 'human' mode.
 
         Parameters:
             mode (str): string to indicate render mode
@@ -423,7 +438,7 @@ class XiangQiEnv(gym.Env):
         Searches all valid actions each given player's piece can perform
 
         Parameters:
-            player (int): -1 for ENEMY 1 for ALLY
+            player (int): -1 for ENEMY and 1 for ALLY
         """
         # Current piece set changes depending on whose turn it is
         if player == ALLY:
@@ -434,7 +449,6 @@ class XiangQiEnv(gym.Env):
             possible_actions = self._enemy_actions
 
         # Clear previous turn's possible actions
-        # TODO: Don't clear the entire list, but only the relevant actions.
         possible_actions.fill(0)
 
         # Get possible moves for every piece in the piece set
