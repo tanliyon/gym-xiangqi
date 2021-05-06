@@ -11,7 +11,7 @@ def move_to_action_space(piece_id, start, end):
         piece_id (int): a piece ID integer
         start (tuple(int)): (row, col) start coordinate
         end (tuple(int)): (row, col) end coordinate
-    return:
+    Return:
         Index within the self.possible_actions
     """
     piece_id_val = (piece_id - 1) * pow(TOTAL_POS, 2)
@@ -28,7 +28,7 @@ def action_space_to_move(action):
 
     Parameters:
         action (int): index value within action space
-    return:
+    Return:
         piece ID, start coordinate, end coordinate
     """
     piece_id, r = divmod(action, pow(TOTAL_POS, 2))
@@ -45,6 +45,8 @@ def is_ally(piece_id):
     Determines if given input piece_id is ally or enemy piece
     This function CANNOT guarantee if the piece is an enemy piece
 
+    Parameters:
+        piece_id (int): a piece ID integer
     Return:
         True: given piece ID is an ally piece
         False: given piece ID is either an empty space or an enemy piece
