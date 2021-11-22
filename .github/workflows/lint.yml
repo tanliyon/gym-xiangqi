@@ -10,7 +10,7 @@ jobs:
       - name: Check out source repository
         uses: actions/checkout@v2
       - name: Set up Python environment
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v2.3.0
         with:
           python-version: "3.8"
       - name: flake8 Lint
