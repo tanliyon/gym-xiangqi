@@ -8,6 +8,7 @@ import time
 
 def main():
     env = gym.make('gym_xiangqi:xiangqi-v0')
+    obs = env.reset()
     env.render()
     agent = RandomAgent()
 
@@ -18,7 +19,7 @@ def main():
         time.sleep(1)
 
         action = agent.move(env)
-        _, reward, done, _ = env.step(action)
+        obs, reward, done, _ = env.step(action)
         turn = "Ally" if env.turn == ALLY else "Enemy"
         move = action_space_to_move(action)
         piece = PIECE_ID_TO_NAME[move[0]]
